@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .app {
+        @apply bg-gray-200 dark:bg-gray-900 h-screen w-screen overflow-hidden;
+    }
+
+    .dark .input-field option {
+        @apply bg-gray-600;
+    }
+
+    .focus\:ring-0:focus {
+        --tw-ring-offset-width: 0;
+    }
+
+    .masonry {
+        display: flex;
+        width: 100%;
+    }
+    .masonry-col {
+        background-clip: padding-box;
+    }
+
+    .block .overlay {
+        @apply text-white p-4 rounded-2xl;
+        position: absolute;
+        top: 3rem;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.8);
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .block:hover .overlay {
+        opacity: 1;
+    }
+
+    .install-input-field {
+        @apply rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-transparent text-gray-700 dark:text-white placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:border-transparent;
+    }
+
+    .input-field {
+        @apply block w-full mt-0 px-0.5 bg-transparent border-0 border-b-2 border-gray-400 focus:ring-0;
+    }
+
+    .UserAvatar--dark {
+        @apply text-white;
+    }
+
+    .UserAvatar--light {
+        @apply text-gray-700;
+    }
+
+    .UserAvatar.square .UserAvatar--inner {
+        border-radius: 0 !important;
+    }
+
+    .auth-bg {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        background: #4F46E5;
+        background: linear-gradient(-135deg, #818CF8, #312E81);
+    }
+
+    .auth-bg[data-theme="indigo"] {
+        background: #4F46E5;
+        background: linear-gradient(-135deg, #818CF8, #312E81);
+    }
+
+    .dark .auth-bg[data-theme="indigo"] {
+        background: #6366F1;
+        background: linear-gradient(-135deg, #3c183a, #3447a6);
+    }
+
+    .auth-bg[data-theme="fuchsia"] {
+        background: #CA8A04;
+        background: linear-gradient(-135deg, #FAE8FF, #E879F9);
+    }
+
+    .dark .auth-bg[data-theme="fuchsia"] {
+        background: #D946EF;
+        background: linear-gradient(-135deg, #C026D3, #701A75);
+    }
+
+    .auth-bg[data-theme="light-blue"] {
+        background: #CA8A04;
+        background: linear-gradient(-135deg, #E0F2FE, #38BDF8);
+    }
+
+    .dark .auth-bg[data-theme="light-blue"] {
+        background: #0EA5E9;
+        background: linear-gradient(-135deg, #0284C7, #0C4A6E);
+    }
+
+    .auth-bg[data-theme="red"] {
+        background: #DC2626;
+        background: linear-gradient(-135deg, #FEE2E2, #F87171);
+    }
+
+    .dark .auth-bg[data-theme="red"] {
+        background: #EF4444;
+        background: linear-gradient(-135deg, #DC2626, #7F1D1D);
+    }
+
+    .auth-bg[data-theme="orange"] {
+        background: #EA580C;
+        background: linear-gradient(-135deg, #FFEDD5, #FB923C);
+    }
+
+    .dark .auth-bg[data-theme="orange"] {
+        background: #F97316;
+        background: linear-gradient(-135deg, #EA580C, #7C2D12);
+    }
+
+    .auth-bg[data-theme="yellow"] {
+        background: #CA8A04;
+        background: linear-gradient(-135deg, #FEF9C3, #FACC15);
+    }
+
+    .dark .auth-bg[data-theme="yellow"] {
+        background: #EAB308;
+        background: linear-gradient(-135deg, #CA8A04, #713F12);
+    }
+
+    .auth-bg[data-theme="lime"] {
+        background: #65A30D;
+        background: linear-gradient(-135deg, #ECFCCB, #A3E635);
+    }
+
+    .dark .auth-bg[data-theme="lime"] {
+        background: #84CC16;
+        background: linear-gradient(-135deg, #65A30D, #365314);
+    }
+
+    .auth-bg[data-theme="gray"] {
+        background: #52525B;
+        background: linear-gradient(-135deg, #F4F4F5, #A1A1AA);
+    }
+
+    .dark .auth-bg[data-theme="gray"] {
+        background: #71717A;
+        background: linear-gradient(-135deg, #52525B, #18181B);
+    }
+    
+    /*
+    //light: 100 - 400
+    //dark: 600 - 900
+    */
+
+    .loader {
+        position: relative;
+        width: 6rem;
+        height: 6rem;
+        margin: auto;
+        top: 50%;
+        bottom: 50%;
+        @apply text-gray-300 dark:text-gray-500;
+    }
+}

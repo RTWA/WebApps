@@ -1,0 +1,49 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: /home/runner/work/WebApps/WebApps
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Install Dependencies
+        run: |
+          composer self-update
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
+      - name: Compile assets
+        run: |
+          npm install
+          npm run production
+      - name: Deploy by FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.1.0
+        with:
+          server: getwebapps.uk
+          username: github-actions@develop-staging.getwebapps.uk
+          password: ${{ secrets.STAGING_FTP_PASSWORD }}
+          exclude: '[
+        , **/.developers*/**
+        , **/.git*/**
+        , **/node_modules/**
+        , **/tests/**
+        , vendor/**/var-dump-server
+        , .env*
+        , .git*
+        , .*.yml
+        , *.js
+        , .babelrc
+        , package-lock.json
+        , package.json
+        , phpcs.xml
+        , phpunit.xml
+        , README.md
+        , server.php
+        ]'
