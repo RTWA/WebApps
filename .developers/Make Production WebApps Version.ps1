@@ -124,6 +124,16 @@ Write-Host "Optimised packages installed!" -ForegroundColor Green
 Write-Host ""
 Write-Host ""
 
+# Publish livewire assets
+Write-Host "Publishing Livewire Assets..." -ForegroundColor White
+Write-Host ""
+cd $path
+php artisan livewire:publish --assets
+cd "$($originalPath)/../"
+Write-Host "Livewire Assets published!" -ForegroundColor Green
+Write-Host ""
+Write-Host ""
+
 
 # Create ZIP file
 Write-Host "Creating ZIP file..." -ForegroundColor DarkYellow
@@ -163,7 +173,7 @@ Write-Host "             Version $verNum                           " -Foreground
 Write-Host ""
 Write-Host ""
 Write-Host "All the tasks have been completed. WebApps version $verNum has been made ready for production use."  -ForegroundColor Cyan
-Write-Host "Press any key to exit this wizard." -ForegroundColor Cyan
+Write-Host "Press any key to exit this wizard." -ForegroundColor Green
 
 Read-Host
 cd $originalPath
