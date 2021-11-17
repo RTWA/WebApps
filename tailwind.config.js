@@ -46,7 +46,8 @@ module.exports = {
         /^-left-/,
         /^UserAvatar/,
         /^max-/,
-        /^opacity-/
+        /^opacity-/,
+        /grid-cols-/
       ]
     }
   },
