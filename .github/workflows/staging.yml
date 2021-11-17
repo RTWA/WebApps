@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 2
       - name: Install Dependencies
         run: |
-          composer self-update
+          sudo composer self-update
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
       - name: Compile assets
         run: |

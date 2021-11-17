@@ -2,7 +2,9 @@ name: WebApps Tests
 
 on:
   push:
-    branches: [main, develop, version3]
+    branches:
+      - develop
+      - 'release/**'
   pull_request:
     branches: [develop]
 
@@ -34,7 +36,7 @@ jobs:
         run: php -r "file_exists('.env') || copy('.env.github', '.env');"
       - name: Install Dependencies
         run: |
-          composer self-update
+          sudo composer self-update
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Generate a new key
         run: php artisan key:generate --env=github
