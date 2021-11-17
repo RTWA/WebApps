@@ -3,8 +3,8 @@
 </div>
 
 <p align="center">
-<a href="https://travis-ci.com/RobTrehy/WebApps"><img src="https://travis-ci.com/RobTrehy/WebApps.svg?token=jx2yjG7gp7yzqx4Cygy9&branch=version3" alt="Build Status" /></a>
-<a href="https://codecov.io/gh/RobTrehy/WebApps"><img src="https://codecov.io/gh/RobTrehy/WebApps/branch/version3/graph/badge.svg?token=VZWQW7CT2A" alt="PHP Code Coverage" /></a>
+<a href="https://github.com/RTWA/WebApps/actions/workflows/tests.yml"><img src="https://github.com/RTWA/WebApps/actions/workflows/tests.yml/badge.svg?branch=develop" alt="Build Status" /></a>
+<a href="https://codecov.io/gh/RTWA/WebApps"><img src="https://codecov.io/gh/RTWA/WebApps/branch/develop/graph/badge.svg?token=HJLT0YI816" alt="PHP Code Coverage" /></a>
 <a href="https://github.com/RTWA/WebApps/releases/latest"><img src="https://img.shields.io/github/v/release/RTWA/WebApps?sort=semver" alt="Latest Release" /></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-green" alt="License - MIT" /></a>
 </p>
