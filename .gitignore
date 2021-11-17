@@ -18,7 +18,7 @@ yarn-error.log
 .editorconfig
 .phpunit.result.cache
 
-/releases/*/
+/releases/*
 /storage/webapps/apps/
 /storage/webapps/plugins/
 /storage/webapps/installed.json
