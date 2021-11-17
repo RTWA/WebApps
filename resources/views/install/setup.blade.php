@@ -108,7 +108,7 @@ Lets set some basic {{ config('installer.product.name') }} Settings
             <div class="w-2/3">
                 <div class="grid grid-cols-5 gap-4">
                     <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                        <input type="checkbox" id="error_reporting" name="error_reporting" checked="{{ $fields['error_reporting'] }}" class="checked:bg-gray-500 outline-none focus:ring-0 focus:outline-none right-4 checked:right-0 duration-200 ease-in absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
+                        <input type="checkbox" id="error_reporting" name="error_reporting" checked="{{ isset($fields['error_reporting']) }}" class="checked:bg-gray-500 outline-none focus:ring-0 focus:outline-none right-4 checked:right-0 duration-200 ease-in absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
                         <label for="error_reporting" class="block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-700 cursor-pointer" />
                     </div>
                 </div>

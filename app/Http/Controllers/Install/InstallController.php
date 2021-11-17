@@ -66,7 +66,6 @@ class InstallController extends Controller
             'APP_URL' => 'required',
             'theme' => 'required',
             'dark_mode' => 'required',
-            'error_reporting' => 'required'
         ];
         $messages = [
             'required' => 'This field is required'
