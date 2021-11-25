@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MSGraphToken;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 use Spatie\Permission\Models\Role;
@@ -35,7 +36,7 @@ class MSGraphController extends Controller
         }
 
         $client_id = ApplicationSettings::get('azure.graph.client_id');
-        $client_secret = ApplicationSettings::get('azure.graph.client_secret');
+        $client_secret = Crypt::decryptString(ApplicationSettings::get('azure.graph.client_secret'));
         if (!$client_id || !$client_secret) {
             abort(500, 'App Registration Information Missing!');
         }

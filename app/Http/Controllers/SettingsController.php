@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\TestMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 
@@ -40,7 +41,11 @@ class SettingsController extends Controller
     public function update(Request $request, $key)
     {
         $value = is_null($request->input('value')) ? '' : $request->input('value');
-        ApplicationSettings::set($key, $value);
+        if ($key !== "azure.graph.client_secret") {
+            ApplicationSettings::set($key, $value);
+        } else {
+            ApplicationSettings::set($key, Crypt::encryptString($value));
+        }
         return response()->json(['success' => true, 'settings' => ApplicationSettings::all()], 201);
     }
 
