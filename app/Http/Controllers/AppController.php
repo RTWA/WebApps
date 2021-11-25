@@ -20,7 +20,11 @@ class AppController extends Controller
         });
 
         return response()->json([
-            'available' => version_compare(str_replace("v", "", $latest['tag_name']), $this->readWebAppsJson()['app_version'], '>'),
+            'available' => version_compare(
+                str_replace("v", "", $latest['tag_name']),
+                $this->readWebAppsJson()['app_version'],
+                '>'
+            ),
             'version' => str_replace("v", "", $latest['tag_name']),
             'url' => $latest['html_url']
         ], 200);
