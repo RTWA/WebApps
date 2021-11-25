@@ -38,7 +38,7 @@ Thank you for considering contributing to WebApps! Please take a look at our [De
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within WebApps, including any Plugin, App (whether 1st or 3rd party), please send an e-mail to Rob Trehy via [robert@trehy.co.uk](mailto:robert@trehy.co.uk). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within WebApps, including any Plugin, App (whether 1st or 3rd party), please send an e-mail to Rob Trehy via [robert@getwebapps.uk](mailto:robert@getwebapps.uk). All security vulnerabilities will be promptly addressed.
 
 ## License
 
