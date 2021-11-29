@@ -77,12 +77,14 @@ class UIController extends Controller
         ];
 
         $userChildren = [];
-        $userChildren[] = [
-            '_tag' => 'NavChild',
-            'name' => 'Preferences',
-            'exact' => true,
-            'to' => '/user/preferences',
-        ];
+        if (ApplicationSettings::get('core.ui.dark_mode') === 'user') {
+            $userChildren[] = [
+                '_tag' => 'NavChild',
+                'name' => 'Preferences',
+                'exact' => true,
+                'to' => '/user/preferences',
+            ];
+        }
         if (!$user->azure_id) {
             $userChildren[] = [
                 '_tag' => 'NavChild',
