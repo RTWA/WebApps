@@ -7,6 +7,7 @@ use App\Http\Controllers\BlocksController;
 use App\Http\Controllers\Install\InstallController;
 use App\Http\Controllers\Install\UserController;
 use App\Http\Controllers\MSGraphController;
+use App\Http\Controllers\Update\UpdateController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,10 +43,22 @@ Route::group([
     Route::get('/complete', [InstallController::class, 'finish'])->name('final');
 });
 
+Route::group([
+    'prefix' => 'update',
+    'as' => 'Update::',
+    'middleware' => ['can.update']
+], function() {
+    Route::get('/', [UpdateController::class, 'start'])->name('start');
+    Route::post('/login', [UpdateController::class, 'login'])->name('login');
+    Route::get('/database', [UpdateController::class, 'database'])->name('database');
+    Route::get('/database/update', [UpdateController::class, 'databaseUpdate'])->name('database.update');
+    Route::get('/complete', [UpdateController::class, 'complete'])->name('complete');
+});
+
 /**
  * Route once installed or updated
  */
-Route::middleware(['requires.install'])->group(function () {
+Route::middleware(['requires.install', 'requires.update'])->group(function () {
     // Auth Routes
     Route::get('/login', [LoginController::class, 'loginPage'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('loginPost');

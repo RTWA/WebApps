@@ -22,7 +22,7 @@ class CanUpdate
         }
 
         if (!$this->updateAvailable()) {
-            abort(404);
+            return redirect('/');
         }
 
         return $next($request);
@@ -35,6 +35,16 @@ class CanUpdate
      */
     public function updateAvailable()
     {
+        // Get current version
+        $current = json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
+
+        // Get installed version
+        $installed = json_decode(file_get_contents(storage_path('webapps/installed.json')), true);
+
+        if (version_compare($installed['version'], $current['app_version'], '<')) {
+            return true;
+        }
+
         $migrations = $this->getMigrations();
         $executed = $this->getExecutedMigrations();
         

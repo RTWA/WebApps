@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
 
         'can.install' => \App\Http\Middleware\CanInstall::class,
         'can.update' => \App\Http\Middleware\CanUpdate::class,
-        'requires.install' => \App\Http\Middleware\RequiresInstall::class
+        'requires.install' => \App\Http\Middleware\RequiresInstall::class,
+        'requires.update' => \App\Http\Middleware\RequiresUpdate::class,
     ];
 }
