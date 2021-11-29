@@ -209,7 +209,7 @@ class UpdaterTest extends TestCase
         Artisan::call('make:migration', ['name' => 'testMigrationAction']);
         $this->files[] = glob(
             database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . '*test_migration_action.php'
-            )[0];
+        )[0];
 
         $response = $this->get('update/database/update');
 
