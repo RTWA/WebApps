@@ -58,7 +58,7 @@ const AuthenticationSettings = ({ UI, ...props }) => {
                                             })
                                         }
                                     </select>
-                                    <span className="text-xs text-gray-400">
+                                    <span className="text-xs text-gray-400 dark:text-gray-200">
                                         Which group should newly created users be put in by default?
                                     </span>
                                 </div>

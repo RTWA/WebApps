@@ -97,10 +97,10 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                             checked={(settings['core.error.reporting'] === 'true')}
                             onChange={onChange}
                             state={states['core.error.reporting']} />
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 dark:text-gray-200">
                             Enabling this option will report all application errors to WebApps via Sentry. (
                             <a href="https://docs.getwebapps.uk/configuration/application-settings" target="_blank"
-                                className="text-gray-500 hover:text-gray-600 font-semibold">See Documentation</a>)
+                                className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 font-semibold">See Documentation</a>)
                         </p>
                     </div>
                 </div>
@@ -150,7 +150,7 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                                 <div className="text-center">User Selectable</div>
                             </div>
                         </div>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-gray-400 dark:text-gray-200">
                             If you choose to allow the user to select, their system preferences will be respected.
                         </span>
                     </div>
