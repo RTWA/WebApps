@@ -47,7 +47,7 @@ Route::group([
     'prefix' => 'update',
     'as' => 'Update::',
     'middleware' => ['can.update']
-], function() {
+], function () {
     Route::get('/', [UpdateController::class, 'start'])->name('start');
     Route::post('/login', [UpdateController::class, 'login'])->name('login');
     Route::get('/database', [UpdateController::class, 'database'])->name('database');
