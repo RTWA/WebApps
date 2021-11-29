@@ -14,7 +14,7 @@ class BlocksService
     {
         if ($filter !== null && !is_numeric($filter)) {
             return Block::where('owner', $user_id)
-                    ->where(function($query) use ($filter) {
+                    ->where(function ($query) use ($filter) {
                         $query->where('title', 'like', '%' . $filter . '%')
                               ->orWhere('notes', 'like', '%' . $filter . '%')
                               ->orWhere('settings', 'like', '%:"%' . $filter .'%"%');
