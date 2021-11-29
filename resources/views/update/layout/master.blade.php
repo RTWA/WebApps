@@ -58,23 +58,6 @@
         </div>
     </div>
 
-    @if (session()->has('errors'))
-        <div class="text-red-500" id="error_alert">
-            <button type="button" class="close" id="close_alert" data-dismiss="alert" aria-hidden="true">
-                <i class="fa fa-close" aria-hidden="true"></i>
-            </button>
-            <h4>
-                <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                {{ trans('installer_messages.forms.errorTitle') }}
-            </h4>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <p class="text-center text-gray-500 mt-4">{{ config('installer.product.name') }} - Version
         {{ config('installer.product.version') }}</p>
 

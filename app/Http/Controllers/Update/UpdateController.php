@@ -16,13 +16,7 @@ class UpdateController extends Controller
 {
     public function start()
     {
-        $fields = [
-            'username' => '',
-            'password' => '',
-            'backup_confirm' => '',
-        ];
-
-        return view('update.start', compact('fields'));
+        return view('update.start');
     }
 
     public function login(Request $request)
@@ -33,15 +27,25 @@ class UpdateController extends Controller
         ]);
 
         if (!Auth::attempt($credentials)) {
-            return back()->withErrors([
-                'username' => 'The provided credentials do not match our records.',
-            ]);
+            return back()
+                ->withInput([
+                    'username' => $request->input('username'),
+                    'backup_confirm' => $request->input('backup_confirm')
+                ])
+                ->withErrors([
+                    'username' => 'The provided credentials do not match our records.',
+                ]);
         }
 
         if ($request->input('backup_confirm') !== 'on') {
-            return back()->withErrors([
-                'backup_confirm' => 'Please confirm you have taken a backup of your database!'
-            ]);
+            return back()
+                ->withInput([
+                    'username' => $request->input('username'),
+                    'backup_confirm' => $request->input('backup_confirm')
+                ])
+                ->withErrors([
+                    'backup_confirm' => 'Please confirm you have taken a backup of your database!'
+                ]);
         }
 
         return redirect(route('Update::database'));
@@ -81,7 +85,7 @@ class UpdateController extends Controller
         if ($installed['version'] <> $current['app_version']) {
             $installed['history'][] = [
                 'version' => $installed['version'],
-                'installed' => $installed['installed'],
+                'installed' => isset($installed['installed']) ?: 'Unknown',
             ];
             $installed['version'] = $current['app_version'];
             $installed['installed'] = date('Y-m-d h:i:sa');

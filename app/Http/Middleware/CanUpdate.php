@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CanUpdate
 {
@@ -45,30 +44,6 @@ class CanUpdate
             return true;
         }
 
-        $migrations = $this->getMigrations();
-        $executed = $this->getExecutedMigrations();
-        
-        if (count($migrations) == count($executed)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get the available migrations from the filesystem
-     */
-    private function getMigrations()
-    {
-        $migrations = glob(database_path().DIRECTORY_SEPARATOR.'migrations'.DIRECTORY_SEPARATOR.'*.php');
-        return str_replace('.php', '', $migrations);
-    }
-
-     /**
-      * Get a list of executed migrations
-      */
-    private function getExecutedMigrations()
-    {
-        return DB::table('migrations')->get()->pluck('migration');
+        return false;
     }
 }

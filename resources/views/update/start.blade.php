@@ -29,7 +29,7 @@ This wizard will guide you through the update process.
                     <label for="username" class="font-medium">Username</label>
                 </div>
                 <div class="w-2/3">
-                    <input type="text" name="username" id="username" class="install-input-field focus:ring-indigo-600 dark:focus:ring-indigo-400 {{ $errors->has('username') ? 'border-red-500 text-red-500' : '' }}" value="{{ $fields['username'] }}" />
+                    <input type="text" name="username" id="username" class="install-input-field focus:ring-indigo-600 dark:focus:ring-indigo-400 {{ $errors->has('username') ? 'border-red-500 text-red-500' : '' }}" value="{{ old('username') }}" />
                     @if ($errors->has('username'))
                     <div class="text-red-500">
                         {{ $errors->first('username') }}
@@ -42,7 +42,7 @@ This wizard will guide you through the update process.
                     <label for="password" class="font-medium">Password</label>
                 </div>
                 <div class="w-2/3">
-                    <input type="password" name="password" id="password" class="install-input-field focus:ring-indigo-600 dark:focus:ring-indigo-400 {{ $errors->has('password') ? 'border-red-500 text-red-500' : '' }}" value="{{ $fields['password'] }}" />
+                    <input type="password" name="password" id="password" class="install-input-field focus:ring-indigo-600 dark:focus:ring-indigo-400 {{ $errors->has('password') ? 'border-red-500 text-red-500' : '' }}" value="{{ old('password') }}" />
                     @if ($errors->has('password'))
                     <div class="text-red-500">
                         {{ $errors->first('password') }}
@@ -52,7 +52,7 @@ This wizard will guide you through the update process.
             </div>
             <div class="flex flex-row pt-4">
                 <div class="px-4 sm:px-6 w-20 text-center">
-                    <input type="checkbox" id="backup_confirm" name="backup_confirm" class="rounded {{ $errors->has('backup_confirm') ? 'border-red-500' : '' }}" @if ($fields['backup_confirm']==='on' ) checked @endif />
+                    <input type="checkbox" id="backup_confirm" name="backup_confirm" class="rounded {{ $errors->has('backup_confirm') ? 'border-red-500' : '' }}" @if (old('backup_confirm') === 'on' ) checked @endif />
                 </div>
                 <div class="w-full">
                     <label for="backup_confirm">I have taken a backup of my database</label>
