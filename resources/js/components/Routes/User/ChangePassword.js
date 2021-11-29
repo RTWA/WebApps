@@ -107,32 +107,32 @@ const ChangePassword = ({ user }) => {
             <div className="md:grid md:grid-cols-3 md:gap-6">
                 <div className="md:col-span-1 flex justify-between">
                     <div className="px-4 sm:px-0">
-                        <h3 className="text-lg font-medium text-gray-900">Update Password</h3>
-                        <p className="mt-1 text-sm text-gray-600">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Update Password</h3>
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             Ensure your account is using a long, random password to stay secure.
                         </p>
                     </div>
                 </div>
 
                 <div className="mt-5 md:mt-0 md:col-span-2">
-                    <div className="px-4 py-5 bg-white sm:p-6 shadow sm:rounded-tl-md sm:rounded-tr-md">
+                    <div className="px-4 py-5 bg-white dark:bg-gray-800 sm:p-6 shadow sm:rounded-tl-md sm:rounded-tr-md">
                         <div className="grid grid-cols-6 gap-6">
                             <div className="col-span-6 sm:col-span-4">
-                                <label className="block font-medium text-sm text-gray-700" htmlFor="currentPassword">
+                                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300" htmlFor="currentPassword">
                                     Current Password
                                 </label>
                                 <Input type="password" name="currentPassword" id="currentPassword" value={currentPassword} onChange={update} state={states.currentPassword.state} error={states.currentPassword.error} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-4">
-                                <label className="block font-medium text-sm text-gray-700" htmlFor="newPassword">
+                                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300" htmlFor="newPassword">
                                     New Password
                                 </label>
                                 <Input type="password" name="newPassword" id="newPassword" value={newPassword} onChange={update} state={states.newPassword.state} error={states.newPassword.error} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-4">
-                                <label className="block font-medium text-sm text-gray-700" htmlFor="confirmedPassword">
+                                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300" htmlFor="confirmedPassword">
                                     Confirm Password
                                 </label>
                                 <Input type="password" name="confirmedPassword" id="confirmedPassword" value={confirmedPassword} onChange={update} state={states.confirmedPassword.state} error={states.confirmedPassword.error} />
@@ -140,7 +140,7 @@ const ChangePassword = ({ user }) => {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-end px-4 py-3 bg-gray-50 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
+                    <div className="flex items-center justify-end px-4 py-3 bg-gray-50 bg-gray-700 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
                         <Button className="text-xs uppercase tracking-widest" onClick={changePassword}>Save</Button>
                     </div>
                 </div>
