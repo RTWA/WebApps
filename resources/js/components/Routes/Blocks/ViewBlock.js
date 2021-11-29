@@ -33,6 +33,7 @@ const ViewBlock = ({ UI, ...props }) => {
                 /* istanbul ignore else */
                 if (_mounted) {
                     Object.keys(json.data.styles).map(function (i) {
+                        /* istanbul ignore else */
                         if (!document.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document.createElement("style");
                             style.setAttribute("ref", i);
