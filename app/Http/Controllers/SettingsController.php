@@ -44,7 +44,9 @@ class SettingsController extends Controller
         if ($key !== "azure.graph.client_secret") {
             ApplicationSettings::set($key, $value);
         } else {
+            // @codeCoverageIgnoreStart
             ApplicationSettings::set($key, Crypt::encryptString($value));
+            // @codeCoverageIgnoreEnd
         }
         return response()->json(['success' => true, 'settings' => ApplicationSettings::all()], 201);
     }

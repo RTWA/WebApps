@@ -81,9 +81,7 @@ class AppManagerController extends Controller
     {
         foreach ($this->manifest['settings'] as $setting) {
             if (ApplicationSettings::get($setting['key']) === null) {
-                ApplicationSettings::set($setting['key'], (is_array($setting['value']))
-                                                    ? json_encode($setting['value'])
-                                                    : $setting['value']);
+                ApplicationSettings::set($setting['key'], $setting['value']);
             }
         }
     }

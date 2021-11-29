@@ -46,7 +46,9 @@ class Handler extends ExceptionHandler
                 $this->shouldReport($exception) &&
                 ApplicationSettings::get('core.error.reporting') == "true"
             ) {
+                // @codeCoverageIgnoreStart
                 app('sentry')->captureException($exception);
+                // @codeCoverageIgnoreEnd
             }
         }
 

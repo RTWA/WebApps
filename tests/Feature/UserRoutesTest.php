@@ -22,7 +22,7 @@ class UserRoutesTest extends TestCase
             file_put_contents(
                 storage_path('webapps/installed.json'),
                 json_encode([
-                    'version' => 'testing',
+                    'version' => '0.0.0',
                 ])
             );
         }
