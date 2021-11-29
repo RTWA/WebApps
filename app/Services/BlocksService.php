@@ -13,10 +13,12 @@ class BlocksService
     public function filteredBlocks($filter, $user_id, $offset, $limit, $sort)
     {
         if ($filter !== null && !is_numeric($filter)) {
-            return Block::where('title', 'like', '%' . $filter . '%')
-                    ->orWhere('notes', 'like', '%' . $filter . '%')
-                    ->orWhere('settings', 'like', '%:"%' . $filter .'%"%')
-                    ->where('owner', $user_id)
+            return Block::where('owner', $user_id)
+                    ->where(function($query) use ($filter) {
+                        $query->where('title', 'like', '%' . $filter . '%')
+                              ->orWhere('notes', 'like', '%' . $filter . '%')
+                              ->orWhere('settings', 'like', '%:"%' . $filter .'%"%');
+                    })
                     ->offset($offset)
                     ->take($limit)
                     ->get()
