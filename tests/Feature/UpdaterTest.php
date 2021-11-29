@@ -183,7 +183,9 @@ class UpdaterTest extends TestCase
     public function testUserCanSeeWhenThereAreMigrationsRequired()
     {
         Artisan::call('make:migration', ['name' => 'testMigration']);
-        $this->files[] = glob(database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . '*test_migration.php')[0];
+        $this->files[] = glob(
+            database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . '*test_migration.php'
+        )[0];
 
         $response = $this->get('update/database');
 
@@ -205,7 +207,9 @@ class UpdaterTest extends TestCase
     public function testUserCanPerformTheRequiredMigrations()
     {
         Artisan::call('make:migration', ['name' => 'testMigrationAction']);
-        $this->files[] = glob(database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . '*test_migration_action.php')[0];
+        $this->files[] = glob(
+            database_path() . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . '*test_migration_action.php'
+            )[0];
 
         $response = $this->get('update/database/update');
 
