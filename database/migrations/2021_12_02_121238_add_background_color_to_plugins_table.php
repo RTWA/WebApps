@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColorsToPluginsTable extends Migration
+class AddBackgroundColorToPluginsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,6 @@ class AddColorsToPluginsTable extends Migration
     public function up()
     {
         Schema::table('plugins', function (Blueprint $table) {
-            $table->string('icon_color')->after('icon')->nullable();
             $table->string('background_color')->after('icon_color')->nullable();
         });
     }
@@ -27,7 +26,6 @@ class AddColorsToPluginsTable extends Migration
     public function down()
     {
         Schema::table('plugins', function (Blueprint $table) {
-            $table->dropColumn('icon_color');
             $table->dropColumn('background_color');
         });
     }

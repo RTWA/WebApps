@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColorsToAppsTable extends Migration
+class AddIconColorToAppsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,6 @@ class AddColorsToAppsTable extends Migration
     {
         Schema::table('apps', function (Blueprint $table) {
             $table->string('icon_color')->after('icon')->nullable();
-            $table->string('background_color')->after('icon_color')->nullable();
         });
     }
 
@@ -28,7 +27,6 @@ class AddColorsToAppsTable extends Migration
     {
         Schema::table('apps', function (Blueprint $table) {
             $table->dropColumn('icon_color');
-            $table->dropColumn('background_color');
         });
     }
 }
