@@ -10,16 +10,16 @@ const AppPlugins = ({ apps, plugins }) => {
                 </svg>
                 Back to settings
             </Button>
-            <div className="w-full px-4 py-6">
+            <div className="w-full md:px-4 md:py-6">
                 <div className="flex flex-row mt-8">
-                    <h6 className="text-gray-600 dark:text-gray-400 text-2xl font-bold ml-6">Apps</h6>
+                    <h6 className="text-gray-600 dark:text-gray-400 text-2xl font-bold md:ml-6">Apps</h6>
                     <div className="flex-1 text-right mt-2">
                         <Button to="/settings/online/apps" square>
                             Get More Apps
                         </Button>
                     </div>
                 </div>
-                <div className="flex flex-wrap">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-5 py-4 px-6">
                     {
                         (apps.local === null || apps.local === undefined || typeof apps !== 'object' || apps.local.length === 0) ?
                             (
@@ -42,14 +42,14 @@ const AppPlugins = ({ apps, plugins }) => {
                 </div>
 
                 <div className="flex flex-row mt-8">
-                    <h6 className="text-gray-600 dark:text-gray-400 text-2xl font-bold ml-6">Plugins</h6>
+                    <h6 className="text-gray-600 dark:text-gray-400 text-2xl font-bold md:ml-6">Plugins</h6>
                     <div className="flex-1 text-right mt-2">
                         <Button to="/settings/online/plugins" square>
                             Get More Plugins
                         </Button>
                     </div>
                 </div>
-                <div className="flex flex-wrap">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-5 py-4 px-6">
                     {
                         (plugins.all === null || plugins.all === undefined || typeof plugins !== 'object' || plugins.all.length === 0) ?
                             (

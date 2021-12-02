@@ -30,7 +30,7 @@ const Apps = ({ apps }) => {
                 Back to Apps & Plugins
             </Button>
             <h2 className="mb-2 text-center text-2xl">Choose an App to install</h2>
-            <div className="flex flex-wrap">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-5 py-4 px-6">
                 {
                     Object.keys(apps.online).map((key, i) => {
                         return <AppCard key={i} app={apps.online[key]} showActions={true} />
