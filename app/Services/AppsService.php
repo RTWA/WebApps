@@ -69,6 +69,10 @@ class AppsService
                     $apps[$i]['hasUpdate'] = $this->checkForUpdate($app['slug'], $app['version']);
                     $apps[$i]['current_version'] = $app['version'];
                     $apps[$i]['installed'] =  true;
+
+                    if ($apps[$i]['hasUpdate']) {
+                        $apps[$i]['release'] = $this->repoData[$app['slug']]['release'];
+                    }
                 }
             }
             if (!$exists) {
@@ -81,6 +85,8 @@ class AppsService
                     'slug' => $slug,
                     'author' => isset($appData['author']) ? $appData['author'] : '',
                     'icon' => isset($appData['icon']) ? $appData['icon'] : "[\"fas\", \"star\"]",
+                    'icon_color' => isset($appData['icon_color']) ?: '',
+                    'background_color' => isset($appData['background_color']) ?: '',
                     'active' => 0,
                     'version' => isset($appData['version']) ? $appData['version'] : '0.0.0',
                     'current_version' => isset($appData['version']) ? $appData['version'] : '0.0.0',
@@ -157,6 +163,8 @@ class AppsService
             $_app->name = $app['name'];
             $_app->version = (isset($app['version']) ? $app['version'] : $app['release']['version']);
             $_app->icon = $app['icon'];
+            $_app->icon_color = $app['icon_color'];
+            $_app->background_color = $app['background_color'];
             $_app->author = $app['author'];
             $_app->save();
         }

@@ -54,6 +54,8 @@ class AppsController extends Controller
             [
                 'name' => $_app->name,
                 'icon' => $_app->icon,
+                'icon_color' => $_app->icon_color,
+                'background_color' => $_app->background_color,
                 'version' => $_app->version,
                 'author' => $_app->author,
                 'menu' => json_encode($_app->menu),
@@ -123,6 +125,8 @@ class AppsController extends Controller
                     'slug' => $request->input('slug'),
                     'name' => $_app->name,
                     'icon' => $_app->icon,
+                    'icon_color' => $_app->icon_color,
+                    'background_color' => $_app->background_color,
                     'version' => $_app->version,
                     'author' => $_app->author,
                     'menu' => json_encode($_app->menu),

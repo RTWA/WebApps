@@ -18,6 +18,8 @@ class App extends Model
         'slug',
         'active',
         'icon',
+        'icon_color',
+        'background_color',
         'version',
         'author',
         'menu',

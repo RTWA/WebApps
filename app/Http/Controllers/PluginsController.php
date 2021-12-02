@@ -114,6 +114,8 @@ class PluginsController extends Controller
             $plugin = Plugin::create([
                 'name' => $_plugin->name,
                 'icon' => $_plugin->icon,
+                'icon_color' => $_plugin->icon_color,
+                'background_color' => $_plugin->background_color,
                 'slug' => $request->input('slug'),
                 'version' => $_plugin->version,
                 'author' => $_plugin->author,

@@ -26,6 +26,8 @@ class AppManagerController extends Controller
         $this->name = $this->manifest['name'];
         $this->slug = $this->manifest['slug'];
         $this->icon = $this->manifest['icon'];
+        $this->icon_color = isset($this->manifest['icon_color']) ?: '';
+        $this->background_color = isset($this->manifest['background_color']) ?: '';
         $this->version = $this->manifest['version'];
         $this->author = $this->manifest['author'];
         $this->menu = $this->manifest['menu'];

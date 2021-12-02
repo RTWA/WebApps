@@ -69,6 +69,10 @@ class PluginsService
                     $plugins[$i]['hasUpdate'] = $this->checkForUpdate($plugin['slug'], $plugin['version']);
                     $plugins[$i]['current_version'] = $plugin['version'];
                     $plugins[$i]['installed'] =  true;
+
+                    if ($plugins[$i]['hasUpdate']) {
+                        $plugins[$i]['release'] = $this->repoData[$plugin['slug']]['release'];
+                    }
                 }
             }
             if (!$exists) {
@@ -81,6 +85,8 @@ class PluginsService
                     'slug' => $slug,
                     'author' => isset($pluginData['author']) ? $pluginData['author'] : '',
                     'icon' => isset($pluginData['icon']) ? $pluginData['icon'] : ['fas', 'star'],
+                    'icon_color' => isset($pluginData['icon_color']) ?: '',
+                    'background_color' => isset($pluginData['background_color']) ?: '',
                     'state' => 0,
                     'version' => isset($pluginData['version']) ? $pluginData['version'] : '0.0.0',
                     'current_version' => isset($pluginData['version']) ? $pluginData['version'] : '0.0.0',
@@ -156,6 +162,8 @@ class PluginsService
             $_plugin->name = $plugin['name'];
             $_plugin->version = (isset($plugin['version']) ? $plugin['version'] : $plugin['release']['version']);
             $_plugin->icon = $plugin['icon'];
+            $_plugin->icon_color = $plugin['icon_color'];
+            $_plugin->background_color = $plugin['background_color'];
             $_plugin->author = $plugin['author'];
             $_plugin->save();
         }

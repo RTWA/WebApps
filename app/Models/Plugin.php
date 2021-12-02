@@ -15,6 +15,8 @@ class Plugin extends Model
         'name',
         'slug',
         'icon',
+        'icon_color',
+        'background_color',
         'version',
         'author',
         'state'
