@@ -70,9 +70,11 @@ class PluginsService
                     $plugins[$i]['current_version'] = $plugin['version'];
                     $plugins[$i]['installed'] =  true;
 
+                    // @codeCoverageIgnoreStart
                     if ($plugins[$i]['hasUpdate']) {
                         $plugins[$i]['release'] = $this->repoData[$plugin['slug']]['release'];
                     }
+                    // @codeCoverageIgnoreEnd
                 }
             }
             if (!$exists) {

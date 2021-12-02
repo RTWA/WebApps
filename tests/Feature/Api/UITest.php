@@ -58,6 +58,7 @@ class UITest extends TestCase
         ApplicationSettings::set('core.cms.display_link', "true");
         ApplicationSettings::set('core.cms.text', 'Return to CMS');
         ApplicationSettings::set('core.cms.url', '#');
+        ApplicationSettings::set('core.ui.dark_mode', 'user');
 
         $response = $this->getJson('/api/navigation');
 

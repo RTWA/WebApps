@@ -70,9 +70,11 @@ class AppsService
                     $apps[$i]['current_version'] = $app['version'];
                     $apps[$i]['installed'] =  true;
 
+                    // @codeCoverageIgnoreStart
                     if ($apps[$i]['hasUpdate']) {
                         $apps[$i]['release'] = $this->repoData[$app['slug']]['release'];
                     }
+                    // @codeCoverageIgnoreEnd
                 }
             }
             if (!$exists) {
