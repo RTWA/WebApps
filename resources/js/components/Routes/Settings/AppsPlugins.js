@@ -23,7 +23,7 @@ const AppPlugins = ({ apps, plugins }) => {
                     {
                         (apps.local === null || apps.local === undefined || typeof apps !== 'object' || apps.local.length === 0) ?
                             (
-                                <div className="w-full text-center font-medium">
+                                <div className="md:col-span-5 text-center font-medium">
                                     <p className="mb-4">No Apps Downloaded!</p>
                                     <Button to="/settings/online/apps" square color="gray" style="outline">
                                         Get Some Apps
@@ -53,7 +53,7 @@ const AppPlugins = ({ apps, plugins }) => {
                     {
                         (plugins.all === null || plugins.all === undefined || typeof plugins !== 'object' || plugins.all.length === 0) ?
                             (
-                                <div className="w-full text-center font-medium">
+                                <div className="md:col-span-5 text-center font-medium">
                                     <p className="mb-4">No Plugins Downloaded!</p>
                                     <Button to="/settings/online/plugins" square color="gray" style="outline">
                                         Get Some Plugins
