@@ -24,10 +24,17 @@ const Grid = props => {
         </svg>
     )
 
+    const breakpointCols = {
+        default: 4,
+        1536: 3,
+        1280: 2,
+        640: 1,
+    }
+
 
     if (blocks.length === 0) {
         return (
-            <div>No matching blocks found</div>
+            <div className="text-center p-4">No matching blocks found.</div>
         )
     }
 
@@ -36,13 +43,13 @@ const Grid = props => {
             loadMore={loadMore}
             hasMore={hasMore}>
             <Masonry
-                breakpointCols={4}
-                className="masonry"
+                breakpointCols={breakpointCols}
+                className="masonry mt-3"
                 columnClassName="masonry-col">
                 {
                     blocks.map((block, i) => {
                         return (
-                            <div key={i} id={block.publicId} className="block relative shadow-lg rounded-2xl p-4 bg-white dark:bg-gray-700 mx-4 mb-4">
+                            <div key={i} id={block.publicId} className="block relative shadow-lg rounded-2xl p-4 bg-white dark:bg-gray-700 sm:mx-4 mb-4">
                                 <div className="flex items-center justify-between mb-6">
                                     <span onClick={() => { previewBlock(block) }}
                                         className={(block.rename === true) ? 'hidden' : 'font-bold text-md text-black dark:text-white ml-2'}>

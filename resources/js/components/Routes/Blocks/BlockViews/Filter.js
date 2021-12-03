@@ -10,15 +10,15 @@ const Filter = props => {
     const { UI } = useContext(WebAppsContext);
 
     return (
-        <div className="grid grid-cols-4 gap-4">
-            <div className="col-span-2">&nbsp;</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="hidden xl:block col-span-2">&nbsp;</div>
             <div>
                 <label htmlFor="filter-search" className="sr-only">Filter by Search</label>
-                <input type="text" className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 mb-4 bg-transparent`} placeholder="Search..." onKeyUp={blockFilter} id="filter-search" />
+                <input type="text" className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 bg-transparent`} placeholder="Search..." onKeyUp={blockFilter} id="filter-search" />
             </div>
             <div>
                 <label htmlFor="filter-plugin" className="sr-only">Filter by Plugin</label>
-                <select className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 mb-4 bg-transparent`} onChange={blockFilter} id="filter-plugin">
+                <select className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 bg-transparent`} onChange={blockFilter} id="filter-plugin">
                     <option value="">Show All Block Types</option>
                     {
                         plugins.map(function (plugin, i) {
