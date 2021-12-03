@@ -3,16 +3,12 @@ import { BlockCount, BlockViews, PopularBlocks, RecentBlocks } from '../../../wi
 
 const Dashboard = () => {
     return (
-        <div className="w-full h-full grid grid-cols-6 grid-rows-6 gap-x-3 gap-y-10">
+        <div className="w-full flex flex-wrap gap-3">
             <BlockCount />
             <BlockViews />
-            <div className="col-span-4" />
-            <div className="col-span-3 row-span-3">
-                <RecentBlocks />
-            </div>   
-            <div className="col-span-3 row-span-3">
-                <PopularBlocks />
-            </div>         
+            <div className="w-full lg:h-24"></div>
+            <RecentBlocks />
+            <PopularBlocks />
         </div>
     )
 }

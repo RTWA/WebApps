@@ -84,7 +84,7 @@ const RecentBlocks = () => {
 
     if (blocks === null) {
         return (
-            <div className="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full h-full mb-6 shadow-lg rounded">
+            <div className="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full max-w-1/2-gap-3 shadow-lg rounded">
                 <div className="rounded-t mb-0 px-4 py-3 border-0">
                     <div className="flex flex-wrap items-center">
                         <div className="relative w-full px-4 max-w-full flex-grow flex-1">
@@ -125,11 +125,11 @@ const RecentBlocks = () => {
 
     if (blocks.length === 0) {
         return (
-            <div className="w-full h-full flex flex-auto items-center">
-                <div className="-mt-20">
+            <div className="w-full h-full flex flex-wrap lg:flex-auto items-center">
+                <div className="-mt-20 mx-auto lg:mx-0">
                     <NoBlocks size="56" />
                 </div>
-                <div className="flex flex-col border-l border-gray-500 pl-3">
+                <div className="flex flex-col text-center lg:text-left w-full lg:w-auto lg:border-l border-gray-500 pl-3">
                     <p className="text-xl">You have not created any blocks yet.</p>
                     <Button href="/blocks/new" style="link" className="-mx-4">Why not create one now?</Button>
                 </div>
@@ -138,7 +138,7 @@ const RecentBlocks = () => {
     }
 
     return (
-        <div className="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full mb-6 shadow-lg rounded">
+        <div className="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full max-w-1/2-gap-3 shadow-lg rounded">
             <div className="rounded-t mb-0 px-4 py-3 border-0">
                 <div className="flex flex-wrap items-center">
                     <div className="relative w-full px-4 max-w-full flex-grow flex-1">
