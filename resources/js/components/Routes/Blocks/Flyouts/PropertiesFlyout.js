@@ -47,7 +47,7 @@ const PropertiesFlyout = ({ UI, ...props }) => {
     return (
         <div className={flyoutClass}>
             <div className={bdClass} aria-hidden="true" onClick={toggleProperties}></div>
-            <section className="absolute inset-y-0 right-0 pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
+            <section className="absolute inset-y-0 right-0 sm:pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
                 <div className={panelClass}>
                     <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl overflow-y-auto relative">
                         <div className={`px-4 sm:px-6 py-6 bg-${UI.theme}-600 dark::bg-${UI.theme}-500 text-white dark:text-gray-200`}>
@@ -82,13 +82,13 @@ const PropertiesFlyout = ({ UI, ...props }) => {
                                         className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`} />
 
                                     <p className="mt-5 text-gray-500">This Block is owned by:</p>
-                                    <div className="flex flex-row items-center p-4 border rounded mx-8 my-2">
+                                    <div className="flex flex-col sm:flex-row items-center p-4 border rounded mx-8 my-2">
                                         <UserAvatar size="48" name={block.user.name} src={`/user/${block.user.id}/photo`} />
                                         <p className="ml-4 text-black dark:text-white font-medium">{block.user.name}</p>
                                         {
                                             (block.id)
-                                                ? <p className="ml-24"><strong>{block.user.number_of_blocks - 1}</strong> other Blocks</p>
-                                                : <p className="ml-24"><strong>{block.user.number_of_blocks}</strong> other Blocks</p>
+                                                ? <p className="mt-3 sm:mt-0 sm:ml-24"><strong>{block.user.number_of_blocks - 1}</strong> other Blocks</p>
+                                                : <p className="mt-3 sm:mt-0 sm:ml-24"><strong>{block.user.number_of_blocks}</strong> other Blocks</p>
                                         }
 
                                     </div>

@@ -5,7 +5,7 @@ import { useToasts } from 'react-toast-notifications';
 
 import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
 
-import { Repeater, Select, Switch, Text } from '../../Fields';
+import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
 import { OrphanedBlock } from './BlockViews';
 import { Button, Icon, Loader, withWebApps } from 'webapps-react';
@@ -13,6 +13,7 @@ import { Button, Icon, Loader, withWebApps } from 'webapps-react';
 export const PropertiesContext = createContext({});
 
 const Fields = {
+    image: Image,
     repeater: Repeater,
     select: Select,
     switch: Switch,
@@ -28,7 +29,7 @@ const EditBlock = ({ UI, ...props }) => {
     const [block, setBlock] = useState(null);
     const [repeater, setRepeater] = useState(0);
     const [properties, setProperties] = useState(false);
-    /* istanbul ignore next */ 
+    /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
 
     const { addToast, updateToast } = useToasts();
@@ -67,7 +68,7 @@ const EditBlock = ({ UI, ...props }) => {
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
-                    Object.keys(json.data.styles).map(function(i) { 
+                    Object.keys(json.data.styles).map(function (i) {
                         if (!document.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document.createElement("style");
                             style.setAttribute("ref", i);
@@ -114,7 +115,7 @@ const EditBlock = ({ UI, ...props }) => {
                             content: json.data.message
                         }
                     );
-                    /* istanbul ignore next */ 
+                    /* istanbul ignore next */
                     if (props.history) {
                         props.history.push(`/blocks/view/${block.publicId}`);
                     }
@@ -141,12 +142,12 @@ const EditBlock = ({ UI, ...props }) => {
         if (ref !== undefined && mounted) {
             block.settings[ref][index][field] = value;
             setBlock({ ...block });
-        } else 
-        /* istanbul ignore else */
-        if (mounted) {
-            block.settings[field] = value;
-            setBlock({ ...block });
-        }
+        } else
+            /* istanbul ignore else */
+            if (mounted) {
+                block.settings[field] = value;
+                setBlock({ ...block });
+            }
     }
 
     const updateBlockProperties = e => {
@@ -236,7 +237,7 @@ const EditBlock = ({ UI, ...props }) => {
         if (node.type === "text") {
             let template = node.data;
             let r = template.match(/{[^}]+}/g);
-            /* istanbul ignore next */ 
+            /* istanbul ignore next */
             r && r.forEach(state => {
                 let regex = new RegExp(state, 'g');
                 let stateItem = state.split(/{|}/g)[1];
@@ -316,23 +317,25 @@ const EditBlock = ({ UI, ...props }) => {
                     value={block.title}
                     placeholder="Unnamed Block" />
             </div>
-            <div className="w-5/12 px-4">
-                <div className={block.plugin.slug} id="block-preview">
-                    {preview(block, transform)}
-                </div>
-            </div>
-            <div className="w-7/12">
-                <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${UI.theme}-600 dark:border-${UI.theme}-500 border-t-2`}>
-                    <div className="flex flex-row border-b border-gray-200 dark:border-gray-700 px-4 py-2 text-lg">
-                        <span className="font-medium mr-2">Plugin:</span>
-                        <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
-                        <div className="ml-auto">
-                            <Button onClick={toggleProperties} style="ghost" square className="-mx-4 -my-2">
-                                Block Properties
-                            </Button>
-                        </div>
+            <div className="flex flex-col flex-col-reverse gap-y-4 xl:flex-row w-full">
+                <div className="w-full xl:w-5/12 px-4">
+                    <div className={block.plugin.slug} id="block-preview">
+                        {preview(block, transform)}
                     </div>
-                    <div className="px-4 py-2">
+                </div>
+                <div className="w-full xl:w-7/12">
+                    <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${UI.theme}-600 dark:border-${UI.theme}-500 border-t-2`}>
+                        <div className="flex flex-col flex-col-reverse sm:flex-row border-b border-gray-200 dark:border-gray-700 text-lg">
+                            <div className="flex flex-row px-4 py-2">
+                                <span className="font-medium mr-2">Plugin:</span>
+                                <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
+                            </div>
+                            <div className="w-full border-t border-gray-200 sm:border-t-0 sm:w-auto sm:ml-auto">
+                                <Button onClick={toggleProperties} style="ghost" square className="w-full sm:w-auto">
+                                    Block Properties
+                                </Button>
+                            </div>
+                        </div>
                         {
                             Object.keys(options).map(function (field, i) {
                                 if (options[field].type === "custom") {
@@ -351,21 +354,21 @@ const EditBlock = ({ UI, ...props }) => {
                                     : (null);
                             })
                         }
-                    </div>
-                    <div className="border-t border-gray-200 dark:border-gray-700 w-full">
-                        {
-                            (saving)
-                                ? (
-                                    <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex">
-                                        <Loader style="circle" className="h-4 w-4 mr-2 mt-1" /> Saving...
-                                    </Button>
-                                )
-                                : (
-                                    <Button onClick={saveBlockData} style="ghost" square>
-                                        Save Changes & View
-                                    </Button>
-                                )
-                        }
+                        <div className="border-t border-gray-200 dark:border-gray-700 w-full">
+                            {
+                                (saving)
+                                    ? (
+                                        <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex w-full sm:w-auto">
+                                            <Loader style="circle" className="h-4 w-4 mr-2 mt-1" /> Saving...
+                                        </Button>
+                                    )
+                                    : (
+                                        <Button onClick={saveBlockData} style="ghost" square className="w-full sm:w-auto">
+                                            Save Changes & View
+                                        </Button>
+                                    )
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

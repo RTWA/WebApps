@@ -18,11 +18,9 @@ const Select = ({ UI, ...props }) => {
     }
 
     return (
-        <div className="flex flex-auto px-4 lg:px-10 py-10 pt-5" data-for={name}>
-            <div className="w-full lg:w-3/12">
-                <label className="block py-2" htmlFor={name}>{field.label}</label>
-            </div>
-            <div className="w-full lg:w-9/12">
+        <div className="flex flex-col lg:flex-row px-4 py-4" data-for={name}>
+            <label className="w-full lg:w-4/12 lg:py-2 font-medium lg:font-normal text-sm lg:text-base" htmlFor={name}>{field.label}</label>
+            <div className="w-full lg:w-8/12">
                 <select name={name}
                     id={name}
                     value={value}

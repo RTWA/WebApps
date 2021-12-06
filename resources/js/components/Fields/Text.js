@@ -20,21 +20,18 @@ const Text = props => {
     }
 
     return (
-        <div className="flex flex-auto px-4 lg:px-10 py-10 pt-5" data-for={name}>
-            <div className="w-full lg:w-3/12">
-                <label className="block py-2" htmlFor={name}>{field.label}</label>
-            </div>
-            <div className="w-full lg:w-9/12">
-                <Input name={name}
-                    type="text"
-                    id={name}
-                    placeholder={field.placeholder || ''}
-                    maxLength={field.maxLength || ''}
-                    value={value}
-                    onChange={onChange}
-                    state={state}
-                    error={error} />
-            </div>
+        <div className="flex flex-col lg:flex-row px-4 py-4" data-for={name}>
+            <label className="w-full lg:w-4/12 lg:py-2 font-medium lg:font-normal text-sm lg:text-base" htmlFor={name}>{field.label}</label>
+            <Input name={name}
+                id={name}
+                type="text"
+                placeholder={field.placeholder || ''}
+                maxLength={field.maxLength || ''}
+                value={value}
+                onChange={onChange}
+                state={state}
+                error={error}
+                className="w-full lg:w-8/12" />
         </div>
     )
 }

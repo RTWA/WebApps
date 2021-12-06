@@ -60,20 +60,20 @@ const SortableItem = props => {
 
     const paneClass = classNames(
         'px-4',
-        'bg-white',
+        'bg-gray-50',
         'dark:bg-gray-800',
         (repeater.open === i) ? 'block' : 'hidden'
     );
 
     return (
-        <div className="border cursor-pointer rounded bg-gray-100 dark:bg-gray-900 dark:border-gray-700 mb-1" ref={setNodeRef} style={style}>
+        <div className="cursor-pointer bg-gray-100 dark:bg-gray-900 mb-1" ref={setNodeRef} style={style}>
             <div className="flex flex-row w-full">
                 <div className="p-2" {...attributes} {...listeners}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                     </svg>
                 </div>
-                <p className="flex-1 p-2" onClick={() => repeater.toggle(i)}>{field.label}: {value[field.ref]}</p>
+                <p className="flex-1 p-2 bg-gray-50" onClick={() => repeater.toggle(i)}>{field.label}: {value[field.ref]}</p>
                 {
                     (props.data[name].length !== 1)
                         ? (
@@ -218,7 +218,7 @@ const Repeater = ({ UI, ...props }) => {
                     }
                 </DragOverlay>
             </DndContext>
-            <button className={`block mx-auto outline-none hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-500`} data-name={name} onClick={repeater.add}>
+            <button className={`block mx-auto outline-none hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-500 mb-1`} data-name={name} onClick={repeater.add}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline-block -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
