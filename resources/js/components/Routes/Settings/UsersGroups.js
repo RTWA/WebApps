@@ -387,9 +387,7 @@ const UsersGroups = ({ UI, ...props }) => {
         'ml-6',
         'inline-block',
         'cursor-pointer',
-        (tab === id) ? 'text-2xl' : 'text-lg',
-        (tab === id) ? 'font-bold' : '',
-        (tab === id) ? '' : 'mt-1'
+        (tab === id) ? 'text-2xl font-bold' : 'text-lg mt-1',
     )
 
     const paneClass = id => classNames(
@@ -401,16 +399,18 @@ const UsersGroups = ({ UI, ...props }) => {
 
     return (
         <>
-            <Button to="/settings" style="link" className="flex flex-auto -mt-8 text-sm uppercase">
+            <Button to="/settings" style="link" className="flex flex-auto -mt-8 -ml-4 text-sm uppercase">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                 </svg>
                 Back to settings
             </Button>
-            <div className="w-full px-4 py-6" id="usersgroups">
-                <div className="flex flex-row">
-                    <h6 className={tabClass(0)} onClick={() => setTab(0)}>Users</h6>
-                    <h6 className={tabClass(1)} onClick={() => setTab(1)}>Groups</h6>
+            <div className="w-full py-4" id="usersgroups">
+                <div className="flex flex-col flex-col-reverse xl:flex-row">
+                    <div className="flex flex-row">
+                        <h6 className={tabClass(0)} onClick={() => setTab(0)}>Users</h6>
+                        <h6 className={tabClass(1)} onClick={() => setTab(1)}>Groups</h6>
+                    </div>
 
                     {
                         (tab === 0) ?
