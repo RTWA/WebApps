@@ -656,4 +656,44 @@ class SecurityRoutesTest extends TestCase
             'success' => true
         ]);
     }
+
+    public function testCanCheckAUserHasPermissionTo()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            $user = User::find(1),
+            ['*']
+        );
+
+        $response = $this->postJson('/api/permission/check', [
+            'permission' => 'admin.access'
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJsonFragment([
+            'user_id' => 1,
+            'has_permission' => true
+        ]);
+    }
+
+    public function testCanCheckAUserDoesntHavePermissionTo()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            $user = User::find(5),
+            ['*']
+        );
+
+        $response = $this->postJson('/api/permission/check', [
+            'permission' => 'admin.access'
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJsonFragment([
+            'user_id' => 5,
+            'has_permission' => false
+        ]);
+    }
 }

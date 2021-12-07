@@ -56,6 +56,7 @@ Route::group(
         Route::post('/permissions/group', [SecurityController::class, 'toggleGroupPermission']);
         Route::post('/permissions/search', [SecurityController::class, 'searchPermissions']);
         Route::post('/permitted', [SecurityController::class, 'getPermittedUsers']);
+        Route::post('/permission/check', [SecurityController::class, 'checkUserPermission']);
 
         // User Settings
         Route::get('/users', [UserController::class, 'allUsersWithGroups']);

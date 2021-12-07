@@ -18,8 +18,6 @@ class SecurityController extends Controller
 {
     /**
      * Retrieve a list of available Groups (Roles)
-     *
-     * @return json array
      */
     public function groups()
     {
@@ -109,6 +107,9 @@ class SecurityController extends Controller
         ], 200);
     }
 
+    /**
+     * Get Azure group mappings
+     */
     public function getGroupMappings()
     {
         $maps = GroupToAzureGroup::all();
@@ -123,13 +124,16 @@ class SecurityController extends Controller
         ], 200);
     }
 
+    /**
+     * Sets an Azure group mapping
+     */
     public function setGroupMapping(Request $request)
     {
         $group = $request->input('group_id');
         $azGroup = $request->input('azure_group_id');
 
         $current = GroupToAzureGroup::where('role_id', $group)->first();
-        
+
         if ($current && $current->azure_group_id <> $azGroup) {
             $current->azure_group_id = $azGroup;
             $current->save();
@@ -145,12 +149,10 @@ class SecurityController extends Controller
 
     /**
      * Retreive a list of available Permissions
-     *
-     * @return json array
      */
     public function permissions()
     {
-        $perms       = Permission::all();
+        $perms  = Permission::all();
         $permissions = [
             'admin'  => [
                 'name'        => 'Administrative Options',
@@ -241,7 +243,7 @@ class SecurityController extends Controller
         } else {
             $user->revokePermissionTo($permission);
         }
-        
+
         return response()->json([
             'success' => true,
             'user' => User::with('permissions')->where('id', $request->input('user'))->first()
@@ -262,10 +264,22 @@ class SecurityController extends Controller
         } else {
             $group->revokePermissionTo($permission);
         }
-        
+
         return response()->json([
             'success' => true,
             'group' => Role::with('permissions')->where('id', $request->input('group'))->first()
         ], 201);
+    }
+
+    /**
+     * Check the authenticated User has a Permission
+     */
+    public function checkUserPermission(Request $request)
+    {
+        return response()->json([
+            'permission' => $request->input('permission'),
+            'user_id' => Auth::id(),
+            'has_permission' => Auth::user()->hasPermissionTo($request->input('permission'))
+        ], 200);
     }
 }

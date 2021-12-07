@@ -162,7 +162,6 @@ class UserController extends Controller
         }
         // @codeCoverageIgnoreEnd
 
-        /* TODO: allow manual user photos */
         return response(
             (new InitialAvatar())->name($user->name)->generate()->stream('png', 100)
         )->header('Content-Type', 'image/png');
