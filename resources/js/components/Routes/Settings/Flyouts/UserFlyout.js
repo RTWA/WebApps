@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import classNames from 'classnames';
 import { useToasts } from 'react-toast-notifications';
@@ -26,6 +26,10 @@ const UserFlyout = ({ UI, ...props }) => {
     const {
         userModal, toggleUserModal,
     } = useContext(FlyoutsContext);
+
+    useEffect(() => {
+        setPasswordResetShowing(false);
+    }, [user]);
 
     const showPasswordReset = () => {
         setPasswordResetShowing(true);
@@ -145,9 +149,9 @@ const UserFlyout = ({ UI, ...props }) => {
     return (
         <div className={flyoutClass}>
             <div className={bdClass} aria-hidden="true" onClick={toggleUserModal}></div>
-            <section className="absolute inset-y-0 right-0 pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
+            <section className="absolute inset-y-0 right-0 sm:pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
                 <div className={panelClass}>
-                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl overflow-y-auto">
+                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl">
                         <div className={`px-4 sm:px-6 py-6 bg-${UI.theme}-600 dark:bg-${UI.theme}-500 text-white dark:text-gray-200 relative`}>
                             <div className="absolute top-0 right-0 -ml-8 pt-6 pr-2 flex sm:-ml-10 sm:pr-4">
                                 <button className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
@@ -168,71 +172,78 @@ const UserFlyout = ({ UI, ...props }) => {
                                     </div>
                                 ) : null
                         }
-                        <div className="mt-6 relative flex-1 px-4 sm:px-6">
+                        <div className="my-6 relative flex-1 px-4 sm:px-6 overflow-y-auto">
                             <div className="absolute inset-0 px-4 sm:px-6">
                                 <div className="h-full" aria-hidden="true">
                                     <h1 className="text-lg font-medium">{user.name}</h1>
                                     <p className="italic text-gray-500">{user.username}</p>
                                     <h4 className="mt-2 font-medium text-md">{user.email}</h4>
-                                    <div className="mt-8">
-                                        <label className="text-lg font-medium" htmlFor="usrSecGroup">Change Security Group</label>
-                                        <select name="usrSecGroup"
-                                            id="usrSecGroup"
-                                            onChange={setGroup}
-                                            value={user._CurrentGroupId}
-                                            className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
-                                            <option value="0">No group assigned</option>
-                                            {
-                                                Object(groups).map(function (group, i) {
-                                                    return (
-                                                        <option value={group.id} key={i}>{group.name}</option>
-                                                    )
-                                                })
-                                            }
-                                        </select>
+                                    <div className="mt-8 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="usrSecGroup">Change Security Group</label>
+                                        <div className="w-full">
+                                            <select name="usrSecGroup"
+                                                id="usrSecGroup"
+                                                onChange={setGroup}
+                                                value={user._CurrentGroupId}
+                                                className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
+                                                <option value="0">No group assigned</option>
+                                                {
+                                                    Object(groups).map(function (group, i) {
+                                                        return (
+                                                            <option value={group.id} key={i}>{group.name}</option>
+                                                        )
+                                                    })
+                                                }
+                                            </select>
+                                        </div>
                                     </div>
-                                    <h4 className="mt-8 text-lg font-medium">Blocks</h4>
-                                    <p>This user has created <span className="font-medium">{user.number_of_blocks}</span> {blocksText}.</p>
-                                    {
-                                        (user.number_of_blocks > 0) ?
-                                            (
-                                                <div className="pt-6">
-                                                    <Button to={`/blocks/user/${user.username}`} square>
-                                                        View this user's {blocksText}
-                                                    </Button>
-                                                </div>
-                                            ) : null
-                                    }
-                                    <h4 className="mt-8 text-lg font-medium">Password</h4>
+                                    <h4 className="mt-8 w-full font-medium text-sm">Blocks</h4>
+                                    <div className="sm:flex sm:flex-row sm:gap-x-6">
+                                        <p>
+                                            This user has created <span className="font-medium">{user.number_of_blocks}</span> {blocksText}.
+                                        </p>
+                                        {
+                                            (user.number_of_blocks > 0) ?
+                                                <Button to={`/blocks/user/${user.username}`} style="ghost" size="small" square>
+                                                    View this user's {blocksText}
+                                                </Button> : null
+                                        }
+                                    </div>
+                                    <h4 className="mt-8 w-full font-medium text-sm">Password</h4>
                                     {
                                         (passwordResetShowing) ?
                                             (
                                                 <>
-                                                    <div className="col-span-6 sm:col-span-4">
-                                                        <label className="block font-medium text-sm text-gray-700" htmlFor="newPassword">
-                                                            New Password:
-                                                        </label>
-                                                        <Input type="password" name="newPassword" id="newPassword" value={newPassword} onChange={update} state={states.newPassword.state} error={states.newPassword.error} />
+                                                    <div className="mt-4 flex flex-col">
+                                                        <label className="w-full font-medium text-sm" htmlFor="newPassword">New Password:</label>
+                                                        <Input type="password"
+                                                            name="newPassword"
+                                                            id="newPassword"
+                                                            value={newPassword}
+                                                            onChange={update}
+                                                            state={states.newPassword.state}
+                                                            error={states.newPassword.error}
+                                                            className="w-full" />
                                                     </div>
-
-                                                    <div className="col-span-6 sm:col-span-4 mt-2">
-                                                        <label className="block font-medium text-sm text-gray-700" htmlFor="confirmedPassword">
-                                                            Confirm Password:
-                                                        </label>
-                                                        <Input type="password" name="confirmedPassword" id="confirmedPassword" value={confirmedPassword} onChange={update} state={states.confirmedPassword.state} error={states.confirmedPassword.error} />
+                                                    <div className="mt-2 flex flex-col">
+                                                        <label className="w-full font-medium text-sm" htmlFor="confirmedPassword">Confirm Password:</label>
+                                                        <Input type="password"
+                                                            name="confirmedPassword"
+                                                            id="confirmedPassword"
+                                                            value={confirmedPassword}
+                                                            onChange={update}
+                                                            state={states.confirmedPassword.state}
+                                                            error={states.confirmedPassword.error}
+                                                            className="w-full" />
                                                     </div>
                                                     <div className="flex items-center justify-end text-right mt-2">
-                                                        <Button square color="orange" size="small" className="uppercase tracking-widest" onClick={changePassword}>Reset Password</Button>
+                                                        <Button square color="orange" size="small" className="uppercase tracking-widest" onClick={changePassword}>Change Password</Button>
                                                     </div>
                                                 </>
                                             ) :
-                                            (
-                                                <div className="pt-6">
-                                                    <Button onClick={showPasswordReset} square color="orange">
-                                                        Reset Password
-                                                    </Button>
-                                                </div>
-                                            )
+                                            <Button onClick={showPasswordReset} size="small" style="ghost" square color="orange">
+                                                Change this user's password
+                                            </Button>
                                     }
                                 </div>
                             </div>

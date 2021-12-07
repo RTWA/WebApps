@@ -49,9 +49,9 @@ const GroupFlyout = ({ UI, ...props }) => {
     return (
         <div className={flyoutClass}>
             <div className={bdClass} aria-hidden="true" onClick={toggleGroupModal}></div>
-            <section className="absolute inset-y-0 right-0 pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
+            <section className="absolute inset-y-0 right-0 sm:pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
                 <div className={panelClass}>
-                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl overflow-y-auto">
+                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl">
                         <div className={`px-4 sm:px-6 py-6 bg-${UI.theme}-600 dark:bg-${UI.theme}-500 text-white dark:text-gray-200 relative`}>
                             <div className="absolute top-0 right-0 -ml-8 pt-6 pr-2 flex sm:-ml-10 sm:pr-4">
                                 <button className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
@@ -64,23 +64,20 @@ const GroupFlyout = ({ UI, ...props }) => {
                             </div>
                             <h2 id="slide-over-heading" className="text-lg font-medium">{group.name} - Group Properties</h2>
                         </div>
-                        <div className="mt-6 relative flex-1 px-4 sm:px-6">
-                            <div className="absolute inset-0 px-4 sm:px-6">
+                        <div className="my-6 relative flex-1 px-4 sm:px-6">
+                            <div className="absolute inset-0 px-4 sm:px-6 overflow-y-auto">
                                 <div className="h-full" aria-hidden="true">
-                                    <div className="flex flex-auto">
-                                        <div className="w-full lg:w-3/12">
-                                            <label className="block py-2" htmlFor="name_gf">Group Name</label>
-                                        </div>
-                                        <div className="w-full lg:w-9/12">
-                                            <Input name="groupName"
-                                                type="text"
-                                                id="name_gf"
-                                                value={group.name || ''}
-                                                onChange={renameGroup}
-                                                onBlur={saveRenameGroup}
-                                                error={group.error || ''}
-                                                state={group.state || ''} />
-                                        </div>
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="name_gf">Group Name</label>
+                                        <Input type="text"
+                                            name="groupName"
+                                            id="name_gf"
+                                            value={group.name || ''}
+                                            onChange={renameGroup}
+                                            onBlur={saveRenameGroup}
+                                            error={group.error || ''}
+                                            state={group.state || ''}
+                                            className="w-full" />
                                     </div>
                                 </div>
                             </div>
