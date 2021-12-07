@@ -375,7 +375,7 @@ const EditBlock = ({ UI, ...props }) => {
 
 
             <PropertiesContext.Provider value={{ properties, toggleProperties }}>
-                <PropertiesFlyout block={block} update={updateBlockProperties} />
+                <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
             </PropertiesContext.Provider>
         </div>
     )

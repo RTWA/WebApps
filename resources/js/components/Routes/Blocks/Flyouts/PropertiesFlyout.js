@@ -1,18 +1,93 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import UserAvatar from 'react-user-avatar';
-import { withWebApps } from 'webapps-react';
+import { useToasts } from 'react-toast-notifications';
+import { Button, UserSuggest, withAuth, withWebApps } from 'webapps-react';
 import { PropertiesContext } from '../EditBlock';
 
-const PropertiesFlyout = ({ UI, ...props }) => {
+let _mounted = false;
+
+const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
     const {
         block,
+        setBlock,
         update
     } = props;
 
     const {
         properties, toggleProperties,
     } = useContext(PropertiesContext);
+
+    const [chown, setChown] = useState(false);
+    const [users, setUsers] = useState([]);
+    const [newOwner, setNewOwner] = useState({});
+
+    const { addToast } = useToasts();
+
+    useEffect(() => {
+        _mounted = true;
+
+        return /* istanbul ignore next */ () => { _mounted = false; }
+    }, []);
+
+    useEffect(async () => {
+        if (users.length === 0) {
+            await axios.get('/api/users')
+                .then(json => {
+                    /* istanbul ignore else */
+                    if (_mounted) {
+                        setUsers(json.data.users);
+                    }
+                })
+                .catch(/* istanbul ignore next */ error => {
+                    if (_mounted) {
+                        addToast('An error occurred loading user data!', { appearance: 'error' });
+                    }
+                });
+        }
+    }, [chown]);
+
+    const chownSelect = user => {
+        setNewOwner(user);
+    }
+
+    const changeOwner = async () => {
+        if (newOwner.id === undefined) {
+            setChown(false);
+            setNewOwner({});
+            return;
+        }
+
+        if (block.owner === newOwner.id) {
+            addToast('Unable to change owner to the same user!', { appearance: 'error' });
+            setChown(false);
+            setNewOwner({});
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append('old_owner_id', block.owner);
+        formData.append('new_owner_id', newOwner.id);
+
+        await axios.post(`/api/blocks/${block.publicId}/chown`, formData)
+            .then(response => {
+                newOwner.number_of_blocks++;
+                setNewOwner(newOwner);
+
+                block.owner = newOwner.id;
+                block.user = newOwner;
+                setBlock(block);
+
+                addToast('Owner changed successfully!', { appearance: 'success' });
+                setChown(false);
+                setNewOwner({});
+            })
+            .catch(error => {
+                addToast(error.response.data.message, { appearance: 'error' });
+                setChown(false);
+                setNewOwner({});
+            })
+    }
 
     const flyoutClass = classNames(
         'absolute',
@@ -82,15 +157,38 @@ const PropertiesFlyout = ({ UI, ...props }) => {
                                         className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`} />
 
                                     <p className="mt-5 text-gray-500">This Block is owned by:</p>
-                                    <div className="flex flex-col sm:flex-row items-center p-4 border rounded mx-8 my-2">
-                                        <UserAvatar size="48" name={block.user.name} src={`/user/${block.user.id}/photo`} />
-                                        <p className="ml-4 text-black dark:text-white font-medium">{block.user.name}</p>
+                                    <div className="flex flex-col border rounded mx-8 my-2">
+                                        <div className="flex flex-col sm:flex-row items-center p-4 relative">
+                                            <UserAvatar size="48" name={block.user.name} src={`/user/${block.user.id}/photo`} />
+                                            <p className="ml-4 text-black dark:text-white font-medium">{block.user.name}</p>
+                                            {
+                                                (block.id)
+                                                    ? <p className="mt-3 sm:mt-0 sm:ml-24"><strong>{block.user.number_of_blocks - 1}</strong> other Blocks</p>
+                                                    : <p className="mt-3 sm:mt-0 sm:ml-24"><strong>{block.user.number_of_blocks}</strong> other Blocks</p>
+                                            }
+                                            {
+                                                (checkPermission('admin.access') && !chown)
+                                                    ? (
+                                                        <div className="absolute -bottom-0 right-0">
+                                                            <Button onClick={() => setChown(true)} style="ghost" size="small" color="orange" square className="rounded-br">
+                                                                Change Owner
+                                                            </Button>
+                                                        </div>
+                                                    )
+                                                    : null
+                                            }
+                                        </div>
                                         {
-                                            (block.id)
-                                                ? <p className="mt-3 sm:mt-0 sm:ml-24"><strong>{block.user.number_of_blocks - 1}</strong> other Blocks</p>
-                                                : <p className="mt-3 sm:mt-0 sm:ml-24"><strong>{block.user.number_of_blocks}</strong> other Blocks</p>
+                                            (chown)
+                                                ? (
+                                                    <div className="px-2 pb-2 border-t relative">
+                                                        <UserSuggest users={users} placeholder="Enter new owner's username" limit={5} select={chownSelect} />
+                                                        <Button onClick={changeOwner} style="ghost" size="small" color="orange" square className="absolute inset-y-2 right-2">
+                                                            Change Owner
+                                                        </Button>
+                                                    </div>
+                                                ) : null
                                         }
-
                                     </div>
 
                                     <p className="mt-5 text-gray-500">
@@ -106,4 +204,4 @@ const PropertiesFlyout = ({ UI, ...props }) => {
     )
 }
 
-export default withWebApps(PropertiesFlyout);
+export default withAuth(withWebApps(PropertiesFlyout));
