@@ -140,7 +140,7 @@ const ChangePassword = ({ user }) => {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-end px-4 py-3 bg-gray-50 bg-gray-700 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
+                    <div className="flex items-center justify-end px-4 py-3 bg-gray-50 dark:bg-gray-700 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
                         <Button className="text-xs uppercase tracking-widest" onClick={changePassword}>Save</Button>
                     </div>
                 </div>
