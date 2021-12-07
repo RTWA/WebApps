@@ -14,7 +14,7 @@ const Default = ({ navigation, UI }) => {
         <div className="flex md:flex-row flex-col h-full">
             <Sidebar />
             <AppError theme={UI.theme}>
-                <div className="px-8 py-4 text-gray-700 bg-gray-200 dark:bg-gray-900 dark:text-white h-screen w-screen overflow-auto" id="app-content">
+                <div className="px-2 md:px-4 lg:px-8 py-4 text-gray-700 bg-gray-200 dark:bg-gray-900 dark:text-white h-screen w-screen overflow-auto" id="app-content">
                     {
                         (UI.envWriteable) ? <Banner color="red-300" darkColor="red-900" className="rounded-b-lg -my-4"><strong>The WebApps <code>.env</code> file is writeable, you should change the permissions!</strong></Banner> : null
                     }
