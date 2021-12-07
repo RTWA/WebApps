@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Media;
+use LasseRafn\InitialAvatarGenerator\InitialAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -25,5 +26,12 @@ class MediaController extends Controller
         ]);
 
         return response()->json(['media' => $media], 201);
+    }
+
+    public function getGroupPhoto($name)
+    {
+        return response(
+            (new InitialAvatar())->name($name)->generate()->stream('png', 100)
+        )->header('Content-Type', 'image/png');
     }
 }

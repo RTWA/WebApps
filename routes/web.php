@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BlocksController;
 use App\Http\Controllers\Install\InstallController;
 use App\Http\Controllers\Install\UserController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MSGraphController;
 use App\Http\Controllers\Update\UpdateController;
 use Illuminate\Support\Facades\Route;
@@ -75,8 +76,9 @@ Route::middleware(['requires.install', 'requires.update'])->group(function () {
     // View embedded block
     Route::get('/embed/{publicId}', [BlocksController::class, 'embed']);
 
-    // Get a User Photo
+    // Get Photos
     Route::get('/user/{user}/photo', [App\Http\Controllers\UserController::class, 'getPhoto']);
+    Route::get('/group/{name}/photo', [MediaController::class, 'getGroupPhoto']);
 
     // Wildcard React Route - needs to be below anything else
     Route::view('/{any}', 'app')->where('any', '^(?!api|apps\/.*\/view\b).*$');
