@@ -90,9 +90,11 @@ class AdminTest extends TestCase
         $this->seed();
 
         Sanctum::actingAs(
-            User::find(5),
+            $user = User::find(5),
             ['*']
         );
+
+        $user->assignRole('Standard Users');
 
         $plugin = Plugin::create([
             'name' => 'test_plugin',

@@ -18,7 +18,7 @@ class BlocksController extends Controller
      * Retrieve a list of a Users Blocks
      * This can be filtered by component id
      * This can be filtered by searching title/notes
-     * 
+     *
      * Required Permission: blocks.view or blocks.view.others
      *
      * @param String $username
@@ -82,7 +82,7 @@ class BlocksController extends Controller
     /**
      * Retrieve the data required to view, edit and preview a Block
      * If $publicId is the name of Plugin slug, a new Block will be returned
-     * 
+     *
      * Required Permission: blocks.create (Block owner or Administrators)
      *
      * @param $publicId string - The publicID of the block
@@ -135,7 +135,7 @@ class BlocksController extends Controller
 
     /**
      * Save changes made to a Block
-     * 
+     *
      * Required Permission: blocks.create (Block owner or Administrators)
      */
     public function update(Request $request)
@@ -198,7 +198,7 @@ class BlocksController extends Controller
 
     /**
      * Deletes a Block
-     * 
+     *
      * Required Permission: blocks.create (Block owner or Administrators)
      *
      * @param $publicId string - The publicID of the block
@@ -221,7 +221,7 @@ class BlocksController extends Controller
 
     /**
      * Get the count of Blocks the authenticated User has
-     * 
+     *
      * Required Permission: blocks.view
      */
     public function count()
@@ -235,7 +235,7 @@ class BlocksController extends Controller
 
     /**
      * Get the total Block views the authenticated User has
-     * 
+     *
      * Required Permission: blocks.view
      */
     public function views()
@@ -256,7 +256,7 @@ class BlocksController extends Controller
 
     /**
      * Change the owner of a block
-     * 
+     *
      * Required Permission: admin.access
      *
      * @param $publicId string - The publicID of the block
