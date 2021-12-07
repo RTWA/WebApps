@@ -31,14 +31,14 @@ const GroupList = props => {
                     : (
                         groups.map(function (group, i) {
                             return (
-                                <div key={i} className="grid grid-cols-5 bg-white dark:bg-gray-800 rounded mb-1" onClick={() => selectGroup(group)} style={{ cursor: 'pointer' }}>
+                                <div key={i} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 bg-white dark:bg-gray-800 rounded mb-1" onClick={() => selectGroup(group)} style={{ cursor: 'pointer' }}>
                                     <div className="py-2 pl-4 flex flex-row">
                                         <div className="flex-grow-0 pr-5">
                                             <UserAvatar size="48" name={group.name} />
                                         </div>
                                         <h6 className="py-3">{group.name}</h6>
                                     </div>
-                                    <div className="py-5">{group.users_count} Members</div>
+                                    <div className="hidden sm:block py-5">{group.users_count} Members</div>
                                 </div>
                             )
                         })
