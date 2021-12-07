@@ -127,75 +127,94 @@ const CreateUserFlyout = ({ UI, ...props }) => {
     return (
         <div className={flyoutClass}>
             <div className={bdClass} aria-hidden="true"></div>
-            <section className="absolute inset-y-0 right-0 pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
+            <section className="absolute inset-y-0 right-0 sm:pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
                 <div className={panelClass}>
-                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl overflow-y-auto relative">
+                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl relative">
                         <div className={`px-4 sm:px-6 py-6 bg-${UI.theme}-600 dark:bg-${UI.theme}-500 text-white dark:text-gray-200`}>
                             <h2 id="slide-over-heading" className="text-lg font-medium">Add New User</h2>
                         </div>
-                        <div className="mt-6 relative flex-1 px-4 sm:px-6">
-                            <div className="absolute inset-0 px-4 sm:px-6">
+                        <div className="my-6 relative flex-1 px-4 sm:px-6">
+                            <div className="absolute inset-0 px-4 sm:px-6 overflow-y-auto">
                                 <div className="h-full" aria-hidden="true">
-                                    <div className="text-gray-500"><label htmlFor="name_cuf">User's Name</label></div>
-                                    <Input name="name"
-                                        type="text"
-                                        id="name_cuf"
-                                        value={user.name.value || ''}
-                                        error={user.name.error || ''}
-                                        state={user.name.state || ''}
-                                        onChange={typeValue} />
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="name_cuf">User's Name</label>
+                                        <Input name="name"
+                                            type="text"
+                                            id="name_cuf"
+                                            value={user.name.value || ''}
+                                            error={user.name.error || ''}
+                                            state={user.name.state || ''}
+                                            onChange={typeValue}
+                                            className="w-full" />
+                                    </div>
 
-                                    <div className="mt-5 text-gray-500"><label htmlFor="username_cuf">Username</label></div>
-                                    <Input name="username"
-                                        type="text"
-                                        id="username_cuf"
-                                        value={user.username.value || ''}
-                                        error={user.username.error || ''}
-                                        state={user.username.state || ''}
-                                        onChange={typeValue} />
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="username_cuf">Username</label>
+                                        <Input name="username"
+                                            type="text"
+                                            id="username_cuf"
+                                            value={user.username.value || ''}
+                                            error={user.username.error || ''}
+                                            state={user.username.state || ''}
+                                            onChange={typeValue}
+                                            className="w-full" />
+                                    </div>
 
-                                    <div className="mt-5 text-gray-500"><label htmlFor="email_cuf">E-Mail Address</label></div>
-                                    <Input name="email"
-                                        type="text"
-                                        id="email_cuf"
-                                        value={user.email.value || ''}
-                                        error={user.email.error || ''}
-                                        state={user.email.state || ''}
-                                        onChange={typeValue} />
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="email_cuf">E-Mail Address</label>
+                                        <Input name="email"
+                                            type="text"
+                                            id="email_cuf"
+                                            value={user.email.value || ''}
+                                            error={user.email.error || ''}
+                                            state={user.email.state || ''}
+                                            onChange={typeValue}
+                                            className="w-full" />
+                                    </div>
 
-                                    <div className="mt-5 text-gray-500"><label htmlFor="password_cuf">Enter Password</label></div>
-                                    <Input name="password"
-                                        type="password"
-                                        id="password_cuf"
-                                        value={user.password.value || ''}
-                                        error={user.password.error || ''}
-                                        state={user.password.state || ''}
-                                        onChange={typeValue} />
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="password_cuf">Enter Password</label>
+                                        <Input name="password"
+                                            type="password"
+                                            id="password_cuf"
+                                            value={user.password.value || ''}
+                                            error={user.password.error || ''}
+                                            state={user.password.state || ''}
+                                            onChange={typeValue}
+                                            className="w-full" />
+                                    </div>
 
-                                    <div className="mt-5 text-gray-500"><label htmlFor="password_confirmation_cuf">Confirm Password</label></div>
-                                    <Input name="password_confirmation"
-                                        type="password"
-                                        id="password_confirmation_cuf"
-                                        value={user.password_confirmation.value || ''}
-                                        error={user.password_confirmation.error || ''}
-                                        state={user.password_confirmation.state || ''}
-                                        onChange={typeValue} />
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="password_confirmation_cuf">Confirm Password</label>
+                                        <Input name="password_confirmation"
+                                            type="password"
+                                            id="password_confirmation_cuf"
+                                            value={user.password_confirmation.value || ''}
+                                            error={user.password_confirmation.error || ''}
+                                            state={user.password_confirmation.state || ''}
+                                            onChange={typeValue}
+                                            className="w-full" />
+                                    </div>
 
-                                    <div className="mt-5 text-gray-500"><label htmlFor="secGroup_cuf">Select Security Group</label></div>
-                                    <select name="group"
-                                        id="secGroup_cuf"
-                                        onChange={typeValue}
-                                        value={group}
-                                        className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
-                                        <option value="0">Select Group...</option>
-                                        {
-                                            Object(groups).map(function (role, i) {
-                                                return (
-                                                    <option value={role.id} key={i}>{role.name}</option>
-                                                )
-                                            })
-                                        }
-                                    </select>
+                                    <div className="mt-8 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="secGroup_cuf">Select Security Group</label>
+                                        <div className="w-full">
+                                            <select name="group"
+                                                id="secGroup_cuf"
+                                                onChange={typeValue}
+                                                value={group}
+                                                className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
+                                                <option value="0">Select Group...</option>
+                                                {
+                                                    Object(groups).map(function (role, i) {
+                                                        return (
+                                                            <option value={role.id} key={i}>{role.name}</option>
+                                                        )
+                                                    })
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

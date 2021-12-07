@@ -83,23 +83,26 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
     return (
         <div className={flyoutClass}>
             <div className={bdClass} aria-hidden="true"></div>
-            <section className="absolute inset-y-0 right-0 pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
+            <section className="absolute inset-y-0 right-0 sm:pl-10 max-w-full flex" aria-labelledby="slide-over-heading">
                 <div className={panelClass}>
-                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl overflow-y-auto relative">
+                    <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl relative">
                         <div className={`px-4 sm:px-6 py-6 bg-${UI.theme}-600 dark:bg-${UI.theme}-500 text-white dark:text-gray-200`}>
                             <h2 id="slide-over-heading" className="text-lg font-medium">Add New Group</h2>
                         </div>
-                        <div className="mt-6 relative flex-1 px-4 sm:px-6">
+                        <div className="my-6 relative flex-1 px-4 sm:px-6 overflow-y-auto">
                             <div className="absolute inset-0 px-4 sm:px-6">
                                 <div className="h-full" aria-hidden="true">
-                                    <div className="text-gray-500"><label htmlFor="name_cgf">Groups Name</label></div>
-                                    <Input name="name"
-                                        type="text"
-                                        id="name_cgf"
-                                        value={name}
-                                        onChange={typeValue}
-                                        error={error}
-                                        state={state} />
+                                    <div className="mt-4 flex flex-col">
+                                        <label className="w-full font-medium text-sm" htmlFor="name_cgf">Groups Name</label>
+                                        <Input name="name"
+                                            type="text"
+                                            id="name_cgf"
+                                            value={name}
+                                            onChange={typeValue}
+                                            error={error}
+                                            state={state}
+                                            className="w-full" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
