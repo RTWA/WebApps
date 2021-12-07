@@ -22,10 +22,17 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
     const [users, setUsers] = useState([]);
     const [newOwner, setNewOwner] = useState({});
 
+    const [canChown, setCanChown] = useState();
+
     const { addToast } = useToasts();
 
-    useEffect(() => {
+    useEffect(async () => {
         _mounted = true;
+
+        await checkPermission('admin.access')
+            .then(response => {
+                setCanChown(response);
+            });
 
         return /* istanbul ignore next */ () => { _mounted = false; }
     }, []);
@@ -167,7 +174,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
                                                     : <p className="mt-3 sm:mt-0 sm:ml-24"><strong>{block.user.number_of_blocks}</strong> other Blocks</p>
                                             }
                                             {
-                                                (checkPermission('admin.access') && !chown)
+                                                (canChown && !chown)
                                                     ? (
                                                         <div className="absolute -bottom-0 right-0">
                                                             <Button onClick={() => setChown(true)} style="ghost" size="small" color="orange" square className="rounded-br">
