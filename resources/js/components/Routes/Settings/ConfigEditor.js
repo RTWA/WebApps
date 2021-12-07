@@ -62,14 +62,14 @@ const ConfigEditor = ({ UI, ...props }) => {
 
     return (
         <>
-            <Button to="/settings" style="link" className="flex flex-auto -mt-8 text-sm uppercase">
+            <Button to="/settings" style="link" className="flex flex-auto -mt-8 -mt-4 text-sm uppercase">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                 </svg>
                 Back to settings
             </Button>
-            <div className="w-full px-4 py-6">
-                <h6 className="text-gray-600 dark:text-gray-400 text-2xl font-bold ml-6 mb-8">Config Editor (Advanced)</h6>
+            <div className="w-full py-6">
+                <h6 className="text-gray-600 dark:text-gray-400 text-2xl font-bold mb-8">Config Editor (Advanced)</h6>
                 <div className="flex flex-col min-w-0 break-words w-full mx-auto shadow bg-white dark:bg-gray-800 rounded">
                     <div className="py-3 px-2 bg-light-blue-300 text-light-blue-800 border border-light-blue-600 rounded-t dark:bg-light-blue-800 dark:text-light-blue-300 dark:border-light-blue-400">
                         <h4 className="font-bold">Advanced Users Only!</h4>
@@ -111,7 +111,7 @@ const ConfigEditor = ({ UI, ...props }) => {
                                             )
                                         })
                                     }
-                                    <div className="px-4 py-2 flex flex-row lg:grid lg:grid-cols-7 bg-gray-200 dark:bg-gray-600 border-t border-gray-800 dark:border-gray-200">
+                                    <div className="px-4 py-2 flex flex-col lg:grid lg:grid-cols-7 bg-gray-200 dark:bg-gray-600 border-t border-gray-800 dark:border-gray-200">
                                         <div className="flex-grow lg:pr-4 lg:col-span-3">
                                             <label className="sr-only" htmlFor="new_key">Create a new key</label>
                                             <input type="text"
@@ -122,7 +122,7 @@ const ConfigEditor = ({ UI, ...props }) => {
                                                 placeholder="Create a new key" />
                                         </div>
                                         <div className="lg:col-span-4">
-                                            <Button className="inline-block align-middle" square onClick={createNewKey}>
+                                            <Button className="w-full lg:w-auto inline-block align-middle" square onClick={createNewKey}>
                                                 Create Key
                                             </Button>
                                         </div>
