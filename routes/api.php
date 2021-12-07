@@ -79,6 +79,7 @@ Route::group(
         Route::get('/blocks/{publicId}', [BlocksController::class, 'show']);
         Route::put('/blocks/{publicId}', [BlocksController::class, 'update']);
         Route::delete('/blocks/{publicId}', [BlocksController::class, 'delete']);
+        Route::post('/blocks/{publicId}/chown', [BlocksController::class, 'chown']);
 
         // Plugins
         Route::get('/plugins', [PluginsController::class, 'all']);

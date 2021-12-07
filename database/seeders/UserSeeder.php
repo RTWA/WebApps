@@ -27,6 +27,14 @@ class UserSeeder extends Seeder
                 'active' => true,
             ]);
             DB::table('users')->insert([
+                'id' => 5,
+                'name' => 'Test Standard User',
+                'username' => 'standard',
+                'email' => 'standard@test.com',
+                'password' => Hash::make('1234'),
+                'active' => true,
+            ]);
+            DB::table('users')->insert([
                 'id' => 10,
                 'name' => 'Test NoRole User',
                 'username' => 'no_role',
@@ -42,6 +50,8 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('1234'),
                 'active' => false,
             ]);
+            $user = User::find(5);
+            $user->assignRole('Standard Users');
         } else {
             DB::table('users')->insert([
                 'id' => 1,

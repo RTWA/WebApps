@@ -18,6 +18,8 @@ class BlocksController extends Controller
      * Retrieve a list of a Users Blocks
      * This can be filtered by component id
      * This can be filtered by searching title/notes
+     * 
+     * Required Permission: blocks.view or blocks.view.others
      *
      * @param String $username
      */
@@ -80,6 +82,8 @@ class BlocksController extends Controller
     /**
      * Retrieve the data required to view, edit and preview a Block
      * If $publicId is the name of Plugin slug, a new Block will be returned
+     * 
+     * Required Permission: blocks.create (Block owner or Administrators)
      *
      * @param $publicId string - The publicID of the block
      */
@@ -131,6 +135,8 @@ class BlocksController extends Controller
 
     /**
      * Save changes made to a Block
+     * 
+     * Required Permission: blocks.create (Block owner or Administrators)
      */
     public function update(Request $request)
     {
@@ -166,6 +172,8 @@ class BlocksController extends Controller
 
     /**
      * Returns the embed view of a Block
+     *
+     * @param $publicId string - The publicID of the block
      */
     public function embed($publicId)
     {
@@ -190,6 +198,10 @@ class BlocksController extends Controller
 
     /**
      * Deletes a Block
+     * 
+     * Required Permission: blocks.create (Block owner or Administrators)
+     *
+     * @param $publicId string - The publicID of the block
      */
     public function delete($publicId)
     {
@@ -207,6 +219,11 @@ class BlocksController extends Controller
         return response()->json(['message' => "Block deleted"], 200);
     }
 
+    /**
+     * Get the count of Blocks the authenticated User has
+     * 
+     * Required Permission: blocks.view
+     */
     public function count()
     {
         if (!Auth::user()->hasPermissionTo('blocks.view')) {
@@ -216,6 +233,11 @@ class BlocksController extends Controller
         return response()->json(['count' => Block::where('owner', Auth::id())->count()], 200);
     }
 
+    /**
+     * Get the total Block views the authenticated User has
+     * 
+     * Required Permission: blocks.view
+     */
     public function views()
     {
         if (!Auth::user()->hasPermissionTo('blocks.view')) {
@@ -230,5 +252,30 @@ class BlocksController extends Controller
         }
 
         return response()->json(['views' => $count], 200);
+    }
+
+    /**
+     * Change the owner of a block
+     * 
+     * Required Permission: admin.access
+     *
+     * @param $publicId string - The publicID of the block
+     */
+    public function chown(Request $request, $publicId)
+    {
+        if (!Auth::user()->hasPermissionTo('admin.access')) {
+            abort(403, 'You do not have permission to change a Blocks owner.');
+        }
+
+        $block = Block::findByPublicId($publicId)->firstOrFail();
+
+        if ($block->owner <> $request->input('old_owner_id')) {
+            abort(400, "Incorrect `old_owner_id`");
+        }
+
+        $block->owner = $request->input('new_owner_id');
+        $block->save();
+
+        return response()->json(['block' => $block], 200);
     }
 }
