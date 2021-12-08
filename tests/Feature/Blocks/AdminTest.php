@@ -85,6 +85,44 @@ class AdminTest extends TestCase
         ]);
     }
 
+    public function testAdministratorCannotChangeBlockOwnerWhilstProvidingTheIncorrectCurrentOwner()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            User::find(1),
+            ['*']
+        );
+
+        $plugin = Plugin::create([
+            'name' => 'test_plugin',
+            'slug' => 'Sample',
+            'icon' => '',
+            'version' => 'PHPUnitTestLatest',
+            'author' => 'PHPUnit',
+            'state' => 1
+        ]);
+        Block::create([
+            'owner' => 10,
+            'plugin' => $plugin->id,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
+            'publicId' => 'PHPUnitTest',
+            'title' => 'PHP Unit Test Block',
+            'notes' => 'This block was created for testing',
+            'views' => 10
+        ]);
+
+        $response = $this->postJson('/api/blocks/PHPUnitTest/chown', [
+            'old_owner_id' => 1,
+            'new_owner_id' => 1,
+        ]);
+
+        $response->assertStatus(400);
+        $response->assertJsonFragment([
+            'message' => "Incorrect `old_owner_id`"
+        ]);
+    }
+
     public function testNonAdministratorCannotChangeBlockOwner()
     {
         $this->seed();
