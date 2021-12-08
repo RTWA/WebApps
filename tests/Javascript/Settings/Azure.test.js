@@ -16,7 +16,8 @@ test('Renders Azure', () => {
     render(<WebApps><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={mockFunction} typeValue={mockFunction} /></BrowserRouter></WebApps>);
 
     expect(screen.getByRole('heading', { name: /microsoft azure integration/i })).toBeDefined();
-    expect(screen.getByText(/please follow the guidance found in the webapps documentation to create your app registration in azure, then provide the required information below\./i)).toBeDefined();
+    expect(screen.getByText(/please follow the guidance found in the/i)).toBeDefined();
+    expect(screen.getByText(/to create your app registration in azure, then provide the required information below\./i)).toBeDefined();
 })
 
 test('Get Started Button Appears Once Client ID and Client Secret Are Provided', async () => {

@@ -79,7 +79,7 @@ const User = {
 const users = [
     User,
     {
-        id: 10001,
+        id: 10002,
         username: 'jest4',
         password: 'alsojesting4',
         name: 'Jest Alternative User',
@@ -219,6 +219,7 @@ const blocks = [
                 required: true
             }
         },
+        user: User,
         preview: "<h1 data-val=\"value.message\" \/>",
         number_of_blocks: 1
     },
@@ -245,6 +246,7 @@ const blocks = [
                 required: true
             }
         },
+        user: User,
         preview: "<h1 data-val=\"value.message\" \/>",
         number_of_blocks: 50
     }

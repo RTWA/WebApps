@@ -295,7 +295,7 @@ const Azure = ({ UI, ...props }) => {
                                         {
                                             Object(groups).map(function (group, i) {
                                                 return (
-                                                    <div className="flex flex-col xl:flex-row p-4">
+                                                    <div className="flex flex-col xl:flex-row p-4" key={i}>
                                                         <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor={`${group.id}`}>{group.name}</label>
                                                         <select name={group.id}
                                                             id={group.id}

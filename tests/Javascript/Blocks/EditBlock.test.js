@@ -1,10 +1,11 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { ToastProvider } from 'react-toast-notifications';
 import { rest } from 'msw';
 
 import { server } from '../../../resources/js/__mocks__/server';
+import { users } from '../../../resources/js/__mocks__/mockData';
 
 import { WebApps } from 'webapps-react';
 
@@ -72,19 +73,171 @@ test('Can Open The Flyout And Change The Properties Of The Block', async () => {
     expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("New Title");
 });
 
+test('Can Open The Flyout And Change The Owner Of The Block', async () => {
+    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
+
+    expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /block properties/i })).toBeDefined();
+
+    expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("Test Block\'s Title");
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /block properties/i }));
+    });
+    await waitFor(() =>
+        screen.getByRole('button', { name: /change owner/i, hidden: true })
+    );
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
+    });
+    await waitFor(() =>
+        screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true })
+    );
+
+    await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true }), { target: { value: users[1].username } });
+        await screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true }).value === users[1].username;
+    });
+
+    expect(screen.getByText(/\(jest@test\)/i)).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByText(/\(jest@test\)/i));
+    });
+
+    expect(screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true })).toHaveValue(users[1].username);
+    expect(screen.getByRole('button', { name: /change owner/i, hidden: true })).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
+    });
+    await waitFor(() =>
+        screen.getByText(/owner changed successfully!/i)
+    );
+
+    expect(screen.getByText(/owner changed successfully!/i)).toBeDefined();
+});
+
+test('Can Open The Flyout But Cannot Change The Owner Of The Block To The Current Owner', async () => {
+    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
+
+    expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /block properties/i })).toBeDefined();
+
+    expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("Test Block\'s Title");
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /block properties/i }));
+    });
+    await waitFor(() =>
+        screen.getByRole('button', { name: /change owner/i, hidden: true })
+    );
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
+    });
+    await waitFor(() =>
+        screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true })
+    );
+
+    await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true }), { target: { value: users[0].username } });
+        await screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true }).value === users[0].username;
+    });
+
+    expect(screen.getByText(/\(test@jest\)/i)).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByText(/\(test@jest\)/i));
+    });
+
+    expect(screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true })).toHaveValue(users[0].username);
+    expect(screen.getByRole('button', { name: /change owner/i, hidden: true })).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
+    });
+    await waitFor(() =>
+        screen.getByText(/unable to change owner to the same user!/i)
+    );
+
+    expect(screen.getByText(/unable to change owner to the same user!/i)).toBeDefined();
+});
+
+test('Can Open The Flyout But Cannot Change The Owner Of The Block Due To An Error', async () => {
+    server.use(
+        rest.post('/api/blocks/:id/chown', (req, res, ctx) => {
+            return res(
+                ctx.status(400),
+                ctx.json({
+                    message: "An error occurred"
+                })
+
+            )
+        }),
+    )
+    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
+
+    expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /block properties/i })).toBeDefined();
+
+    expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("Test Block\'s Title");
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /block properties/i }));
+    });
+    await waitFor(() =>
+        screen.getByRole('button', { name: /change owner/i, hidden: true })
+    );
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
+    });
+    await waitFor(() =>
+        screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true })
+    );
+
+    await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true }), { target: { value: users[1].username } });
+        await screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true }).value === users[1].username;
+    });
+
+    expect(screen.getByText(/\(jest@test\)/i)).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByText(/\(jest@test\)/i));
+    });
+
+    expect(screen.getByRole('textbox', { name: /enter new owner's username/i, hidden: true })).toHaveValue(users[1].username);
+    expect(screen.getByRole('button', { name: /change owner/i, hidden: true })).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
+    });
+    await waitFor(() =>
+        screen.getByText(/an error occurred/i)
+    );
+
+    expect(screen.getByText(/an error occurred/i)).toBeDefined();
+});
+
 test('Can Change Block Text Value', async () => {
     render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
-    expect(screen.getByRole('textbox', {  name: /enter the sample message/i})).toBeDefined();
+    expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toBeDefined();
 
     await act(async () => {
-        fireEvent.change(screen.getByRole('textbox', {  name: /enter the sample message/i}), { target: { value: 'New Value' } });
-        await screen.getByRole('textbox', {  name: /enter the sample message/i}).value === 'New Value';
+        fireEvent.change(screen.getByRole('textbox', { name: /enter the sample message/i }), { target: { value: 'New Value' } });
+        await screen.getByRole('textbox', { name: /enter the sample message/i }).value === 'New Value';
     });
 
-    expect(screen.getByRole('textbox', {  name: /enter the sample message/i})).toHaveValue('New Value');
+    expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toHaveValue('New Value');
 });
 
 test('Can Open And Close A Repeater Without Any Errors', async () => {
@@ -92,23 +245,23 @@ test('Can Open And Close A Repeater Without Any Errors', async () => {
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
-    expect(screen.getByRole('textbox', {  name: /enter the sample message/i})).toBeDefined();
+    expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toBeDefined();
 
     await act(async () => {
         fireEvent.click(screen.getByText(/image slide:/i));
     });
     await waitFor(() =>
-        screen.getByRole('link', {  name: /enter url/i})
+        screen.getByRole('link', { name: /enter url/i })
     );
 
     await act(async () => {
         fireEvent.click(screen.getByText(/image slide:/i));
     });
     await waitFor(() =>
-        screen.getByRole('link', {  name: /enter url/i})
+        screen.getByRole('link', { name: /enter url/i })
     );
 
-    expect(screen.getByRole('link', {  name: /enter url/i})).toBeDefined();
+    expect(screen.getByRole('link', { name: /enter url/i })).toBeDefined();
 });
 
 test('Can Add And Remove A Repeater', async () => {
@@ -116,10 +269,10 @@ test('Can Add And Remove A Repeater', async () => {
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
-    expect(screen.getByRole('button', {  name: /add new image slide/i})).toBeDefined();
+    expect(screen.getByRole('button', { name: /add new image slide/i })).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', {  name: /add new image slide/i}));
+        fireEvent.click(screen.getByRole('button', { name: /add new image slide/i }));
     });
     await waitFor(() =>
         screen.getAllByText(/image slide:/i).length === 2
@@ -144,21 +297,21 @@ test('Can Successfully Save Block Changes', async () => {
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
-    expect(screen.getByRole('textbox', {  name: /enter the sample message/i})).toBeDefined();
+    expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toBeDefined();
 
     await act(async () => {
-        fireEvent.change(screen.getByRole('textbox', {  name: /enter the sample message/i}), { target: { value: 'New Value' } });
-        await screen.getByRole('textbox', {  name: /enter the sample message/i}).value === 'New Value';
+        fireEvent.change(screen.getByRole('textbox', { name: /enter the sample message/i }), { target: { value: 'New Value' } });
+        await screen.getByRole('textbox', { name: /enter the sample message/i }).value === 'New Value';
     });
 
-    expect(screen.getByRole('textbox', {  name: /enter the sample message/i})).toHaveValue('New Value');
-    expect(screen.getByRole('button', {  name: /save changes & view/i})).toBeDefined();
+    expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toHaveValue('New Value');
+    expect(screen.getByRole('button', { name: /save changes & view/i })).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', {  name: /save changes & view/i}));
+        fireEvent.click(screen.getByRole('button', { name: /save changes & view/i }));
     });
     await waitFor(() =>
-        screen.getByRole('button', {  name: /saving\.\.\./i})
+        screen.getByRole('button', { name: /saving\.\.\./i })
     );
 
     expect(screen.getByText(/saved!/i)).toBeDefined();
@@ -169,21 +322,21 @@ test('Cannot Successfully Save Block Changes', async () => {
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
-    expect(screen.getByRole('textbox', {  name: /enter the sample message/i})).toBeDefined();
+    expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toBeDefined();
 
     await act(async () => {
-        fireEvent.change(screen.getByRole('textbox', {  name: /enter the sample message/i}), { target: { value: 'Error This' } });
-        await screen.getByRole('textbox', {  name: /enter the sample message/i}).value === 'Error This';
+        fireEvent.change(screen.getByRole('textbox', { name: /enter the sample message/i }), { target: { value: 'Error This' } });
+        await screen.getByRole('textbox', { name: /enter the sample message/i }).value === 'Error This';
     });
 
-    expect(screen.getByRole('textbox', {  name: /enter the sample message/i})).toHaveValue('Error This');
-    expect(screen.getByRole('button', {  name: /save changes & view/i})).toBeDefined();
+    expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toHaveValue('Error This');
+    expect(screen.getByRole('button', { name: /save changes & view/i })).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', {  name: /save changes & view/i}));
+        fireEvent.click(screen.getByRole('button', { name: /save changes & view/i }));
     });
     await waitFor(() =>
-        screen.getByRole('button', {  name: /saving\.\.\./i})
+        screen.getByRole('button', { name: /saving\.\.\./i })
     );
 
     expect(screen.getByText(/an error occurred whilst saving the block\./i)).toBeDefined();

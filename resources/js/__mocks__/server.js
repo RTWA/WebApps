@@ -393,6 +393,15 @@ const handlers = [
         }
     }),
 
+    rest.post('/api/blocks/:id/chown', (req, res, ctx) => {
+        return res(
+            ctx.status(200),
+            ctx.json({
+                block: mockData.blocks[0]
+            })
+        )
+    }),
+
     rest.post('/api/blocks/:id', (req, res, ctx) => {
         if (req.body.get('_method') === 'DELETE') {
             return res(

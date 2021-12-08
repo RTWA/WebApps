@@ -60,10 +60,10 @@ test('Can Reset A User Password', async () => {
         screen.getByRole('heading', { name: /test jest user \- properties/i })
     );
 
-    expect(screen.getByRole('button', { name: /reset password/i, hidden: true })).toBeDefined();
+    expect(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true})).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true}));
     });
     await waitFor(() =>
         screen.getByLabelText(/new password/i)
@@ -77,13 +77,13 @@ test('Can Reset A User Password', async () => {
     });
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', { name: /change password/i, hidden: true }));
     });
     await waitFor(() =>
-        screen.getByText(/password reset!/i)
+        screen.getByText(/password has been changed!/i)
     );
 
-    expect(screen.getByText(/password reset!/i)).toBeDefined();
+    expect(screen.getByText(/password has been changed!/i)).toBeDefined();
 });
 
 test('Cannot Reset A User Password If A New Password Isn\'t Provided', async () => {
@@ -104,17 +104,17 @@ test('Cannot Reset A User Password If A New Password Isn\'t Provided', async () 
         screen.getByRole('heading', { name: /test jest user \- properties/i })
     );
 
-    expect(screen.getByRole('button', { name: /reset password/i, hidden: true })).toBeDefined();
+    expect(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true})).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true}));
     });
     await waitFor(() =>
         screen.getByLabelText(/new password/i)
     );
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', { name: /change password/i, hidden: true }));
     });
     await waitFor(() =>
         screen.getByText(/please enter a new password\./i)
@@ -141,10 +141,10 @@ test('Cannot Reset A User Password If They Don\'t Match', async () => {
         screen.getByRole('heading', { name: /test jest user \- properties/i })
     );
 
-    expect(screen.getByRole('button', { name: /reset password/i, hidden: true })).toBeDefined();
+    expect(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true})).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true}));
     });
     await waitFor(() =>
         screen.getByLabelText(/new password/i)
@@ -158,7 +158,7 @@ test('Cannot Reset A User Password If They Don\'t Match', async () => {
     });
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', { name: /change password/i, hidden: true }));
     });
     await waitFor(() =>
         screen.getByText(/passwords do not match!/i)
@@ -185,10 +185,10 @@ test('Cannot Reset A User Password If It Is Invalid', async () => {
         screen.getByRole('heading', { name: /test jest user \- properties/i })
     );
 
-    expect(screen.getByRole('button', { name: /reset password/i, hidden: true })).toBeDefined();
+    expect(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true})).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', {  name: /change this user's password/i,  hidden: true}));
     });
     await waitFor(() =>
         screen.getByLabelText(/new password/i)
@@ -202,7 +202,7 @@ test('Cannot Reset A User Password If It Is Invalid', async () => {
     });
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', { name: /change password/i, hidden: true }));
     });
     await waitFor(() =>
         screen.getByText(/this is not valid\./i)
@@ -229,10 +229,10 @@ test('Cannot Reset A User Password With An Unknown Error', async () => {
         screen.getByRole('heading', { name: /test jest user \- properties/i })
     );
 
-    expect(screen.getByRole('button', { name: /reset password/i, hidden: true })).toBeDefined();
+    expect(screen.getByRole('button', { name: /change this user's password/i, hidden: true })).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', { name: /change this user's password/i, hidden: true }));
     });
     await waitFor(() =>
         screen.getByLabelText(/new password/i)
@@ -246,13 +246,13 @@ test('Cannot Reset A User Password With An Unknown Error', async () => {
     });
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /reset password/i, hidden: true }));
+        fireEvent.click(screen.getByRole('button', { name: /change password/i, hidden: true }));
     });
     await waitFor(() =>
         screen.getByLabelText(/new password:/i).value === ''
     );
 
-    expect(screen.getByRole('button', { name: /reset password/i, hidden: true })).toBeDefined();
+    expect(screen.getByRole('button', { name: /change password/i, hidden: true })).toBeDefined();
 });
 
 test('Can Select A User And Change Their Group', async () => {

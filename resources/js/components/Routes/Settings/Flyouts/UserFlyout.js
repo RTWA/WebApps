@@ -76,7 +76,7 @@ const UserFlyout = ({ UI, ...props }) => {
                 .then(json => {
                     // istanbul ignore else
                     if (json.data.success) {
-                        addToast('Password Reset!', { appearance: 'success' });
+                        addToast('Password has been changed!', { appearance: 'success' });
                         setPasswordResetShowing(false);
                         setNewPassword('');
                         setConfirmedPassword('');
@@ -102,10 +102,9 @@ const UserFlyout = ({ UI, ...props }) => {
                             setStates({ ...states });
                         }
                     } else {
-                        setPasswordResetShowing(false);
                         setNewPassword('');
                         setConfirmedPassword('');
-                        addToast('Failed to reset password', { appearance: 'error' });
+                        addToast('Failed to change password', { appearance: 'error' });
                     }
                 });
         }

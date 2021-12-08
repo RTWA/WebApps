@@ -9,6 +9,7 @@ import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
 let load = 30;
+let _mounted = false;
 
 const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     const username = props.match.params.username;
@@ -27,10 +28,15 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     let toastId = 0;
 
     useEffect(() => {
+        _mounted = true;
+
         // Get all available Plugins
         axios.get('/api/plugins')
             .then(json => {
-                setPlugins(json.data.plugins);
+                /* istanbul ignore else */
+                if (_mounted) {
+                    setPlugins(json.data.plugins);
+                }
             })
             .catch(/* istanbul ignore next */ error => {
                 // TODO: Handle errors
@@ -42,34 +48,39 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             : `/api/blocks/user/${username}?limit=${load}&offset=0`
         axios.get(uri)
             .then(json => {
-                if (json.data.message === "No blocks found.") {
-                    setHasBlocks(false);
-                    return;
-                }
-                Object.keys(json.data.styles).map(function(i) { 
-                    if (!document.querySelectorAll('style[ref=' + i + ']').length) {
-                        let style = document.createElement("style");
-                        style.setAttribute("ref", i);
-                        style.innerHTML = json.data.styles[i];
-                        document.head.appendChild(style);
+                /* istanbul ignore else */
+                if (_mounted) {
+                    if (json.data.message === "No blocks found.") {
+                        setHasBlocks(false);
+                        return;
                     }
-                });
-                if (json.data.total <= load) {
-                    setHasMore(false);
+                    Object.keys(json.data.styles).map(function (i) {
+                        if (!document.querySelectorAll('style[ref=' + i + ']').length) {
+                            let style = document.createElement("style");
+                            style.setAttribute("ref", i);
+                            style.innerHTML = json.data.styles[i];
+                            document.head.appendChild(style);
+                        }
+                    });
+                    if (json.data.total <= load) {
+                        setHasMore(false);
+                    }
+                    setTotal(json.data.total);
+                    setHasBlocks((json.data.blocks.length !== 0));
+                    setBlocks(json.data.blocks);
                 }
-                setTotal(json.data.total);
-                setHasBlocks((json.data.blocks.length !== 0));
-                setBlocks(json.data.blocks);
             })
             .catch(/* istanbul ignore next */ error => {
                 // TODO: handle errors
                 console.error(error)
             });
+
+        return () => _mounted = false;
     }, []);
 
     useEffect(() => {
         /* istanbul ignore else */
-        if (blocks !== undefined) {
+        if (blocks !== undefined && _mounted) {
             if ((blocks.length + load) >= (total + load - 1)) {
                 setHasMore(false);
             }
@@ -77,13 +88,15 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     }, [blocks]);
 
     useEffect(() => {
-        if (filter !== null && blocks.length === 0) {
+        /* istanbul ignore else */
+        if (filter !== null && blocks.length === 0 && _mounted) {
             loadMore();
         }
     }, [filter, blocks]);
 
     useEffect(() => {
-        if (modals.preview_blocks !== undefined) {
+        /* istanbul ignore else */
+        if (modals.preview_blocks !== undefined && _mounted) {
             modals.preview_blocks.block = curBlock;
             setModals({ ...modals });
         }
@@ -97,18 +110,21 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         if (lastUri !== uri) {
             lastUri = uri;
             axios.get(uri)
-                .then(json => {                    
-                    Object.keys(json.data.styles).map(function(i) { 
-                        if (!document.querySelectorAll('style[ref=' + i + ']').length) {
-                            let style = document.createElement("style");
-                            style.setAttribute("ref", i);
-                            style.innerHTML = json.data.styles[i];
-                            document.head.appendChild(style);
-                        }
-                    });
-                    setTotal(json.data.total);
-                    Object.keys(json.data.blocks).map(function (i) { blocks.push(json.data.blocks[i]); });
-                    setBlocks([...blocks]);
+                .then(json => {
+                    /* istanbul ignore else */
+                    if (_mounted) {
+                        Object.keys(json.data.styles).map(function (i) {
+                            if (!document.querySelectorAll('style[ref=' + i + ']').length) {
+                                let style = document.createElement("style");
+                                style.setAttribute("ref", i);
+                                style.innerHTML = json.data.styles[i];
+                                document.head.appendChild(style);
+                            }
+                        });
+                        setTotal(json.data.total);
+                        Object.keys(json.data.blocks).map(function (i) { blocks.push(json.data.blocks[i]); });
+                        setBlocks([...blocks]);
+                    }
                 })
                 .catch(/* istanbul ignore next */ error => {
                     // TODO: handle errors
@@ -125,13 +141,19 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 blocks[i] = _block;
             }
         });
-        setBlocks(blocks);
-        setCurBlock(_block);
+        /* istanbul ignore else */
+        if (_mounted) {
+            setBlocks(blocks);
+            setCurBlock(_block);
+        }
     }
 
     const renameBlock = e => {
-        curBlock.title = e.target.value;
-        setCurBlock({ ...curBlock });
+        /* istanbul ignore else */
+        if (_mounted) {
+            curBlock.title = e.target.value;
+            setCurBlock({ ...curBlock });
+        }
     }
 
     const saveName = _block => {
@@ -158,26 +180,32 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
         axios.post(`/api/blocks/${tmpBlock.publicId}`, formData)
             .then(json => {
-                updateToast(
-                    toastId,
-                    {
-                        appearance: 'success',
-                        autoDismiss: true,
-                        content: json.data.message
-                    }
-                );
-                setBlocks(tmpBlocks);
-                setCurBlock([]);
+                /* istanbul ignore else */
+                if (_mounted) {
+                    updateToast(
+                        toastId,
+                        {
+                            appearance: 'success',
+                            autoDismiss: true,
+                            content: json.data.message
+                        }
+                    );
+                    setBlocks(tmpBlocks);
+                    setCurBlock([]);
+                }
             })
             .catch(error => {
-                updateToast(
-                    toastId,
-                    {
-                        appearance: 'error',
-                        autoDismiss: true,
-                        content: 'An unknown error occurred.'
-                    }
-                )
+                /* istanbul ignore else */
+                if (_mounted) {
+                    updateToast(
+                        toastId,
+                        {
+                            appearance: 'error',
+                            autoDismiss: true,
+                            content: 'An unknown error occurred.'
+                        }
+                    )
+                }
             })
     }
 
@@ -200,42 +228,51 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
         axios.post(`/api/blocks/${_block.publicId}`, formData)
             .then(json => {
-                Object(blocks).map(function (b, i) {
-                    /* istanbul ignore else */
-                    if (b === _block)
-                        delete blocks[i];
-                });
-
-                let _blocks = blocks.filter(/* istanbul ignore next */ function () {
-                    return true;
-                });
-                setBlocks(_blocks);
-                setCurBlock([]);
-
-                delete modals.preview_blocks;
-                setModals({ ...modals });
-
                 /* istanbul ignore else */
-                if (total === 1) {
-                    setHasBlocks(false);
-                }
-                setTotal(total - 1);
+                if (_mounted) {
+                    Object(blocks).map(function (b, i) {
+                        /* istanbul ignore else */
+                        if (b === _block)
+                            delete blocks[i];
+                    });
 
-                addToast(json.data.message, { appearance: 'success' });
+                    let _blocks = blocks.filter(/* istanbul ignore next */ function () {
+                        return true;
+                    });
+                    setBlocks(_blocks);
+                    setCurBlock([]);
+
+                    delete modals.preview_blocks;
+                    setModals({ ...modals });
+
+                    /* istanbul ignore else */
+                    if (total === 1) {
+                        setHasBlocks(false);
+                    }
+                    setTotal(total - 1);
+
+                    addToast(json.data.message, { appearance: 'success' });
+                }
             })
             .catch(error => {
-                addToast('Unable to delete block.', { appearance: 'error' });
+                /* istanbul ignore else */
+                if (_mounted) {
+                    addToast('Unable to delete block.', { appearance: 'error' });
+                }
             })
     }
 
     const previewBlock = _block => {
-        setCurBlock(_block);
-        modals.preview_blocks = {
-            show: true,
-            block: _block,
-            delete: deleteBlock
+        /* istanbul ignore else */
+        if (_mounted) {
+            setCurBlock(_block);
+            modals.preview_blocks = {
+                show: true,
+                block: _block,
+                delete: deleteBlock
+            }
+            setModals({ ...modals });
         }
-        setModals({ ...modals });
     }
 
     const blockFilter = e => {
