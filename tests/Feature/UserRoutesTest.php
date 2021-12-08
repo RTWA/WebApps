@@ -561,4 +561,19 @@ class UserRoutesTest extends TestCase
         $response->assertSuccessful();
         $response->assertHeader('content-type', 'image/png');
     }
+
+    public function testGetCanGetAGroupsPhoto()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            $user = User::find(1),
+            ['*']
+        );
+
+        $response = $this->get('/group/Group Name/photo');
+
+        $response->assertSuccessful();
+        $response->assertHeader('content-type', 'image/png');
+    }
 }
