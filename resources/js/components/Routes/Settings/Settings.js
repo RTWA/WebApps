@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
-import { useToasts } from 'react-toast-notifications';
 import axios from 'axios';
 
-import { Loader, withWebApps } from 'webapps-react';
+import { Loader, useToasts, withWebApps } from 'webapps-react';
 import { Apps, Plugins } from './Online';
 import ApplicationSettings from './ApplicationSettings';
 import EmailSettings from './EmailSettings';
@@ -34,7 +33,7 @@ const Settings = ({ UI, loadNavigation }) => {
         await loadPermissions();
         await loadSettings();
         await checkForUpdate();
-        
+
         return () => {
             _mounted = false;
         }
@@ -89,9 +88,9 @@ const Settings = ({ UI, loadNavigation }) => {
                             <a href={json.data.url} target="_blank">Click here to view details</a>
                         </>
                     )
-                    addToast(content, { appearance: 'info', autoDismissTimeout: 10000 });
+                    addToast('Update Available!', content, { appearance: 'info', autoDismissTimeout: 10000 });
                     setUpdateCheck(<><p>An update is available ({json.data.version}).</p>
-                    <a href={json.data.url} target="_blank" className="hover:text-gray-900 dark:hover:text-white">Click here to view details</a></>);
+                        <a href={json.data.url} target="_blank" className="hover:text-gray-900 dark:hover:text-white">Click here to view details</a></>);
                 } else if (_mounted) {
                     setUpdateCheck(<a href="#" onClick={checkForUpdate} className="hover:text-gray-900 dark:hover:text-white">Check for updates</a>);
                 }
@@ -115,6 +114,7 @@ const Settings = ({ UI, loadNavigation }) => {
             .catch(error => {
                 addToast(
                     "An unknown error occurred.",
+                    '',
                     { appearance: 'error' }
                 );
             })
@@ -132,6 +132,7 @@ const Settings = ({ UI, loadNavigation }) => {
             .catch(error => {
                 addToast(
                     "An unknown error occurred.",
+                    '',
                     { appearance: 'error' }
                 );
             })
@@ -174,6 +175,7 @@ const Settings = ({ UI, loadNavigation }) => {
             .catch(error => {
                 addToast(
                     "An unknown error occurred.",
+                    '',
                     { appearance: 'error' }
                 );
 

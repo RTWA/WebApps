@@ -1,14 +1,13 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
 import axios from 'axios';
-import { useToasts } from 'react-toast-notifications';
 
 import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
 
 import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
 import { OrphanedBlock } from './BlockViews';
-import { Button, Icon, Loader, withWebApps } from 'webapps-react';
+import { Button, Icon, Loader, useToasts, withWebApps } from 'webapps-react';
 
 export const PropertiesContext = createContext({});
 
@@ -94,6 +93,7 @@ const EditBlock = ({ UI, ...props }) => {
 
         addToast(
             "Saving changes, please wait...",
+            '',
             { appearance: 'info', autoDismiss: false },
             (id) => toastId = id
         );
@@ -112,7 +112,7 @@ const EditBlock = ({ UI, ...props }) => {
                         {
                             appearance: 'success',
                             autoDismiss: true,
-                            content: json.data.message
+                            title: json.data.message
                         }
                     );
                     /* istanbul ignore next */
@@ -128,7 +128,7 @@ const EditBlock = ({ UI, ...props }) => {
                         appearance: 'error',
                         autoDismiss: true,
                         autoDismissTimeout: 5000,
-                        content: "An error occurred whilst saving the block."
+                        title: "An error occurred whilst saving the block."
                     }
                 );
 

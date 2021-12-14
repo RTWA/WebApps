@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import classNames from 'classnames';
-import { useToasts } from 'react-toast-notifications';
-import { Button, ConfirmDeleteButton, Input, withWebApps } from 'webapps-react';
+import { Button, ConfirmDeleteButton, Input, useToasts, withWebApps } from 'webapps-react';
 
 import { FlyoutsContext } from '../UsersGroups';
 
@@ -76,7 +75,7 @@ const UserFlyout = ({ UI, ...props }) => {
                 .then(json => {
                     // istanbul ignore else
                     if (json.data.success) {
-                        addToast('Password has been changed!', { appearance: 'success' });
+                        addToast('Password has been changed!', '', { appearance: 'success' });
                         setPasswordResetShowing(false);
                         setNewPassword('');
                         setConfirmedPassword('');
@@ -104,7 +103,7 @@ const UserFlyout = ({ UI, ...props }) => {
                     } else {
                         setNewPassword('');
                         setConfirmedPassword('');
-                        addToast('Failed to change password', { appearance: 'error' });
+                        addToast('Failed to change password', '', { appearance: 'error' });
                     }
                 });
         }

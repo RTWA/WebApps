@@ -79,6 +79,7 @@ module.exports = {
       backgroundColor: ["checked"],
       borderColor: ["checked"],
       inset: ["checked"],
+      fontWeight: ["hover"],
     },
   },
   plugins: [

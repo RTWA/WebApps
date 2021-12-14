@@ -1,9 +1,8 @@
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import axios from 'axios';
-import { useToasts } from 'react-toast-notifications';
 import { FlyoutsContext } from '../UsersGroups';
-import { Button, Input, withWebApps } from 'webapps-react';
+import { Button, Input, useToasts, withWebApps } from 'webapps-react';
 
 const CreateUserFlyout = ({ UI, ...props }) => {
     const {
@@ -90,7 +89,7 @@ const CreateUserFlyout = ({ UI, ...props }) => {
         axios.post('/api/user', formData)
             .then(json => {
                 pushUser(json.data.user);
-                addToast(json.data.message, { appearance: 'success' });
+                addToast(json.data.message, '', { appearance: 'success' });
                 toggleCreateUserFlyout();
                 resetState();
             })
@@ -104,6 +103,7 @@ const CreateUserFlyout = ({ UI, ...props }) => {
                 } else {
                     addToast(
                         "An unknown error occurred.",
+                        '',
                         { appearance: 'error' }
                     );
                 }

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useToasts } from 'react-toast-notifications';
-import { Button, Input, withAuth, withWebApps } from 'webapps-react';
+import { Button, Input, useToasts, withAuth, withWebApps } from 'webapps-react';
 
 let testSndBtnText = 'Send test Email';
 
@@ -43,6 +42,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
             .then(json => {
                 addToast(
                     "Test Email Sent",
+                    '',
                     { appearance: 'success' }
                 );
                 testSndBtnText = 'Send test Email';
@@ -50,6 +50,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
             .catch(error => {
                 addToast(
                     "Unable to send test Email",
+                    '',
                     { appearance: 'error' }
                 );
                 testSndBtnText = 'Send test Email';

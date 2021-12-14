@@ -2,8 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import classNames from 'classnames';
 import ContentLoader from "react-content-loader"
-import { useToasts } from 'react-toast-notifications';
-import { Button, withWebApps } from 'webapps-react';
+import { Button, useToasts, withWebApps } from 'webapps-react';
 import { CreateGroupFlyout, CreateUserFlyout, GroupFlyout, UserFlyout } from './Flyouts';
 import { GroupList, UserList } from './Lists';
 
@@ -64,7 +63,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast('An error occurred loading user data!', { appearance: 'error' });
+                    addToast('An error occurred loading user data!', '', { appearance: 'error' });
                 }
             });
     }
@@ -88,7 +87,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast('An error occurred loading user data!', { appearance: 'error' });
+                    addToast('An error occurred loading user data!','', { appearance: 'error' });
                 }
             });
     }
@@ -141,6 +140,7 @@ const UsersGroups = ({ UI, ...props }) => {
         if (user.azure_id !== null) {
             addToast(
                 "You cannot change this user's group as they have been provisioned by Microsoft Azure Active Directory.",
+                '',
                 { appearance: 'error' }
             );
             return;
@@ -179,6 +179,7 @@ const UsersGroups = ({ UI, ...props }) => {
                 if (_mounted) {
                     addToast(
                         "An unknown error occurred.",
+                        '',
                         { appearance: 'error' }
                     );
 
@@ -223,7 +224,7 @@ const UsersGroups = ({ UI, ...props }) => {
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
-                        addToast(json.data.message, { appearance: 'success' });
+                        addToast(json.data.message, '', { appearance: 'success' });
                         groups.map(function (g, gi) {
                             /* istanbul ignore else */
                             if (selectedGroup.id === g.id)
@@ -261,7 +262,7 @@ const UsersGroups = ({ UI, ...props }) => {
         e.preventDefault();
 
         if (user.azure_id !== null) {
-            addToast("You cannot disable this user as they have been provisioned by Microsoft Azure Active Directory.", { appearance: 'error' });
+            addToast("You cannot disable this user as they have been provisioned by Microsoft Azure Active Directory.", '', { appearance: 'error' });
             return;
         }
 
@@ -290,7 +291,7 @@ const UsersGroups = ({ UI, ...props }) => {
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
                     console.log(error.response);
-                    addToast(error.response.data.message, { appearance: 'error' });
+                    addToast(error.response.data.message, '', { appearance: 'error' });
                 }
             });
     }
@@ -319,7 +320,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast(error.response.data.message, { appearance: 'error' });
+                    addToast(error.response.data.message, '', { appearance: 'error' });
                 }
             });
     }
@@ -347,7 +348,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast(error.response.data.message, { appearance: 'error' });
+                    addToast(error.response.data.message, '', { appearance: 'error' });
                 }
             });
     }
@@ -376,7 +377,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast(error.response.data.errors.name[0], { appearance: 'error' });
+                    addToast(error.response.data.errors.name[0], '', { appearance: 'error' });
                 }
             });
     }

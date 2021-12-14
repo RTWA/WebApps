@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useToasts } from 'react-toast-notifications';
-import { Button, Input, withAuth } from 'webapps-react';
+import { Button, Input, useToasts, withAuth } from 'webapps-react';
 
 const ChangePassword = ({ user }) => {
     const [states, setStates] = useState({ currentPassword: {}, newPassword: {}, confirmedPassword: {} });
@@ -67,7 +66,7 @@ const ChangePassword = ({ user }) => {
                         setCurrentPassword('');
                         setNewPassword('');
                         setConfirmedPassword('');
-                        addToast('Password Changed!', { appearance: 'success' });
+                        addToast('Password Changed!', '', { appearance: 'success' });
                     }
                 })
                 .catch(error => {

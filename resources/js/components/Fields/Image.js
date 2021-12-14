@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useToasts } from 'react-toast-notifications';
-import { withWebApps } from 'webapps-react';
+import { useToasts, withWebApps } from 'webapps-react';
 
 const Image = ({ UI, ...props }) => {
     const {
@@ -41,7 +40,7 @@ const Image = ({ UI, ...props }) => {
 
         // Check if a file has actually been selected
         if (file !== null) {
-            addToast('Uploading image...', { appearence: 'info', autoDismiss: false }, id => toastId = id);
+            addToast('Uploading image...', '', { appearence: 'info', autoDismiss: false }, id => toastId = id);
 
             let formData = new FormData();
             formData.append('file', file);
@@ -60,7 +59,7 @@ const Image = ({ UI, ...props }) => {
                             appearance: 'success',
                             autoDismiss: true,
                             autoDismissTimeout: 3000,
-                            content: "Image uploaded!"
+                            title: "Image uploaded!"
                         }
                     );
                 })
@@ -71,12 +70,12 @@ const Image = ({ UI, ...props }) => {
                             appearance: 'error',
                             autoDismiss: true,
                             autoDismissTimeout: 5000,
-                            content: 'Failed to upload image.'
+                            title: 'Failed to upload image.'
                         }
                     );
                 })
         } else {
-            addToast('No Image Selected!', { appearence: 'warning', autoDismissTimeout: 1000 });
+            addToast('No Image Selected!', '', { appearence: 'warning', autoDismissTimeout: 1000 });
         }
     }
 

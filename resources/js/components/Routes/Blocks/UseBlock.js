@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useToasts } from 'react-toast-notifications';
-import { withWebApps } from 'webapps-react';
+import { useToasts, withWebApps } from 'webapps-react';
 
 const UseBlock = props => {
     const { block, UI } = props;
@@ -53,7 +52,7 @@ const UseBlock = props => {
                     <li>Insert an HTML/Embed option and paste (<kbd>Ctrl</kbd>+<kbd>V</kbd>) the text below.</li>
                 </ol>
                 <label htmlFor="simple-text" className="sr-only">Simple Text to Copy</label>
-                <CopyToClipboard text={textarea} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", { appearance: 'success' }) }}>
+                <CopyToClipboard text={textarea} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
                     <textarea className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`} 
                                 value={textarea} readOnly rows="4" id="simple-text" />
                 </CopyToClipboard>
@@ -69,7 +68,7 @@ const UseBlock = props => {
                     <li>Press done to embed the block onto the page.</li>
                 </ol>
                 <label htmlFor="advanced-text" className="sr-only">Advanced Text to Copy</label>
-                <CopyToClipboard text={link} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", { appearance: 'success' }) }}>
+                <CopyToClipboard text={link} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
                     <input type="text" className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}
                                 value={link} readOnly id="advanced-text" />
                 </CopyToClipboard>

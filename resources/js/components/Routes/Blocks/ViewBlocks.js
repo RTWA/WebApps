@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import { confirmAlert } from 'react-confirm-alert';
-import { useToasts } from 'react-toast-notifications';
 
-import { Button, ConfirmDeleteModal, Loader, withWebApps } from 'webapps-react';
+import { Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
@@ -159,6 +158,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     const saveName = _block => {
         addToast(
             "Saving changes, please wait...",
+            '',
             { appearance: 'info', autoDismiss: false },
             (id) => toastId = id
         );
@@ -187,7 +187,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                         {
                             appearance: 'success',
                             autoDismiss: true,
-                            content: json.data.message
+                            title: json.data.message
                         }
                     );
                     setBlocks(tmpBlocks);
@@ -202,7 +202,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                         {
                             appearance: 'error',
                             autoDismiss: true,
-                            content: 'An unknown error occurred.'
+                            title: 'An unknown error occurred.'
                         }
                     )
                 }
@@ -251,13 +251,13 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                     }
                     setTotal(total - 1);
 
-                    addToast(json.data.message, { appearance: 'success' });
+                    addToast(json.data.message, '', { appearance: 'success' });
                 }
             })
             .catch(error => {
                 /* istanbul ignore else */
                 if (_mounted) {
-                    addToast('Unable to delete block.', { appearance: 'error' });
+                    addToast('Unable to delete block.', '', { appearance: 'error' });
                 }
             })
     }

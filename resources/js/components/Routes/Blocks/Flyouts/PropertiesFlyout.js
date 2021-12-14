@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import classNames from 'classnames';
 import UserAvatar from 'react-user-avatar';
-import { useToasts } from 'react-toast-notifications';
-import { Button, UserSuggest, withAuth, withWebApps } from 'webapps-react';
+import { Button, UserSuggest, withAuth, useToasts, withWebApps } from 'webapps-react';
 import { PropertiesContext } from '../EditBlock';
 
 let _mounted = false;
@@ -57,7 +56,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
                 })
                 .catch(/* istanbul ignore next */ error => {
                     if (_mounted) {
-                        addToast('An error occurred loading user data!', { appearance: 'error' });
+                        addToast('An error occurred loading user data!', '', { appearance: 'error' });
                     }
                 });
         }
@@ -76,7 +75,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
         }
 
         if (block.owner === newOwner.id) {
-            addToast('Unable to change owner to the same user!', { appearance: 'error' });
+            addToast('Unable to change owner to the same user!', '', { appearance: 'error' });
             setChown(false);
             setNewOwner({});
             return;
@@ -97,7 +96,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
                     block.user = newOwner;
                     setBlock(block);
 
-                    addToast('Owner changed successfully!', { appearance: 'success' });
+                    addToast('Owner changed successfully!', '',{ appearance: 'success' });
                     setChown(false);
                     setNewOwner({});
                 }

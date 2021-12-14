@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ToastProvider } from 'react-toast-notifications';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import ReactTooltip from 'react-tooltip';
@@ -9,10 +8,8 @@ import { Auth } from 'webapps-react';
 
 ReactDOM.render(
     <Auth>
-        <ToastProvider autoDismiss="true" autoDismissTimeout="3000">
-            <App />
-            <ReactTooltip effect="solid" />
-        </ToastProvider>
+        <App />
+        <ReactTooltip effect="solid" />
     </Auth>,
     document.getElementById('WebApps')
 );

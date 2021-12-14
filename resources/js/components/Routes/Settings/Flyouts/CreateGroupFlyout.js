@@ -1,8 +1,7 @@
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import axios from 'axios';
-import { useToasts } from 'react-toast-notifications';
-import { Button, Input, withWebApps } from 'webapps-react';
+import { Button, Input, useToasts, withWebApps } from 'webapps-react';
 import { FlyoutsContext } from '../UsersGroups';
 
 const CreateGroupFlyout = ({ UI, ...props }) => {
@@ -70,7 +69,7 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
         axios.post('/api/group', formData)
             .then(json => {
                 pushGroup(json.data.group);
-                addToast(json.data.message, { appearance: 'success' });
+                addToast(json.data.message, '', { appearance: 'success' });
                 toggleCreateGroupFlyout();
                 setState('');
             })

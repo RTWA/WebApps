@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import classNames from 'classnames';
-import { useToasts } from 'react-toast-notifications';
-import { Switch, withWebApps } from 'webapps-react';
+import { Switch, useToasts, withWebApps } from 'webapps-react';
 
 let _mounted = false;
 
@@ -50,7 +49,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                 /* istanbul ignore else */ 
                 if (_mounted) {
                     addToast(
-                        "Permission failed to update. Please reload the page try again.",
+                        "Permission failed to update.",
+                        "Please reload the page try again.",
                         { appearance: 'error' }
                     );
 
@@ -99,6 +99,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
         if (group.name === "Administrators" && perm.name === "admin.access") {
             addToast(
                 "Administrators cannot be denied access to Administrative Options",
+                '',
                 { appearance: 'error' }
             );
 
