@@ -167,8 +167,8 @@ const Azure = ({ UI, ...props }) => {
                     <div className="flex flex-row">
                         <h6 className="text-gray-600 dark:text-gray-400 inline-block cursor-pointer text-2xl font-bold">Microsoft Azure Integration</h6>
                     </div>
-                    <div className="flex flex-col min-w-0 break-words w-full my-6 shadow-lg rounded-lg bg-blue-gray-100 dark:bg-blue-gray-600 border-0 overflow-hidden">
-                        <div className="bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-blue-gray-100 mb-0 py-6">
+                    <div className="flex flex-col min-w-0 break-words w-full my-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
+                        <div className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 py-6">
                             <div className="px-4 py-2 -mt-2">
                                 <p>Please follow the guidance found in the
                                     <Button href="https://docs.getwebapps.uk/configuration/azure-integration-setup" target="_blank" size="small" style="link">WebApps Documentation</Button>
@@ -227,9 +227,9 @@ const Azure = ({ UI, ...props }) => {
                 <div className="flex flex-row">
                     <h6 className="text-gray-600 dark:text-gray-400 inline-block cursor-pointer text-2xl font-bold">Microsoft Azure Integration</h6>
                 </div>
-                <div className="flex flex-col min-w-0 break-words w-full my-6 shadow-lg rounded-lg bg-blue-gray-100 dark:bg-blue-gray-600 border-0 overflow-hidden">
+                <div className="flex flex-col min-w-0 break-words w-full my-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
                     <div className="flex flex-col">
-                        <div className="w-full bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-blue-gray-100 mb-0 px-4 py-6">
+                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
                             <p className="font-semibold">Azure App Registration Information</p>
                         </div>
                         <div className="flex flex-col xl:flex-row p-4">
@@ -259,7 +259,7 @@ const Azure = ({ UI, ...props }) => {
                             ? (
                                 <>
                                     <div className="flex flex-col">
-                                        <div className="w-full bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-blue-gray-100 mb-0 px-4 py-6">
+                                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
                                             <p className="font-semibold">Azure Authentication</p>
                                         </div>
                                         <div className="px-4 py-2 pt-5">
@@ -285,7 +285,7 @@ const Azure = ({ UI, ...props }) => {
                                         </div>
                                     </div>
                                     <div className="flex flex-col">
-                                        <div className="w-full bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-blue-gray-100 mb-0 px-4 py-6">
+                                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
                                             <p className="font-semibold">Map Azure Groups to WebApps Groups</p>
                                         </div>
                                         <div className="px-4 py-2 pt-5">
@@ -329,7 +329,7 @@ const Azure = ({ UI, ...props }) => {
                                         }
                                     </div>
                                     <div className="flex flex-col">
-                                        <div className="w-full bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-blue-gray-100 mb-0 px-4 py-6">
+                                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
                                             <p className="font-semibold">Azure Synchronisation Status</p>
                                         </div>
                                         <div className="flex flex-col xl:flex-row p-4">

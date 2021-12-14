@@ -88,7 +88,7 @@ const RecentBlocks = () => {
                 <div className="rounded-t mb-0 px-4 py-3 border-0">
                     <div className="flex flex-wrap items-center">
                         <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-                            <h3 className="font-semibold text-base text-blue-gray-700 dark:text-blue-gray-300">Your Recent Blocks</h3>
+                            <h3 className="font-semibold text-base text-gray-700 dark:text-gray-300">Your Recent Blocks</h3>
                         </div>
                     </div>
                 </div>
@@ -96,16 +96,16 @@ const RecentBlocks = () => {
                     <table className="items-center w-full bg-transparent border-collapse">
                         <thead>
                             <tr>
-                                <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                                <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                     Block Type
                                 </th>
-                                <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                                <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                     Title
                                 </th>
-                                <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                                <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                     Views
                                 </th>
-                                <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                                <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                     Created
                                 </th>
                             </tr>
@@ -142,7 +142,7 @@ const RecentBlocks = () => {
             <div className="rounded-t mb-0 px-4 py-3 border-0">
                 <div className="flex flex-wrap items-center">
                     <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-                        <h3 className="font-semibold text-base text-blue-gray-700 dark:text-blue-gray-300">Your Recent Blocks</h3>
+                        <h3 className="font-semibold text-base text-gray-700 dark:text-gray-300">Your Recent Blocks</h3>
                     </div>
                 </div>
             </div>
@@ -150,16 +150,16 @@ const RecentBlocks = () => {
                 <table className="items-center w-full bg-transparent border-collapse">
                     <thead>
                         <tr>
-                            <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                            <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                 Block Type
                             </th>
-                            <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                            <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                 Title
                             </th>
-                            <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                            <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                 Views
                             </th>
-                            <th className="px-6 bg-blue-gray-50 dark:bg-blue-gray-600 text-blue-gray-500 dark:text-blue-gray-50 align-middle border border-blue-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                            <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
                                 Created
                             </th>
                         </tr>
