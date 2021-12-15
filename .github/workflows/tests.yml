@@ -22,7 +22,6 @@ jobs:
       - name: Start MySQL service
         run: |
           sudo systemctl start mysql.service
-          sudo apt-get install -y mysql-client
           sudo mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "SHOW DATABASES"
       - name: Create database
         run: sudo mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "CREATE DATABASE webapps"
