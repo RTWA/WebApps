@@ -96,10 +96,10 @@ test('Cannot Add A Permission Due To An Error', async () => {
         fireEvent.click(screen.getByTestId('second.permission_Mocked Group'));
     });
     await waitFor(() =>
-        screen.getByText(/permission failed to update\. please reload the page try again\./i)
+        screen.getByText(/permission failed to update\./i)
     );
 
-    expect(screen.getByText(/permission failed to update\. please reload the page try again\./i)).toBeDefined();
+    expect(screen.getByText(/permission failed to update\./i)).toBeDefined();
 });
 
 test('Cannot Toggle Admin Permission for Administrators', async () => {

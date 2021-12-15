@@ -165,7 +165,7 @@ const UsersGroups = ({ UI, ...props }) => {
                     document.getElementById('usrSecGroup').classList.add('text-green-500');
                     document.getElementById('usrSecGroup').classList.add('border-green-500');
 
-                    addToast('Security Group Updated', { appearance: 'success' });
+                    addToast('Security Group Updated', '', { appearance: 'success' });
                     /* istanbul ignore next */
                     setTimeout(function () {
                         if (_mounted && document.getElementById('usrSecGroup') !== null) {

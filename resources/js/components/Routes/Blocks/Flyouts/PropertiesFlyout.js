@@ -104,7 +104,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
             .catch(error => {
                 /* istanbul ignore else */
                 if (_mounted) {
-                    addToast(error.response.data.message, { appearance: 'error' });
+                    addToast(error.response.data.message, '', { appearance: 'error' });
                     setChown(false);
                     setNewOwner({});
                 }
