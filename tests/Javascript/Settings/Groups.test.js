@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 
@@ -14,7 +13,7 @@ const mockFunction = (e) => {
 }
 
 test('Can View Groups List', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -30,7 +29,7 @@ test('Can View Groups List', async () => {
 });
 
 test('Can View Groups List Loader', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={[]} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={[]} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -46,7 +45,7 @@ test('Can View Groups List Loader', async () => {
 });
 
 test('Can Return To Users List After Viewing Groups List', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -69,7 +68,7 @@ test('Can Return To Users List After Viewing Groups List', async () => {
 });
 
 test('Can Select A Group', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -92,7 +91,7 @@ test('Can Select A Group', async () => {
 });
 
 test('Can View The Add New Group Flyout', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -115,7 +114,7 @@ test('Can View The Add New Group Flyout', async () => {
 });
 
 test('Can Create A New Group With Valid Data', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -154,7 +153,7 @@ test('Can Create A New Group With Valid Data', async () => {
 });
 
 test('Cannot Create A New Group With Invalid Data', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -195,7 +194,7 @@ test('Cannot Create A New Group With Invalid Data', async () => {
 test('Can Rename A Group', async () => {
     if (mockData.groups[0].name !== 'Mocked Group') { mockData.groups[0].name = 'Mocked Group'; }
 
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -237,7 +236,7 @@ test('Can Rename A Group', async () => {
 test('Cannot Rename A Group With Invalid Data', async () => {
     if (mockData.groups[0].name !== 'Mocked Group') { mockData.groups[0].name = 'Mocked Group'; }
     
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -279,7 +278,7 @@ test('Cannot Rename A Group With Invalid Data', async () => {
 test('Cannot Rename A Group With Invalid Data For Old Name', async () => {
     if (mockData.groups[0].name !== 'Mocked Group') { mockData.groups[0].name = 'Mocked Group'; }
     
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
@@ -321,7 +320,7 @@ test('Cannot Rename A Group With Invalid Data For Old Name', async () => {
 test('Can Delete A Group', async () => {
     if (mockData.groups[0].name !== 'Mocked Group') { mockData.groups[0].name = 'Mocked Group'; }
 
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
 
     expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();

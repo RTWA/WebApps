@@ -1,6 +1,5 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 import { rest } from 'msw';
 
 import { server } from '../../../resources/js/__mocks__/server';
@@ -14,13 +13,13 @@ const mockFunction = jest.fn((e) => {
 });
 
 test('Can Render Image', () => {
-    render(<ToastProvider><WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps></ToastProvider>);
+    render(<WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps>);
 
     expect(screen.getByRole('link', {  name: /enter url/i})).toBeDefined();
 });
 
 test('Can Set By Entering A URL', async () => {
-    render(<ToastProvider><WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps></ToastProvider>);
+    render(<WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps>);
 
     expect(screen.getByRole('link', {  name: /enter url/i})).toBeDefined();
 
@@ -40,7 +39,7 @@ test('Can Set By Entering A URL', async () => {
 });
 
 test('Can Set By Uploading An Image', async () => {
-    render(<ToastProvider><WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps></ToastProvider>);
+    render(<WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps>);
 
     expect(screen.getByLabelText(/upload an image/i)).toBeDefined();
 
@@ -65,7 +64,7 @@ test('Cannot Set By Uploading An Image With An Error', async () => {
             )
         }),
     )
-    render(<ToastProvider><WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps></ToastProvider>);
+    render(<WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps>);
 
     expect(screen.getByLabelText(/upload an image/i)).toBeDefined();
 
@@ -80,7 +79,7 @@ test('Cannot Set By Uploading An Image With An Error', async () => {
 });
 
 test('Cannot Set By Uploading An Image With No Image Selected', async () => {
-    render(<ToastProvider><WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps></ToastProvider>);
+    render(<WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps>);
 
     expect(screen.getByLabelText(/upload an image/i)).toBeDefined();
 

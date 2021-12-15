@@ -1,6 +1,5 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 
 import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
@@ -14,7 +13,7 @@ const mockFunction = (e) => {
 }
 
 test('Renders E-Mail Settings', () => {
-    render(<WebApps><ToastProvider><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></ToastProvider></WebApps>);
+    render(<WebApps><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
 
     expect(screen.getByText(/smtp server host/i)).toBeDefined();
     expect(screen.getByText(/smtp server port/i)).toBeDefined();
@@ -27,7 +26,7 @@ test('Renders E-Mail Settings', () => {
 });
 
 test('Can Change A Setting', async () => {
-    render(<WebApps><ToastProvider><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></ToastProvider></WebApps>);
+    render(<WebApps><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
 
     expect(screen.getByText(/smtp server host/i)).toBeDefined();
     
@@ -44,7 +43,7 @@ test('Can Change A Setting', async () => {
 });
 
 test('Can Send A Test Email', async () => {
-    render(<WebApps><ToastProvider><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></ToastProvider></WebApps>);
+    render(<WebApps><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
 
     expect(screen.getByText(/send test to/i)).toBeDefined();
     
@@ -68,7 +67,7 @@ test('Can Send A Test Email', async () => {
 });
 
 test('Cannot Send A Test Email Due To An Error', async () => {
-    render(<WebApps><ToastProvider><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></ToastProvider></WebApps>);
+    render(<WebApps><EmailSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
 
     expect(screen.getByText(/send test to/i)).toBeDefined();
     

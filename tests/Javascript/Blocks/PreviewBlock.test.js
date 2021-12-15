@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 
 import { WebApps } from 'webapps-react';
 
@@ -9,7 +8,7 @@ import ViewBlocks from '../../../resources/js/components/Routes/Blocks/ViewBlock
 import Modals from '../../../resources/js/components/Layouts/Default/Modals';
 
 test('Can View The Preview Block Modal', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
     
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -27,7 +26,7 @@ test('Can View The Preview Block Modal', async () => {
 });
 
 test('Can Close The Preview Block Modal', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
     
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -52,7 +51,7 @@ test('Can Close The Preview Block Modal', async () => {
 });
 
 test('Can Select The Use This Block Tab, Change To Advanced View And Return To Preview', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
     
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -106,7 +105,7 @@ test('Can Select The Use This Block Tab, Change To Advanced View And Return To P
 });
 
 test('Can Select The Delete This Block Tab And Delete The Block', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /><Modals /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
     
     expect(screen.getByText(/test block/i)).toBeDefined();

@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 import { rest } from 'msw';
 
 import { server } from '../../../resources/js/__mocks__/server';
@@ -12,7 +11,7 @@ import { WebApps } from 'webapps-react';
 import ViewBlocks from '../../../resources/js/components/Routes/Blocks/ViewBlocks';
 
 test('Can View My Blocks', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -48,7 +47,7 @@ test('Can View My Blocks And Load More', async () => {
             }
         })
     )
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.findAllByText(/test block/i)).toBeDefined();
@@ -81,12 +80,12 @@ test('Cannot View My Blocks If I Don\'t Have Any', async () => {
             )
         })
     )
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByText(/you have not created any blocks yet./i)).toBeDefined());
 });
 
 test('Can Rename Block Via Context Menu', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -124,7 +123,7 @@ test('Can Rename Block Via Context Menu', async () => {
 });
 
 test('Cannot Rename Block Via Context Menu Due To Error', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -162,7 +161,7 @@ test('Cannot Rename Block Via Context Menu Due To Error', async () => {
 });
 
 test('Can Delete Block Via Context Menu', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -203,7 +202,7 @@ test('Cannot Delete Block Via Context Menu Due To An Error', async () => {
             )
         })
     )
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -237,7 +236,7 @@ test('Cannot Delete Block Via Context Menu Due To An Error', async () => {
 });
 
 test('Can Filter Blocks By Plugin', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -286,7 +285,7 @@ test('Can Filter Blocks By Plugin', async () => {
 });
 
 test('Can Filter Blocks By Search', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -329,7 +328,7 @@ test('Can Filter Blocks By Search With No Matching Blocks Found', async () => {
             }
         })
     )
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.getByText(/test block/i)).toBeDefined();
@@ -346,7 +345,7 @@ test('Can Filter Blocks By Search With No Matching Blocks Found', async () => {
 });
 
 test('Can View Another User\'s Blocks (No Blocks)', async () => {
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: 'jest2' } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: 'jest2' } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /this user has not created any blocks yet./i })).toBeDefined());
 });
 
@@ -379,7 +378,7 @@ test('Can View Another User\'s Blocks And Load More', async () => {
             }
         })
     )
-    render(<ToastProvider><WebApps><BrowserRouter><ViewBlocks match={{ params: { username: 'jest2' } }} /></BrowserRouter></WebApps></ToastProvider>);
+    render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: 'jest2' } }} /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
 
     expect(screen.findAllByText(/test block/i)).toBeDefined();

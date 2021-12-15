@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 
 import { server } from '../../../resources/js/__mocks__/server';
@@ -12,7 +11,7 @@ import { WebApps } from 'webapps-react';
 import EditBlock from '../../../resources/js/components/Routes/Blocks/EditBlock';
 
 test('Can Render Edit Block', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -32,14 +31,14 @@ test('Can Render Edit Block For An Orphaned Block', async () => {
             )
         }),
     )
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByText(/this block is in an orphaned state\.please contact your system administrator\./i)).toBeDefined());
 
     expect(screen.getByText(/this block is in an orphaned state\.please contact your system administrator\./i)).toBeDefined();
 });
 
 test('Can Open The Flyout And Change The Properties Of The Block', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -74,7 +73,7 @@ test('Can Open The Flyout And Change The Properties Of The Block', async () => {
 });
 
 test('Can Open The Flyout And Change The Owner Of The Block', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -121,7 +120,7 @@ test('Can Open The Flyout And Change The Owner Of The Block', async () => {
 });
 
 test('Can Open The Flyout But Cannot Change The Owner Of The Block To The Current Owner', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -179,7 +178,7 @@ test('Can Open The Flyout But Cannot Change The Owner Of The Block Due To An Err
             )
         }),
     )
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -226,7 +225,7 @@ test('Can Open The Flyout But Cannot Change The Owner Of The Block Due To An Err
 });
 
 test('Can Change Block Text Value', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -241,7 +240,7 @@ test('Can Change Block Text Value', async () => {
 });
 
 test('Can Open And Close A Repeater Without Any Errors', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -265,7 +264,7 @@ test('Can Open And Close A Repeater Without Any Errors', async () => {
 });
 
 test('Can Add And Remove A Repeater', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -293,7 +292,7 @@ test('Can Add And Remove A Repeater', async () => {
 });
 
 test('Can Successfully Save Block Changes', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
@@ -318,7 +317,7 @@ test('Can Successfully Save Block Changes', async () => {
 });
 
 test('Cannot Successfully Save Block Changes', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
 
     expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();

@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 
@@ -10,7 +9,7 @@ import { WebApps } from 'webapps-react';
 import UsersGroups from '../../../resources/js/components/Routes/Settings/UsersGroups';
 
 test('Can View User List', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -22,7 +21,7 @@ test('Can View User List', async () => {
 });
 
 test('Can Select A User', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -43,7 +42,7 @@ test('Can Select A User', async () => {
 });
 
 test('Can Reset A User Password', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -87,7 +86,7 @@ test('Can Reset A User Password', async () => {
 });
 
 test('Cannot Reset A User Password If A New Password Isn\'t Provided', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -124,7 +123,7 @@ test('Cannot Reset A User Password If A New Password Isn\'t Provided', async () 
 });
 
 test('Cannot Reset A User Password If They Don\'t Match', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -168,7 +167,7 @@ test('Cannot Reset A User Password If They Don\'t Match', async () => {
 });
 
 test('Cannot Reset A User Password If It Is Invalid', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -212,7 +211,7 @@ test('Cannot Reset A User Password If It Is Invalid', async () => {
 });
 
 test('Cannot Reset A User Password With An Unknown Error', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -256,7 +255,7 @@ test('Cannot Reset A User Password With An Unknown Error', async () => {
 });
 
 test('Can Select A User And Change Their Group', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -284,7 +283,7 @@ test('Can Select A User And Change Their Group', async () => {
 });
 
 test('Can Select A User But Can\'t Change Their Group If They Are AAD Provisioned', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -310,7 +309,7 @@ test('Can Select A User But Can\'t Change Their Group If They Are AAD Provisione
 });
 
 test('Can Select A User And Disable Them', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -340,7 +339,7 @@ test('Can Select A User And Disable Them', async () => {
 });
 
 test('Can Select A User But Cannot Disable Them If They Are AAD Provisioned', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -370,7 +369,7 @@ test('Can Select A User But Cannot Disable Them If They Are AAD Provisioned', as
 });
 
 test('Can View Disabled User List', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -385,7 +384,7 @@ test('Can View Disabled User List', async () => {
 });
 
 test('Can Select A Disabled User And Enable Them', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -420,7 +419,7 @@ test('Can Select A Disabled User And Enable Them', async () => {
 });
 
 test('Can Select A Disabled User And Delete Them', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -462,7 +461,7 @@ test('Can Select A Disabled User And Delete Them', async () => {
 });
 
 test('Can View Add New User Flyout', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -480,7 +479,7 @@ test('Can View Add New User Flyout', async () => {
 });
 
 test('Can Create A New User With Valid Data', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -524,7 +523,7 @@ test('Can Create A New User With Valid Data', async () => {
 });
 
 test('Cannot Create A New User With Invalid Data', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
@@ -558,7 +557,7 @@ test('Cannot Create A New User With Invalid Data', async () => {
 });
 
 test('Cannot Create A New User Due To An Unknown Error', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
     await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 

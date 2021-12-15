@@ -1,6 +1,5 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 
@@ -13,14 +12,14 @@ const mockFunction = (e) => {
 }
 
 test('Renders Access Permissions', () => {
-    render(<ToastProvider><WebApps><AccessPermissions updateRole={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps></ToastProvider>);
+    render(<WebApps><AccessPermissions updateRole={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps>);
 
     expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
     expect(screen.getByRole('heading', { name: /mocked permission/i })).toBeDefined();
 });
 
 test('Can Switch Between Tabs', async () => {
-    render(<ToastProvider><WebApps><AccessPermissions updateRole={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps></ToastProvider>);
+    render(<WebApps><AccessPermissions updateRole={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps>);
 
     expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
     expect(screen.getByRole('button', { name: /second group/i })).toBeDefined();
@@ -36,7 +35,7 @@ test('Can Switch Between Tabs', async () => {
 });
 
 test('Can Remove A Permission', async () => {
-    render(<ToastProvider><WebApps><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps></ToastProvider>);
+    render(<WebApps><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps>);
 
     expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
     expect(screen.getByTestId('mocked.permission_Mocked Group')).toBeDefined();
@@ -52,7 +51,7 @@ test('Can Remove A Permission', async () => {
 });
 
 test('Can Add A Permission', async () => {
-    render(<ToastProvider><WebApps><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps></ToastProvider>);
+    render(<WebApps><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps>);
 
     expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
     expect(screen.getByRole('button', { name: /second group/i })).toBeDefined();
@@ -78,7 +77,7 @@ test('Can Add A Permission', async () => {
 });
 
 test('Cannot Add A Permission Due To An Error', async () => {
-    render(<WebApps><ToastProvider><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></ToastProvider></WebApps>);
+    render(<WebApps><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps>);
 
     expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
     expect(screen.getByRole('button', { name: /second group/i })).toBeDefined();
@@ -104,7 +103,7 @@ test('Cannot Add A Permission Due To An Error', async () => {
 });
 
 test('Cannot Toggle Admin Permission for Administrators', async () => {
-    render(<ToastProvider><WebApps><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps></ToastProvider>);
+    render(<WebApps><AccessPermissions updateGroup={mockFunction} groups={mockData.groups} permissions={mockData.permissions} /></WebApps>);
 
     expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
     expect(screen.getByRole('button', { name: /second group/i })).toBeDefined();

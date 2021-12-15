@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ToastProvider } from 'react-toast-notifications';
 import { rest } from 'msw';
 
 import { server } from '../../../resources/js/__mocks__/server';
@@ -11,7 +10,7 @@ import { WebApps } from 'webapps-react';
 import NewBlock from '../../../resources/js/components/Routes/Blocks/NewBlock';
 
 test('Can View Create a New Block', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><NewBlock /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><NewBlock /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /select the plugin you wish to use\.\.\./i })).toBeDefined());
 
     expect(screen.getByText(/sample/i)).toBeDefined();
@@ -38,7 +37,7 @@ test('No Plugins Available', async () => {
         }),
     )
 
-    render(<WebApps><ToastProvider><BrowserRouter><NewBlock /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><NewBlock /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', {  name: /no active plugins!/i})).toBeDefined());
 
     expect(screen.getByRole('heading', {  name: /no active plugins!/i})).toBeDefined();
@@ -46,7 +45,7 @@ test('No Plugins Available', async () => {
 });
 
 test('Can Select A Plugin To Use', async () => {
-    render(<WebApps><ToastProvider><BrowserRouter><NewBlock /></BrowserRouter></ToastProvider></WebApps>);
+    render(<WebApps><BrowserRouter><NewBlock /></BrowserRouter></WebApps>);
     await waitFor(() => expect(screen.getByRole('heading', { name: /select the plugin you wish to use\.\.\./i })).toBeDefined());
 
     expect(screen.getByText(/sample/i)).toBeDefined();
