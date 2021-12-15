@@ -28,6 +28,9 @@
             @php
                 echo html_entity_decode($block->output)
             @endphp
+            <div class="absolute bottom-0 right-0">
+                <a href="/blocks/edit/{{ $block->publicId }}" target="_blank" class="text-transparent hover:bg-black hover:text-white px-2">Edit</a>
+            </div>
         </div>
 
         <script type="text/javascript">
