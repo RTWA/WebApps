@@ -98,6 +98,10 @@ return [
             'value' => 'Return to CMS',
         ],
         [
+            'key'   => 'mail.driver',
+            'value' => 'smtp',
+        ],
+        [
             'key'   => 'mail.smtp.from_address',
             'value' => '',
         ],
