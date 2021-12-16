@@ -73,7 +73,7 @@ const SortableItem = props => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                     </svg>
                 </div>
-                <p className="flex-1 p-2 bg-gray-50" onClick={() => repeater.toggle(i)}>{field.label}: {value[field.ref]}</p>
+                <p className="flex-1 p-2 bg-gray-50 dark:bg-gray-700" onClick={() => repeater.toggle(i)}>{field.label}: {value[field.ref]}</p>
                 {
                     (props.data[name].length !== 1)
                         ? (
@@ -82,7 +82,6 @@ const SortableItem = props => {
                             </svg>
                         ) : null
                 }
-
             </div>
             <div className={paneClass} id={name + (i + 1)}>
                 <RepeaterFields {...props} />
