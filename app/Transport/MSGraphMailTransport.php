@@ -10,6 +10,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Mail\Transport\Transport;
+use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 use Swift_Mime_Attachment;
 use Swift_Mime_EmbeddedFile;
 use Swift_Mime_SimpleMessage;
@@ -34,6 +35,10 @@ class MSGraphMailTransport extends Transport
     public function __construct(ClientInterface $client = null)
     {
         $this->http = $client ?? new Client();
+
+        if (ApplicationSettings::get('mail.msgraph.from_address', '') === '') {
+            throw CouldNotSendMail::fromAddressIsNotValid();
+        }
     }
 
     /**
