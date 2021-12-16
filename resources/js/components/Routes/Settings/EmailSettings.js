@@ -30,6 +30,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
     }
 
     const changeDriver = e => {
+        /* istanbul ignore else */
         if (e.target.id === 'mail.driver.smtp') {
             setValue('mail.driver', 'smtp');
 
@@ -74,6 +75,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 testSndBtnText = 'Send test Email';
             })
             .catch(error => {
+                /* istanbul ignore next */
                 if (error.response.data.exception) {
                     addToast(
                         "Unable to send test Email",

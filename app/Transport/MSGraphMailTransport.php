@@ -66,8 +66,13 @@ class MSGraphMailTransport extends Transport
             $this->sendPerformed($message);
             return $this->numberOfRecipients($message);
         } catch (BadResponseException $e) {
-            if ($e->hasResponse()) $response = json_decode((string) $e->getResponse()->getBody());
-            throw CouldNotSendMail::serviceRespondedWithError($response->error->code ?? 'Unknown', $response->error->message ?? 'Unknown Error');
+            if ($e->hasResponse()) {
+                $response = json_decode((string) $e->getResponse()->getBody());
+            }
+            throw CouldNotSendMail::serviceRespondedWithError(
+                $response->error->code ?? 'Unknown',
+                $response->error->message ?? 'Unknown Error'
+            );
         } catch (ConnectException $e) {
             throw CouldNotReachService::networkError();
         } catch (Throwable $e) {
@@ -146,7 +151,8 @@ class MSGraphMailTransport extends Transport
      * @param $attachments
      * @return array
      */
-    protected function toAttachmentCollection($attachments) {
+    protected function toAttachmentCollection($attachments)
+    {
         $collection = [];
 
         foreach ($attachments as $attachment) {
@@ -172,10 +178,12 @@ class MSGraphMailTransport extends Transport
      * Returns header collection for API request
      * @return string[]
      */
-    protected function getHeaders() {
+    protected function getHeaders()
+    {
         return [
             'Accept' => 'application/json',
-            'Authorization' => 'Bearer ' . json_decode((new MSGraphController())->getAccessToken()->content(), true)['token']['access_token'],
+            'Authorization' => 'Bearer ' .
+                json_decode((new MSGraphController())->getAccessToken()->content(), true)['token']['access_token'],
         ];
     }
 }

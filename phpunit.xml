@@ -18,6 +18,7 @@
         </include>
         <exclude>
             <directory suffix=".php">./app/Mail/</directory>
+            <directory suffix=".php">./app/Exceptions/MSGraph/</directory>
             <file>./app/Http/Controllers/Auth/OAuth2Controller.php</file>
             <file>./app/Http/Controllers/MSGraphController.php</file>
             <file>./app/Http/Middleware/Authenticate.php</file>
@@ -30,6 +31,7 @@
             <file>./app/Providers/BroadcastServiceProvider.php</file>
             <file>./app/Providers/MailServiceProvider.php</file>
             <file>./app/Services/Install/DatabaseInstallService.php</file>
+            <file>./app/Transport/MSGraphMailTransport.php</file>
         </exclude>
     </coverage>
     <php>

@@ -43,7 +43,7 @@ class MailServiceProvider extends ServiceProvider
                     'password' => ApplicationSettings::get('mail.smtp.password'),
                 ];
                 Config::set('mail', $config);
-            } else if ($driver === 'msgraph') {
+            } elseif ($driver === 'msgraph') {
                 $config = [
                     'driver' => 'msgraph',
                     'from' => [
@@ -53,7 +53,7 @@ class MailServiceProvider extends ServiceProvider
                 ];
                 Config::set('mail', $config);
 
-                $this->app->get('mail.manager')->extend('msgraph', function() {
+                $this->app->get('mail.manager')->extend('msgraph', function () {
                     return new MSGraphMailTransport();
                 });
             }

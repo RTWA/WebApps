@@ -174,6 +174,7 @@ const settings = {
     "azure.graph.tenant": '',
     "azure.graph.client_id": '',
     "azure.graph.client_secret": '',
+    "mail.driver": 'smtp',
 };
 
 const navigation = {
