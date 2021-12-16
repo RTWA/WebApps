@@ -15,7 +15,7 @@ Lets set some basic {{ config('installer.product.name') }} Settings
 @section('container')
 <form method="post" id="SETUP_FORM" action="{{ route('Install::application.save') }}">
     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-    <div class="flex flex-col divde divide-y dark:divide-blue-gray-400 w-full px-4 pt-5 sm:px-12">
+    <div class="flex flex-col divde divide-y dark:divide-gray-400 w-full px-4 pt-5 sm:px-12">
         <div class="flex flex-row py-4">
             <div class="px-4 pt-3 sm:px-6 w-1/3">
                 <label for="APP_URL" class="font-medium">{{ config('installer.product.name') }} URL</label>

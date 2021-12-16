@@ -30,8 +30,8 @@
 
     @include('install.layout.steps')
 
-    <div class="relative flex flex-col min-w-0 break-words mb-6 mt-12 mx-24 shadow-lg rounded-lg bg-blue-gray-100 dark:bg-blue-gray-600 overflow-hidden">
-        <div class="bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-blue-gray-100 mb-0 px-6 py-6 cursor-pointer">
+    <div class="relative flex flex-col min-w-0 break-words mb-6 mt-12 mx-24 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 overflow-hidden">
+        <div class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-6 py-6 cursor-pointer">
             <h3 class="text-2xl leading-6 font-medium text-indigo-600 dark:text-indigo-400">@yield('title')</h3>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">
                 @yield('subtitle')
@@ -41,7 +41,7 @@
             @yield('container')
         </div>
 
-        <div class="flex p-2 border-t border-gray-200 dark:border-blue-gray-500">
+        <div class="flex p-2 border-t border-gray-200 dark:border-gray-500">
             @if (session('message'))
                 <p class="text-blue-500 text-center text-xs w-2/3">
                     <strong>

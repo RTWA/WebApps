@@ -15,10 +15,10 @@ This wizard will guide you through the update process.
 @section('container')
 <div class="flex flex-col mx-auto w-full items-center">
     <div class="px-4 pt-5 sm:px-6 w-full">
-        <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-blue-gray-300">
+        <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-gray-300">
             To begin, please login with a WebApps Administrator account.
         </h3>
-        <p class="text-sm text-center text-gray-900 dark:text-blue-gray-300">You will need to use a local Administrator account to login here!</p>
+        <p class="text-sm text-center text-gray-900 dark:text-gray-300">You will need to use a local Administrator account to login here!</p>
     </div>
 
     <form method="post" id="LOGIN_FORM" action="{{ route('Update::login') }}" class="w-96">

@@ -11,13 +11,13 @@ Database Update
 @section('container')
 <div class="flex flex-col mx-auto w-full items-center">
     <div class="px-4 pt-5 sm:px-6 w-full">
-        <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-blue-gray-300">
+        <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-gray-300">
             There are {{ $updates }} database updates required for this WebApps update to complete.
         </h3>
         @if ($updates === 0)
-        <p class="my-8 text-sm text-center text-gray-900 dark:text-blue-gray-300">Click Next to proceed through the update process.</p>
+        <p class="my-8 text-sm text-center text-gray-900 dark:text-gray-300">Click Next to proceed through the update process.</p>
         @else
-        <p class="my-8 text-sm text-center text-gray-900 dark:text-blue-gray-300">Click Next to install the updates.</p>
+        <p class="my-8 text-sm text-center text-gray-900 dark:text-gray-300">Click Next to install the updates.</p>
         @endif
     </div>
 </div>

@@ -17,11 +17,11 @@
     <div class="sm:grid sm:grid-cols-2">
         <div class="flex flex-col mx-auto w-full items-center">
             <div class="px-4 pt-5 sm:px-6 w-full">
-                <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-blue-gray-300">
+                <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-gray-300">
                     PHP Version and Extensions
                 </h3>
             </div>
-            <ul class="flex flex-col divide divide-y dark:divide-blue-gray-400 w-full px-4 sm:pr-24 sm:pl-6 mb-4">
+            <ul class="flex flex-col divide divide-y dark:divide-gray-400 w-full px-4 sm:pr-24 sm:pl-6 mb-4">
                 @foreach ($requirements['requirements'] as $type => $requirement)
                     @if ($type == 'php')
                         <li class="flex flex-row">
@@ -59,11 +59,11 @@
 
         <div class="flex flex-col mx-auto w-full items-center">
             <div class="px-4 pt-5 sm:px-6 w-full">
-                <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-blue-gray-300">
+                <h3 class="text-lg text-center leading-6 font-medium text-gray-900 dark:text-gray-300">
                     File and Folder Permissions
                 </h3>
             </div>
-            <ul class="flex flex-col divide divide-y dark:divide-blue-gray-400 w-full px-4 sm:pr-24 sm:pl-6 mb-4">
+            <ul class="flex flex-col divide divide-y dark:divide-gray-400 w-full px-4 sm:pr-24 sm:pl-6 mb-4">
                 @foreach ($permissions['permissions'] as $permission)
                     <li class="flex flex-row">
                         <div class="flex flex-1 py-4">
