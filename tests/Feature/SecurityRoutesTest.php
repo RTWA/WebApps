@@ -696,4 +696,44 @@ class SecurityRoutesTest extends TestCase
             'has_permission' => false
         ]);
     }
+
+    public function testCanCheckAUserIsInGroup()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            $user = User::find(1),
+            ['*']
+        );
+
+        $response = $this->postJson('/api/group/check', [
+            'group' => 'Administrators'
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJsonFragment([
+            'user_id' => 1,
+            'in_group' => true
+        ]);
+    }
+
+    public function testCanCheckAUserIsntInAGroup()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            $user = User::find(5),
+            ['*']
+        );
+
+        $response = $this->postJson('/api/group/check', [
+            'permission' => 'Administrators'
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJsonFragment([
+            'user_id' => 5,
+            'in_group' => false
+        ]);
+    }
 }

@@ -282,4 +282,16 @@ class SecurityController extends Controller
             'has_permission' => Auth::user()->hasPermissionTo($request->input('permission'))
         ], 200);
     }
+
+    /**
+     * Check the authenticated User is in a group
+     */
+    public function checkUserGroup(Request $request)
+    {
+        return response()->json([
+            'group' => $request->input('group'),
+            'user_id' => Auth::id(),
+            'in_group' => in_array($request->input('group'), Auth::user()->getRoleNames()->toArray())
+        ], 200);
+    }
 }
