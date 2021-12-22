@@ -61,12 +61,12 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
         }
     }
 
-    const createGroup = () => {
+    const createGroup = async () => {
         setState('saving');
         let formData = new FormData();
         formData.append('name', name);
 
-        axios.post('/api/group', formData)
+        await axios.post('/api/group', formData)
             .then(json => {
                 pushGroup(json.data.group);
                 addToast(json.data.message, '', { appearance: 'success' });

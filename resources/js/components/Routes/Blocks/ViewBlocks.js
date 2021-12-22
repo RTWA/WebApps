@@ -26,11 +26,11 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
 
-    useEffect(() => {
+    useEffect(async () => {
         _mounted = true;
 
         // Get all available Plugins
-        axios.get('/api/plugins')
+        await axios.get('/api/plugins')
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -45,7 +45,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         // Get first set of Blocks
         let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=0`
             : `/api/blocks/user/${username}?limit=${load}&offset=0`
-        axios.get(uri)
+            await axios.get(uri)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -101,14 +101,14 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         }
     }, [curBlock]);
 
-    const loadMore = () => {
+    const loadMore = async () => {
         let offset = (filter === null) ? blocks.length : 0;
         let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=${offset}&filter=${filter}`
             : `/api/blocks/user/${username}?limit=${load}&offset=${offset}&filter=${filter}`;
 
         if (lastUri !== uri) {
             lastUri = uri;
-            axios.get(uri)
+            await axios.get(uri)
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -155,7 +155,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         }
     }
 
-    const saveName = _block => {
+    const saveName = async _block => {
         addToast(
             "Saving changes, please wait...",
             '',
@@ -178,7 +178,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         formData.append('_method', "PUT");
         formData.append('block', JSON.stringify(tmpBlock));
 
-        axios.post(`/api/blocks/${tmpBlock.publicId}`, formData)
+        await axios.post(`/api/blocks/${tmpBlock.publicId}`, formData)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -222,11 +222,11 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         });
     }
 
-    const deleteBlock = _block => {
+    const deleteBlock = async _block => {
         let formData = new FormData();
         formData.append("_method", "DELETE");
 
-        axios.post(`/api/blocks/${_block.publicId}`, formData)
+        await axios.post(`/api/blocks/${_block.publicId}`, formData)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {

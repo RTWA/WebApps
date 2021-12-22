@@ -35,7 +35,7 @@ const Image = ({ UI, ...props }) => {
         setValue({ ...value });
     }
 
-    const uploadChange = e => {
+    const uploadChange = async e => {
         let file = e.target.files.length ? e.target.files[0] : null;
 
         // Check if a file has actually been selected
@@ -44,7 +44,7 @@ const Image = ({ UI, ...props }) => {
 
             let formData = new FormData();
             formData.append('file', file);
-            axios.post('/api/media/upload', formData)
+            await axios.post('/api/media/upload', formData)
                 .then(json => {
                     value.text = `${json.data.media['original_filename']} (${json.data.media['filesize']})`;
                     value.label = 'Uploaded:';

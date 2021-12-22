@@ -26,8 +26,8 @@ const ViewBlock = ({ UI, ...props }) => {
         }
     }, [block]);
 
-    const loadBlockData = () => {
-        axios.get(`/api/blocks/${props.match.params.id}`)
+    const loadBlockData = async () => {
+        await axios.get(`/api/blocks/${props.match.params.id}`)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {

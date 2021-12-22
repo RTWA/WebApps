@@ -26,7 +26,7 @@ const ChangePassword = ({ user }) => {
         }
     }
 
-    const changePassword = () => {
+    const changePassword = async () => {
         let hasError = false;
         if (currentPassword === '') {
             states.currentPassword = {
@@ -60,7 +60,7 @@ const ChangePassword = ({ user }) => {
             formData.append('password', newPassword);
             formData.append('password_confirmation', confirmedPassword);
 
-            axios.post('/api/user/password', formData)
+            await axios.post('/api/user/password', formData)
                 .then(json => {
                     if (json.data.success) {
                         setCurrentPassword('');

@@ -63,15 +63,15 @@ const Azure = ({ UI, ...props }) => {
         }
     };
 
-    const RequestAccessToken = () => {
-        axios.get('/api/graph/token')
+    const RequestAccessToken = async () => {
+        await axios.get('/api/graph/token')
             .then(json => {
                 setAccessToken(json.data.token.access_token);
             });
     }
 
-    const getGroupMaps = () => {
-        axios.get('/api/group/mappings')
+    const getGroupMaps = async () => {
+        await axios.get('/api/group/mappings')
             .then(json => {
                 setGroupMappings(json.data.mappings);
             })
@@ -81,7 +81,7 @@ const Azure = ({ UI, ...props }) => {
             })
     }
 
-    const setGroupMapping = e => {
+    const setGroupMapping = async e => {
         let group = e.target.id;
         let azGroup = e.target.value;
 
@@ -89,7 +89,7 @@ const Azure = ({ UI, ...props }) => {
         formData.append('group_id', group);
         formData.append('azure_group_id', azGroup);
 
-        axios.post('/api/group/mapping', formData)
+        await axios.post('/api/group/mapping', formData)
             .then(json => {
                 /* istanbul ignore else */
                 if (json.data.success) {
@@ -118,9 +118,9 @@ const Azure = ({ UI, ...props }) => {
             .then(data => setAzGroups(data.value));
     }
 
-    const syncAzureNow = () => {
+    const syncAzureNow = async () => {
         setSyncBtnText('Syncing');
-        axios.get('/api/azure/sync');
+        await axios.get('/api/azure/sync');
     }
 
     const onChange = e => {

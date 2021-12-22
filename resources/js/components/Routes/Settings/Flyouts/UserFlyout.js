@@ -46,7 +46,7 @@ const UserFlyout = ({ UI, ...props }) => {
         }
     }
 
-    const changePassword = () => {
+    const changePassword = async () => {
         let hasError = false;
         if (newPassword === '') {
             states.newPassword = {
@@ -71,7 +71,7 @@ const UserFlyout = ({ UI, ...props }) => {
             formData.append('password', newPassword);
             formData.append('password_confirmation', confirmedPassword);
 
-            axios.post('/api/admin/user.password/reset', formData)
+            await axios.post('/api/admin/user.password/reset', formData)
                 .then(json => {
                     // istanbul ignore else
                     if (json.data.success) {

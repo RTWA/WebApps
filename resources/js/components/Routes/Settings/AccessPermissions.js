@@ -23,12 +23,12 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
         return () => _mounted = false;
     }, []);
 
-    const setPerm = (group, perm, mode, check_id) => {
+    const setPerm = async (group, perm, mode, check_id) => {
         let formData = new FormData();
         formData.append("mode", mode);
         formData.append("group", group.id);
         formData.append("perm", perm.id);
-        axios.post('/api/permissions', formData)
+        await axios.post('/api/permissions', formData)
             .then(response => {
                 /* istanbul ignore else */ 
                 if (_mounted) {

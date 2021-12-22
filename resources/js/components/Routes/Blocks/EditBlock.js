@@ -62,8 +62,8 @@ const EditBlock = ({ UI, ...props }) => {
         }
     }, [repeater]);
 
-    const loadBlockData = () => {
-        axios.get(`/api/blocks/${id}?edit=true`)
+    const loadBlockData = async () => {
+        await axios.get(`/api/blocks/${id}?edit=true`)
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
@@ -84,7 +84,7 @@ const EditBlock = ({ UI, ...props }) => {
             });
     }
 
-    const saveBlockData = (e) => {
+    const saveBlockData = async e => {
         e.preventDefault();
 
         /* istanbul ignore else */
@@ -101,7 +101,7 @@ const EditBlock = ({ UI, ...props }) => {
         let formData = new FormData();
         formData.append('_method', 'PUT');
         formData.append('block', JSON.stringify(block));
-        axios.post(`/api/blocks/${id}`, formData)
+        await axios.post(`/api/blocks/${id}`, formData)
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {

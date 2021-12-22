@@ -101,11 +101,11 @@ const Settings = ({ UI, loadNavigation }) => {
         setOpen((open === pane) ? '' : pane);
     }
 
-    const createKey = key => {
+    const createKey = async key => {
         let formData = new FormData();
         formData.append('_method', 'PUT')
         formData.append('value', '');
-        axios.post(`/api/setting/${key}`, formData)
+        await axios.post(`/api/setting/${key}`, formData)
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -120,10 +120,10 @@ const Settings = ({ UI, loadNavigation }) => {
             })
     }
 
-    const deleteKey = key => {
+    const deleteKey = async key => {
         let formData = new FormData();
         formData.append('_method', 'DELETE');
-        axios.post(`/api/setting/${key}`, formData)
+        await axios.post(`/api/setting/${key}`, formData)
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -138,7 +138,7 @@ const Settings = ({ UI, loadNavigation }) => {
             })
     }
 
-    const setValue = (key, value, ce) => {
+    const setValue = async (key, value, ce) => {
         states[key] = 'saving';
         setStates({ ...states });
 
@@ -156,7 +156,7 @@ const Settings = ({ UI, loadNavigation }) => {
         let formData = new FormData();
         formData.append("_method", "PUT")
         formData.append("value", value);
-        axios.post(`/api/setting/${key}`, formData)
+        await axios.post(`/api/setting/${key}`, formData)
             .then(json => {
                 key = (config_editor) ? ce_key : key;
 

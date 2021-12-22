@@ -31,14 +31,14 @@ const EmailSettings = ({ user, UI, ...props }) => {
         setTestTo(e.target.value);
     }
 
-    const sendTest = e => {
+    const sendTest = async e => {
         e.preventDefault();
 
         testSndBtnText = 'Sending...';
 
         let formData = new FormData();
         formData.append('to', testTo);
-        axios.post('/api/email/test', formData)
+        await axios.post('/api/email/test', formData)
             .then(json => {
                 addToast(
                     "Test Email Sent",

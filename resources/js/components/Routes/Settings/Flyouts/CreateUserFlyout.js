@@ -71,7 +71,7 @@ const CreateUserFlyout = ({ UI, ...props }) => {
         }
     }
 
-    const createUser = () => {
+    const createUser = async () => {
         setState('name', 'saving', '');
         setState('username', 'saving', '');
         setState('email', 'saving', '');
@@ -86,7 +86,7 @@ const CreateUserFlyout = ({ UI, ...props }) => {
         formData.append('password_confirmation', (user.password_confirmation.value === undefined) ? '' : user.password_confirmation.value);
         formData.append('group', group);
 
-        axios.post('/api/user', formData)
+        await axios.post('/api/user', formData)
             .then(json => {
                 pushUser(json.data.user);
                 addToast(json.data.message, '', { appearance: 'success' });
