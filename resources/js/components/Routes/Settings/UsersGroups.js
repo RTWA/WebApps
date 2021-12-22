@@ -146,6 +146,15 @@ const UsersGroups = ({ UI, ...props }) => {
             return;
         }
 
+        if (user.username === 'administrator') {
+            addToast(
+                "You cannot change the built-in administrators group!",
+                '',
+                { appearance: 'error' }
+            );
+            return;
+        }
+
         let group_id = e.target.value;
         let formData = new FormData();
         formData.append('group_id', group_id);
