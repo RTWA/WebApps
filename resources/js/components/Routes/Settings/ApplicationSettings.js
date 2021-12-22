@@ -143,7 +143,7 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                         </div>
                         <div className="text-center">User Selectable</div>
                     </div>
-                    <span className="text-xs text-gray-400 dark:text-gray-200 col-span-3">
+                    <span className="text-xs text-gray-400 dark:text-gray-200 sm:col-span-3">
                         If you choose to allow the user to select, their system preferences will be respected.
                     </span>
                 </div>
