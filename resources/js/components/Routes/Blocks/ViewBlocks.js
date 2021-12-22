@@ -30,7 +30,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         _mounted = true;
 
         // Get all available Plugins
-        await axios.get('/api/plugins')
+        await axios.get('/api/plugins/active')
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
