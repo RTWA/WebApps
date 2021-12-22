@@ -45,7 +45,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         // Get first set of Blocks
         let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=0`
             : `/api/blocks/user/${username}?limit=${load}&offset=0`
-            await axios.get(uri)
+        await axios.get(uri)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
