@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Update;
 
 use App\Http\Controllers\Controller;
+use App\Services\Install\InstallManagerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -76,6 +78,9 @@ class UpdateController extends Controller
 
     public function complete()
     {
+        // Install any new required settings
+        (new InstallManagerService())->createSettings();
+
         // Get current version
         $current = json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
 
@@ -97,6 +102,15 @@ class UpdateController extends Controller
         }
 
         Cache::forget('product.info');
+
+        // Update any Caches
+        if (App::environment() !== 'testing') {
+            // @codeCoverageIgnoreStart
+            Artisan::call('config:cache', []);
+            Artisan::call('view:cache', []);
+            Artisan::call('storage:link', []);
+            // @codeCoverageIgnoreEnd
+        }
 
         return view('update.finished');
     }
