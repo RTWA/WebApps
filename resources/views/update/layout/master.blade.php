@@ -11,14 +11,8 @@
     @yield('style')
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
         integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-        if (localStorage['WA_DarkMode'] === 'dark' || (!('WA_DarkMode' in localStorage) && window.matchMedia(
-                '(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    </script>
+    @include('utils.darkmode')
+    @include('utils.branding')
     <script>
         window.Laravel = <?php echo json_encode([
             'csrfToken' => csrf_token(),

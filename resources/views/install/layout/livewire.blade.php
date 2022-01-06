@@ -9,14 +9,8 @@
     <title>@yield('template_title') | {{ config('installer.product.name') }} Setup</title>
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
     @yield('style')
-    <script type="text/javascript">
-        if (localStorage['WA_DarkMode'] === 'dark' || (!('WA_DarkMode' in localStorage) && window.matchMedia(
-                '(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    </script>
+    @include('utils.darkmode')
+    @include('utils.branding')
     <script>
         window.Laravel = <?php echo json_encode([
                                 'csrfToken' => csrf_token(),
