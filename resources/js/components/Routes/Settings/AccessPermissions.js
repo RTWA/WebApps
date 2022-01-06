@@ -176,7 +176,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                             {
                                 Object(groups).map(function (group, gi) {
                                     return (
-                                        <div key={gi} className={(gi % 2) ? `py-2 lg:grid lg:grid-cols-${permission.permissions.length + 1} bg-gray-200 dark:bg-gray-700` : `py-2 lg:grid lg:grid-cols-${permission.permissions.length + 1}`}>
+                                        <div key={gi} className={(gi % 2) ? `-mx-5 px-5 py-2 lg:grid lg:grid-cols-${permission.permissions.length + 1} bg-gray-200 dark:bg-gray-700` : `-mx-5 px-5 py-2 lg:grid lg:grid-cols-${permission.permissions.length + 1}`}>
                                             <h6 className="font-semibold lg:font-normal text-center lg:text-left">{group.name}</h6>
                                             {
                                                 Object(permission.permissions).map(function (perm, pi) {
