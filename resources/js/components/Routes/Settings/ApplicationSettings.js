@@ -1,5 +1,6 @@
-import React from 'react';
-import { Input, Switch, withWebApps } from 'webapps-react';
+import React, { useEffect, useState } from 'react';
+import Values from 'values.js';
+import { Input, Switch, useToasts, withWebApps } from 'webapps-react';
 
 const ApplicationSettings = ({ UI, setUI, ...props }) => {
     const {
@@ -8,6 +9,59 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
         typeValue,
         states,
     } = props;
+
+    /* Brand Shades
+        -900 = shade(50);
+        -800 = shade(40);??
+        -700 = shade(23);??
+        -600 = shade(10);??
+        -500 = brand
+        -400 = tint(25);
+        -300 = tint(53);
+        -200 = tint(72);
+        -100 = tint(85);
+        -50 = tint(93);
+    */
+    const [brand, setBrand] = useState([]);
+    const [base, setBase] = useState('#000000');
+    const [typeBase, setTypeBase] = useState('');
+
+    const color = new Values(base);
+    const shades = [10, 23, 40, 50];
+    const tints = [93, 85, 72, 53, 25];
+    const index = [9, 9, 9, 9, 9, 0, 0, 0, 0, 0];
+
+    const { addToast } = useToasts();
+
+    useEffect(() => {
+        if (settings['core.ui.branding'] !== undefined) {
+            setBase(JSON.parse(settings['core.ui.branding'])[5]);
+            setTypeBase(JSON.parse(settings['core.ui.branding'])[5]);
+        }
+    }, [settings]);
+
+    useEffect(() => {
+        if (base !== '#000000') {
+            let colors = [];
+            tints.map(function (tint, i) {
+                colors.push({
+                    color: color.tint(tint).hexString().toUpperCase(),
+                    name: (i === 0) ? '50' : `${i}00`
+                });
+            });
+            colors.push({
+                color: base,
+                name: '500',
+            });
+            shades.map(function (shade, i) {
+                colors.push({
+                    color: color.shade(shade).hexString().toUpperCase(),
+                    name: (i === 0) ? '600' : `${6 + i}00`,
+                });
+            });
+            setBrand(colors);
+        }
+    }, [base]);
 
     const colors = [
         {
@@ -31,18 +85,39 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
             name: 'Orange',
         },
         {
-            class: 'yellow',
-            name: 'Yellow',
-        },
-        {
             class: 'lime',
             name: 'Green',
         },
         {
             class: 'gray',
             name: 'Gray',
-        }
+        },
+        {
+            class: 'brand',
+            name: 'Custom',
+        },
     ];
+
+    const onTypeBase = e => {
+        if (e.currentTarget.value.charAt(0) !== '#') {
+            setTypeBase('#' + e.currentTarget.value.toUpperCase());
+        } else {
+            setTypeBase(e.currentTarget.value.toUpperCase());
+        }
+
+        if (e.currentTarget.value.length === 7) {
+            setBase(e.currentTarget.value);
+        }
+    }
+
+    const onChangeBase = e => {
+        let brands = [];
+        brand.map(function (brand) {
+            brands.push(brand.color);
+        });
+        setValue('core.ui.branding', JSON.stringify(brands));
+        addToast('Branding Updated!', 'You should refresh the page to see the new colours.', { appearance: 'success', autoDismissTimeout: 8000 });
+    }
 
     const setColor = color => {
         setValue('core.ui.theme', color)
@@ -125,6 +200,37 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                     }
                 </div>
             </div>
+            {
+                (settings['core.ui.theme'] === 'brand')
+                    ? (
+                        <>
+                            <div className="flex flex-col xl:flex-row py-4">
+                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="base">Custom Colour</label>
+                                <div className="w-full">
+                                    <Input name="base"
+                                        id="base"
+                                        type="text"
+                                        value={typeBase}
+                                        onChange={onTypeBase}
+                                        onBlur={onChangeBase}
+                                        state={states['core.ui.branding']} />
+                                    <div className={`grid grid-cols-1 md:col-span-3 sm:grid-cols-${brand.length / 2} xl:grid-cols-${brand.length} w-full`}>
+                                        {
+                                            Object(brand).map(function (color, i) {
+                                                return (
+                                                    <div key={color.color} className={`w-full bg-white dark:bg-gray-800 overflow-hidden`}>
+                                                        <div className={`h-10 flex items-center text-center justify-center font-bold text-lg proportional-nums not-sr-only`} style={{ backgroundColor: color.color, color: brand[index[i]].color }}>{color.color}</div>
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )
+                    : null
+            }
             <div className="flex flex-col xl:flex-row py-4">
                 <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="core.ui.dark_mode">Dark Mode Option</label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-2 gap-x-4 pt-2 mt-1 xl:mt-0 w-full">
