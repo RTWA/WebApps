@@ -168,6 +168,7 @@ const permissions = {
 const settings = {
     "core.mocked.data_mocked": "true",
     "core.ui.theme": 'indigo',
+    "core.ui.branding": "[\"#EEF2FF\", \"#E0E7FF\", \"#C7D2FE\", \"#A5B4FC\", \"#818CF8\", \"#6366F1\", \"#4F46E5\", \"#4338CA\", \"#3730A3\", \"#312E81\"]",
     "core.cms.display_link": 'true',
     "auth.internal.registrations": 'true',
     "auth.internal.default_group": groups[0].name,

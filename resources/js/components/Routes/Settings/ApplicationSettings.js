@@ -34,6 +34,7 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
     const { addToast } = useToasts();
 
     useEffect(() => {
+        /* istanbul ignore else */
         if (settings['core.ui.branding'] !== undefined) {
             setBase(JSON.parse(settings['core.ui.branding'])[5]);
             setTypeBase(JSON.parse(settings['core.ui.branding'])[5]);

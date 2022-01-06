@@ -84,6 +84,34 @@ test('Can Select A Different Colour Theme', async () => {
     expect(screen.getByText(/red/i)).toBeDefined();
 });
 
+test('Can Select The Custom Colour Theme', async () => {
+    render(<WebApps><ApplicationSettings loginMethods={mockData.loginMethods} settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
+
+    expect(screen.getByText(/theme colour/i)).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByText(/custom/i));
+        mockData.settings['core.ui.theme'] = 'brand';
+    });
+    await waitFor(() =>
+        screen.getByRole('textbox', { name: /custom colour/i })
+    );
+    await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: /custom colour/i }), { target: { value: '11' } });
+        fireEvent.change(screen.getByRole('textbox', { name: /custom colour/i }), { target: { value: '112233' } });
+        await screen.getByRole('textbox', { name: /custom colour/i }).value === '#112233';
+    });
+    await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: /custom colour/i }), { target: { value: '#55AA22' } });
+        await screen.getByRole('textbox', { name: /custom colour/i }).value === '#55AA22';
+        fireEvent.blur(screen.getByRole('textbox', { name: /custom colour/i }));
+    });
+
+    expect(screen.getByText(/#f3f9f0/i)).toBeDefined();
+    mockData.settings['core.ui.theme'] = 'indigo';
+    expect(screen.getByText(/branding updated!/i)).toBeDefined();
+});
+
 test('Can Select Light Mode', async () => {
     render(<WebApps><ApplicationSettings loginMethods={mockData.loginMethods} settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
 
@@ -136,13 +164,13 @@ test('Can Enable CMS Link', async () => {
     expect(screen.getByText(/display "return to cms" link/i)).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', {  name: /display "return to cms" link/i}));
+        fireEvent.click(screen.getByRole('checkbox', { name: /display "return to cms" link/i }));
     });
     await waitFor(() =>
-        screen.getByRole('checkbox', {  name: /display "return to cms" link/i})
+        screen.getByRole('checkbox', { name: /display "return to cms" link/i })
     );
 
-    expect(screen.getByRole('checkbox', {  name: /display "return to cms" link/i})).toBeDefined();
+    expect(screen.getByRole('checkbox', { name: /display "return to cms" link/i })).toBeDefined();
 });
 
 test('Can Disable CMS Link', async () => {
@@ -152,23 +180,23 @@ test('Can Disable CMS Link', async () => {
     expect(screen.getByText(/display "return to cms" link/i)).toBeDefined();
 
     await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', {  name: /display "return to cms" link/i}));
+        fireEvent.click(screen.getByRole('checkbox', { name: /display "return to cms" link/i }));
     });
     await waitFor(() =>
-        screen.getByRole('checkbox', {  name: /display "return to cms" link/i})
+        screen.getByRole('checkbox', { name: /display "return to cms" link/i })
     );
 
-    expect(screen.getByRole('checkbox', {  name: /display "return to cms" link/i})).toBeDefined();
+    expect(screen.getByRole('checkbox', { name: /display "return to cms" link/i })).toBeDefined();
 });
 
 test('Can Type A CMS URL', async () => {
     render(<WebApps><ApplicationSettings loginMethods={mockData.loginMethods} settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
 
     expect(screen.getByText(/cms url/i)).toBeDefined();
-    
+
     await act(async () => {
-        fireEvent.change(screen.getByRole('textbox', {  name: /cms url/i}), { target: { value: 'URL' } });
-        await screen.getByRole('textbox', {  name: /cms url/i}).value === 'URL';
+        fireEvent.change(screen.getByRole('textbox', { name: /cms url/i }), { target: { value: 'URL' } });
+        await screen.getByRole('textbox', { name: /cms url/i }).value === 'URL';
     });
 
     expect(screen.getByText(/cms url/i)).toBeDefined();
@@ -178,10 +206,10 @@ test('Can Type CMS Link Text', async () => {
     render(<WebApps><ApplicationSettings loginMethods={mockData.loginMethods} settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} states={{}} /></WebApps>);
 
     expect(screen.getByText(/"return to cms" link text/i)).toBeDefined();
-    
+
     await act(async () => {
-        fireEvent.change(screen.getByRole('textbox', {  name: /"return to cms" link text/i}), { target: { value: 'Text' } });
-        await screen.getByRole('textbox', {  name: /"return to cms" link text/i}).value === 'Text';
+        fireEvent.change(screen.getByRole('textbox', { name: /"return to cms" link text/i }), { target: { value: 'Text' } });
+        await screen.getByRole('textbox', { name: /"return to cms" link text/i }).value === 'Text';
     });
 
     expect(screen.getByText(/"return to cms" link text/i)).toBeDefined();
