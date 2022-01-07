@@ -74,7 +74,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 console.error(error)
             });
 
-        return () => _mounted = false;
+        return /* istanbul ignore next */ () => _mounted = false;
     }, []);
 
     useEffect(() => {

@@ -114,6 +114,19 @@ const users = [
         roles: [
             groups[0]
         ]
+    },
+    {
+        id: 90909,
+        username: 'administrator',
+        password: 'password123test',
+        name: 'WebApps Administrator',
+        email: 'admin@test',
+        active: true,
+        azure_id: null,
+        number_of_blocks: 0,
+        roles: [
+            groups[2]
+        ]
     }
 ]
 

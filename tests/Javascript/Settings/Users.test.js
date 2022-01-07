@@ -308,6 +308,32 @@ test('Can Select A User But Can\'t Change Their Group If They Are AAD Provisione
     expect(screen.getByText(/you cannot change this user's group as they have been provisioned by microsoft azure active directory./i)).toBeDefined();
 });
 
+test('Can Select A User But Can\'t Change Their Group If They Are \'administrator\'', async () => {
+    render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
+    await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
+    await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
+
+    expect(screen.getByRole('heading', { name: /users/i })).toBeDefined();
+    expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /add new user/i })).toBeDefined();
+
+    expect(screen.getByText(/webapps administrator/i)).toBeDefined();
+
+    await act(async () => {
+        fireEvent.click(screen.getByText(/webapps administrator/i));
+    });
+    await waitFor(() =>
+        screen.getByRole('heading', { name: /webapps administrator \- properties/i })
+    );
+
+    await act(async () => {
+        fireEvent.change(screen.getByRole('combobox', { name: /change security group/i, hidden: true }), { target: { value: mockData.groups[0].id } });
+        await screen.getByRole('combobox', { name: /change security group/i, hidden: true }).value === mockData.groups[0].id;
+    });
+
+    expect(screen.getByText(/you cannot change the built-in administrators group!/i)).toBeDefined();
+});
+
 test('Can Select A User And Disable Them', async () => {
     render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
     await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));

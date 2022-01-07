@@ -78,7 +78,7 @@ const handlers = [
         return res(
             ctx.status(200),
             ctx.json({
-                users: [mockData.users[0], mockData.users[1]]
+                users: [mockData.users[0], mockData.users[1], mockData.users[4]]
             })
         )
     }),
