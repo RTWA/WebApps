@@ -357,6 +357,26 @@ class GetOwnTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testCanGetAnOrphanedBlockForEmbedding()
+    {
+        $this->seed();
+
+        Block::create([
+            'owner' => 1,
+            'plugin' => 40,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
+            'publicId' => 'PHPUnitTest',
+            'title' => 'PHP Unit Test Block',
+            'notes' => 'This block was created for testing',
+            'views' => 10
+        ]);
+
+        $response = $this->get('/embed/PHPUnitTest');
+
+        $response->assertStatus(200);
+        $response->assertViewIs('not-available');
+    }
+
     public function testCannotGetABlockForEmbeddingThatDoesntExist()
     {
         $this->seed();
