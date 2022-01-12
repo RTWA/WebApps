@@ -185,6 +185,10 @@ class BlocksController extends Controller
             'time' => new DateTime()
         ]);
 
+        if ($plugin === null) {
+            return view('not-available');
+        }
+
         $blocksService = new BlocksService();
 
         $block = $blocksService->buildBlock($block);
