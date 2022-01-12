@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Block;
 use App\Models\Plugin;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BlocksService
 {
@@ -14,15 +15,15 @@ class BlocksService
     {
         if ($filter !== null && !is_numeric($filter)) {
             return Block::where('owner', $user_id)
-                    ->where(function ($query) use ($filter) {
-                        $query->where('title', 'like', '%' . $filter . '%')
-                              ->orWhere('notes', 'like', '%' . $filter . '%')
-                              ->orWhere('settings', 'like', '%:"%' . $filter .'%"%');
-                    })
-                    ->offset($offset)
-                    ->take($limit)
-                    ->get()
-                    ->toArray();
+                ->where(function ($query) use ($filter) {
+                    $query->where('title', 'like', '%' . $filter . '%')
+                        ->orWhere('notes', 'like', '%' . $filter . '%')
+                        ->orWhere('settings', 'like', '%:"%' . $filter . '%"%');
+                })
+                ->offset($offset)
+                ->take($limit)
+                ->get()
+                ->toArray();
         } else {
             return Block::when(
                 is_numeric($filter),
@@ -30,11 +31,11 @@ class BlocksService
                     return $query->where('plugin', $filter);
                 }
             )
-            ->where('owner', $user_id)
-            ->offset($offset)
-            ->take($limit)
-            ->get()
-            ->toArray();
+                ->where('owner', $user_id)
+                ->offset($offset)
+                ->take($limit)
+                ->get()
+                ->toArray();
         }
     }
 
@@ -46,19 +47,20 @@ class BlocksService
         $built = [];
         $p = Plugin::find($block['plugin']);
         if ($p <> null) {
-            $built = Plugin::createFromSlug($p['slug'])->prepare($block);
-            $built['plugin'] = $p;
-            $built['scripts'] = $built->scripts();
-            $built['output'] = $built->output();
-            $built['options'] = $built->options;
-            $built['preview'] = $built->preview;
+            try {
+                $built = Plugin::createFromSlug($p['slug'])->prepare($block);
+                $built['plugin'] = $p;
+                $built['scripts'] = $built->scripts();
+                $built['output'] = $built->output();
+                $built['options'] = $built->options;
+                $built['preview'] = $built->preview;
+            } catch (HttpException $e) {
+                if ($e->getMessage() === "Unable to load Plugin: " . $p['slug']) {
+                    $built = $this->notAvailable($block);
+                }
+            }
         } else {
-            $built = (!is_array($block)) ? $block->toArray() : $block;
-            unset($built['plugin']);
-            $built['scripts'] = '';
-            $built['output'] = "<div class=\"text-red-500\">This Plugin is no longer available</div>";
-            $built['options'] = [];
-            $built['preview'] = '';
+            $built = $this->notAvailable($block);
         }
 
         return $built;
@@ -117,11 +119,27 @@ class BlocksService
             return Block::where('plugin', $filter)->where('owner', $user->id)->get()->count();
         } else {
             return Block::where('title', 'like', '%' . $filter . '%')
-                    ->orWhere('notes', 'like', '%' . $filter . '%')
-                    ->orWhere('settings', 'like', '%:"%' . $filter .'%"%')
-                    ->where('owner', $user->id)
-                    ->get()
-                    ->count();
+                ->orWhere('notes', 'like', '%' . $filter . '%')
+                ->orWhere('settings', 'like', '%:"%' . $filter . '%"%')
+                ->where('owner', $user->id)
+                ->get()
+                ->count();
         }
+    }
+
+    /**
+     * Return the object for a Block that is not available
+     */
+    public function notAvailable($block)
+    {
+        $built = (!is_array($block)) ? $block->toArray() : $block;
+        unset($built['plugin']);
+        $built['scripts'] = '';
+        $built['output'] = "<div class=\"text-red-500\">This Plugin is no longer available</div>";
+        $built['options'] = [];
+        $built['preview'] = '';
+        $built['orphaned'] = true;
+
+        return $built;
     }
 }

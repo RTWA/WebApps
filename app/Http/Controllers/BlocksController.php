@@ -11,6 +11,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BlocksController extends Controller
 {
@@ -40,7 +41,8 @@ class BlocksController extends Controller
         $blocks = [];
 
         if (($username <> null) &&
-            (!$_user->hasPermissionTo('blocks.view.others') && $user->username !== $_user->username)) {
+            (!$_user->hasPermissionTo('blocks.view.others') && $user->username !== $_user->username)
+        ) {
             abort(403, 'You do not have permission to access this page.');
         }
         if ($username === null && !$user->hasPermissionTo('blocks.view')) {
@@ -121,16 +123,27 @@ class BlocksController extends Controller
                     'styles' => ''
                 ], 200);
             }
-            $block = Plugin::createFromSlug($p['slug'])->prepare($block->toArray());
+            try {
+                $block = Plugin::createFromSlug($p['slug'])->prepare($block->toArray());
+            } catch (HttpException $e) {
+                if ($e->getMessage() === "Unable to load Plugin: " . $p['slug']) {
+                    $block = null;
+                }
+            }
         }
 
-        $block = $blocksService->buildBlockForEdit($p, $block, isset($_GET['edit']));
-        $styles = $blocksService->buildBlockStyles($styles, $block, $p);
+        if ($block) {
+            $block = $blocksService->buildBlockForEdit($p, $block, isset($_GET['edit']));
+            $styles = $blocksService->buildBlockStyles($styles, $block, $p);
+        } else {
+            $block = $blocksService->notAvailable([]);
+            $styles = [];
+        }
 
         return response()->json([
-                    'block' => $block,
-                    'styles' => $styles
-                ], 200);
+            'block' => $block,
+            'styles' => $styles
+        ], 200);
     }
 
     /**
@@ -185,7 +198,7 @@ class BlocksController extends Controller
             'time' => new DateTime()
         ]);
 
-        if ($plugin === null) {
+        if ($plugin === null || !file_exists(Plugin::path() . $plugin->slug . '/Plugin.php')) {
             return view('not-available');
         }
 

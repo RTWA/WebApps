@@ -290,7 +290,7 @@ const EditBlock = ({ UI, ...props }) => {
         return <Loader />
     }
 
-    if (block === "Not available") {
+    if (block === "Not available" || block.orphaned) {
         return <OrphanedBlock block={block} />
     }
 

@@ -153,7 +153,7 @@ const PopularBlocks = () => {
                         {
                             blocks.map((block, i) => (
                                 <tr key={i} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900" onClick={() => previewBlock(block)}>
-                                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{block.plugin.name}</td>
+                                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{(block.plugin) ? block.plugin.name : 'Unavailable'}</td>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{block.title || block.publicId}</td>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
                                         style={{ width: '5%' }}>{block.views}</td>
