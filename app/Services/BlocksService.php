@@ -46,21 +46,19 @@ class BlocksService
     {
         $built = [];
         $p = Plugin::find($block['plugin']);
-        if ($p <> null) {
-            try {
-                $built = Plugin::createFromSlug($p['slug'])->prepare($block);
-                $built['plugin'] = $p;
-                $built['scripts'] = $built->scripts();
-                $built['output'] = $built->output();
-                $built['options'] = $built->options;
-                $built['preview'] = $built->preview;
-            } catch (HttpException $e) {
-                if ($e->getMessage() === "Unable to load Plugin: " . $p['slug']) {
-                    $built = $this->notAvailable($block);
-                }
+        $slug = ($p) ? $p['slug'] : '';
+        
+        try {
+            $built = Plugin::createFromSlug($slug)->prepare($block);
+            $built['plugin'] = $p;
+            $built['scripts'] = $built->scripts();
+            $built['output'] = $built->output();
+            $built['options'] = $built->options;
+            $built['preview'] = $built->preview;
+        } catch (HttpException $e) {
+            if ($e->getMessage() === "Unable to load Plugin: $slug") {
+                $built = $this->notAvailable($block);
             }
-        } else {
-            $built = $this->notAvailable($block);
         }
 
         return $built;

@@ -117,28 +117,21 @@ class BlocksController extends Controller
             }
 
             $p = Plugin::find($block['plugin']);
-            if ($p === null) {
-                return response()->json([
-                    'block' => 'Not available',
-                    'styles' => ''
-                ], 200);
-            }
+            $slug = ($p) ? $p['slug'] : '';
             try {
-                $block = Plugin::createFromSlug($p['slug'])->prepare($block->toArray());
+                $block = Plugin::createFromSlug($slug)->prepare($block->toArray());
             } catch (HttpException $e) {
-                if ($e->getMessage() === "Unable to load Plugin: " . $p['slug']) {
-                    $block = null;
+                if ($e->getMessage() === "Unable to load Plugin: $slug") {
+                    return response()->json([
+                        'block' => 'Not available',
+                        'styles' => ''
+                    ], 200);
                 }
             }
         }
 
-        if ($block) {
-            $block = $blocksService->buildBlockForEdit($p, $block, isset($_GET['edit']));
-            $styles = $blocksService->buildBlockStyles($styles, $block, $p);
-        } else {
-            $block = $blocksService->notAvailable([]);
-            $styles = [];
-        }
+        $block = $blocksService->buildBlockForEdit($p, $block, isset($_GET['edit']));
+        $styles = $blocksService->buildBlockStyles($styles, $block, $p);
 
         return response()->json([
             'block' => $block,

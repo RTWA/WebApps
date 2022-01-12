@@ -129,6 +129,43 @@ class GetOwnTest extends TestCase
         ]);
     }
 
+    public function testUserCanGetOwnBlocksButOneIsNoLongerAvailableAsFilesAreMissing()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            User::find(1),
+            ['*']
+        );
+        $plugin = Plugin::create([
+            'name' => 'test_plugin_2',
+            'slug' => 'DoesNotExist',
+            'icon' => '',
+            'version' => 'PHPUnitTestLatest',
+            'author' => 'PHPUnit',
+            'state' => 1
+        ]);
+        Block::create([
+            'owner' => 1,
+            'plugin' => $plugin->id,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
+            'publicId' => 'PHPUnitTest',
+            'title' => 'PHP Unit Test Block',
+            'notes' => 'This block was created for testing',
+            'views' => 10
+        ]);
+
+        $response = $this->getJson('/api/blocks');
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'total' => 1
+        ]);
+        $response->assertJsonFragment([
+            'output' => '<div class="text-red-500">This Plugin is no longer available</div>'
+        ]);
+    }
+
     public function testUserCanGetOwnBlocksSortedByPopularity()
     {
         $this->seed();
@@ -364,6 +401,34 @@ class GetOwnTest extends TestCase
         Block::create([
             'owner' => 1,
             'plugin' => 40,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
+            'publicId' => 'PHPUnitTest',
+            'title' => 'PHP Unit Test Block',
+            'notes' => 'This block was created for testing',
+            'views' => 10
+        ]);
+
+        $response = $this->get('/embed/PHPUnitTest');
+
+        $response->assertStatus(200);
+        $response->assertViewIs('not-available');
+    }
+
+    public function testCanGetAnOrphanedBlockForEmbeddingWithPluginInDatabaseButNoFiles()
+    {
+        $this->seed();
+
+        $plugin = Plugin::create([
+            'name' => 'test_plugin_2',
+            'slug' => 'DoesNotExist',
+            'icon' => '',
+            'version' => 'PHPUnitTestLatest',
+            'author' => 'PHPUnit',
+            'state' => 1
+        ]);
+        Block::create([
+            'owner' => 1,
+            'plugin' => $plugin->id,
             'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
             'publicId' => 'PHPUnitTest',
             'title' => 'PHP Unit Test Block',
