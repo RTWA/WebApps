@@ -44,11 +44,12 @@ const Login = props => {
 
             await props.loginUser(state.username, state.password, history)
                 .catch(error => {
+                    console.log(error);
                     /* istanbul ignore else */
-                    if (error.response && error.response.status === 422) {
+                    if (error.status.code === 422) {
                         /* istanbul ignore else */
                         if (_mounted) {
-                            state.alert = error.response.data.errors.username;
+                            state.alert = error.data.errors.username;
                             state.loginActive = false;
                             state.password = '';
                             setState({ ...state });
@@ -56,7 +57,7 @@ const Login = props => {
                     } else {
                         if (_mounted) {
                             console.log(error);
-                            state.alert = "An unknown error occured!";
+                            state.alert = error.data.message;
                             state.loginActive = false;
                             state.password = '';
                             setState({ ...state });
