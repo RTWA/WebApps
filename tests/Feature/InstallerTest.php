@@ -283,4 +283,53 @@ class InstallerTest extends TestCase
 
         $response->assertSuccessful();
     }
+
+    public function testLoadsThemeDataApi()
+    {
+        $this->seed();
+
+        if (file_exists(storage_path('webapps/installed.json'))) {
+            unlink(storage_path('webapps/installed.json'));
+        }
+
+        $response = $this->get('/api/theme');
+
+        $response->assertSuccessful();
+        $response->assertJsonStructure([
+            'core.ui.theme',
+            'core.ui.dark_mode'
+        ]);
+    }
+
+    public function testSetThemeColorApi()
+    {
+        $this->seed();
+
+        if (file_exists(storage_path('webapps/installed.json'))) {
+            unlink(storage_path('webapps/installed.json'));
+        }
+
+        $response = $this->post('/api/color', [
+            'theme' => 'gray'
+        ]);
+
+        $response->assertSuccessful();
+        $this->assertTrue(ApplicationSettings::get('core.ui.theme') === 'gray');
+    }
+
+    public function testSetDarkModeApi()
+    {
+        $this->seed();
+
+        if (file_exists(storage_path('webapps/installed.json'))) {
+            unlink(storage_path('webapps/installed.json'));
+        }
+
+        $response = $this->post('/api/dark', [
+            'mode' => 'user'
+        ]);
+
+        $response->assertSuccessful();
+        $this->assertTrue(ApplicationSettings::get('core.ui.dark_mode') === 'user');
+    }
 }
