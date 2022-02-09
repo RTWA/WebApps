@@ -12,6 +12,10 @@ require('./bootstrap');
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+ var element = document.getElementById('WebApps_Setup');
+ if (typeof (element) != 'undefined' && element != null) {
+     require('./setup/index');
+ }
 var element = document.getElementById('WebApps');
 if (typeof (element) != 'undefined' && element != null) {
     require('./components/index');
