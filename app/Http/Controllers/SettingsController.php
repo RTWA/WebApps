@@ -77,4 +77,35 @@ class SettingsController extends Controller
             return response()->json(['exception' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Return the two theme settings for Application Setup and Update UI
+     */
+    public function themeData()
+    {
+        return response()->json([
+            'core.ui.theme' => ApplicationSettings::get('core.ui.theme', 'indigo'),
+            'core.ui.dark_mode' => ApplicationSettings::get('core.ui.dark_mode', 'user'),
+        ], 200);
+    }
+
+    /**
+     * Update the theme colour from Application Setup and Update UI
+     */
+    public function setThemeColor(Request $request)
+    {
+        ApplicationSettings::set('core.ui.theme', $request->theme);
+
+        return response(null, 204);
+    }
+
+    /**
+     * Update the Dark Mode Option from Application Setup and Update UI
+     */
+    public function setDarkMode(Request $request)
+    {
+        ApplicationSettings::set('core.ui.dark_mode', $request->mode);
+
+        return response(null, 204);
+    }
 }

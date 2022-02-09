@@ -26,6 +26,9 @@ use App\Http\Controllers\UIController;
 |
 */
 Route::post('/logout', [LoginController::class, 'logout']);
+Route::get('/theme', [SettingsController::class, 'themeData']);
+Route::post('/color', [SettingsController::class, 'setThemeColor']);
+Route::post('/dark', [SettingsController::class, 'setDarkMode']);
 
 Route::group(
     ['middleware' => 'auth:sanctum'],
@@ -113,3 +116,22 @@ Route::group(
         });
     }
 );
+
+/**
+ * Routes for Installation and Updates
+ */
+Route::group([
+    'prefix' => 'install',
+    'middleware' => ['can.install']
+], function () {
+    Route::get('/requirements', [App\Http\Controllers\Install\InstallController::class, 'start']);
+    Route::get('/database', [App\Http\Controllers\Install\DatabaseController::class, 'getCurrentEnvironment']);
+    Route::post('/database', [App\Http\Controllers\Install\DatabaseController::class, 'setNewEnvironment']);
+    Route::post('/database/migrate', [App\Http\Controllers\Install\DatabaseController::class, 'migrateAndSeed']);
+    Route::post('/database/sample', [App\Http\Controllers\Install\DatabaseController::class, 'installSampleData']);
+    Route::get('/application', [App\Http\Controllers\Install\InstallController::class, 'setup']);
+    Route::post('/application', [App\Http\Controllers\Install\InstallController::class, 'setupSave']);
+    Route::get('/administrator', [App\Http\Controllers\Install\UserController::class, 'administrator']);
+    Route::post('/administrator', [App\Http\Controllers\Install\UserController::class, 'createAdministrator']);
+    Route::get('/complete', [App\Http\Controllers\Install\InstallController::class, 'complete']);
+});

@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\Http\Controllers\AppController;
 use App\Http\Controllers\Controller;
 use App\Services\Install\EnvironmentInstallService;
 use App\Services\Install\InstallManagerService;
 use App\Services\Install\PermissionInstallService;
 use App\Services\Install\RequirementsInstallService;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Validator;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 
 class InstallController extends Controller
 {
     /**
-     * Display the Start setup page
+     * Get the requirements status
      */
     public function start()
     {
@@ -38,7 +35,11 @@ class InstallController extends Controller
             config('installer.permissions')
         );
 
-        return view('install.start', compact('requirements', 'phpSupportInfo', 'permissions'));
+        return response()->json([
+            'requirements' => $requirements,
+            'phpSupportInfo' => $phpSupportInfo,
+            'permissions' => $permissions
+        ], 200);
     }
 
     /**
@@ -46,65 +47,57 @@ class InstallController extends Controller
      */
     public function setup()
     {
-        $fields = [
+        return response()->json([
             'APP_URL' => (($this->isSSL()) ? 'https://' : 'http://')
                 . (!app()->environment('testing') ? $_SERVER['HTTP_HOST'] : ''),
             'theme' => 'indigo',
             'dark_mode' => 'light',
             'error_reporting' => true,
-        ];
-
-        return view('install.setup', compact('fields'));
+        ], 200);
     }
 
     /**
      * Save the supplied WebApps Settings
      */
-    public function setupSave(Request $request, Redirector $redirect)
+    public function setupSave(Request $request)
     {
         $rules = [
             'APP_URL' => 'required',
             'theme' => 'required',
             'dark_mode' => 'required',
+            'error_reporting' => 'boolean',
         ];
         $messages = [
             'required' => 'This field is required'
         ];
 
-        $fields = $request->all();
-        $validator = Validator::make($fields, $rules, $messages);
-
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return view('install.setup', compact('errors', 'fields'));
-        }
+        $validatedData = $request->validate($rules, $messages);
 
         $service = new EnvironmentInstallService();
-        $service->set('APP_URL', $request->input('APP_URL'));
+        $service->set('APP_URL', $validatedData['APP_URL']);
         $service->set(
             'SANCTUM_STATEFUL_DOMAINS',
-            preg_replace('/(https|http):\/\//', '', $request->input('APP_URL'), 1)
+            preg_replace('/(https|http):\/\//', '', $validatedData['APP_URL'], 1)
         );
 
-        ApplicationSettings::set('core.ui.theme', $request->input('theme'));
-        ApplicationSettings::set('core.ui.dark_mode', $request->input('dark_mode'));
+        ApplicationSettings::set('core.ui.theme', $validatedData['theme']);
+        ApplicationSettings::set('core.ui.dark_mode', $validatedData['dark_mode']);
+        ApplicationSettings::set('core.error.reporting', ($validatedData['error_reporting']) ? "true" : "false");
 
-        $reporting = ($request->input('error_reporting') === 'on' ||
-            $request->input('error_reporting')) ? "true" : "false";
-        ApplicationSettings::set('core.error.reporting', $reporting);
-
-        return $redirect->route('Install::administrator');
+        return response(null, 201);
     }
 
     /**
      * Display the setup complete page
      */
-    public function finish()
+    public function complete()
     {
         $manager = new InstallManagerService();
         $messages = $manager->completeInstall();
 
-        return view('install.finished', compact('messages'));
+        return response()->json([
+            'message' => $messages
+        ]);
     }
 
     /**
