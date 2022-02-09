@@ -13,6 +13,7 @@ const SetupComplete = (props) => {
     const [message, setMessage] = useState(null);
 
     useEffect(async () => {
+        props.setSuccess([true, true, true, true, false]);
         await axios.get('/api/install/complete')
             .then(json => {
                 setMessage(json.data.message);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import * as RouteComponents from '../Routes';
@@ -6,30 +6,35 @@ import Step from '../Components/Step';
 
 const routes = [
     {
+        step: '1',
         title: 'Install WebApps',
         subtitle: 'This wizard will guide you through the installation process. To begin with, check the requirements and permissions below.',
         component: 'SystemRequirements',
         path: '/install',
     },
     {
+        step: '2',
         title: 'Database Setup',
         subtitle: 'Complete the form with the details for the database you have already created.',
         component: 'DatabaseSetup',
         path: '/install/database',
     },
     {
+        step: '3',
         title: 'WebApps Setup',
         subtitle: 'Lets set some basic WebApps Settings',
         component: 'ApplicationSetup',
         path: '/install/application',
     },
     {
+        step: '4',
         title: 'Create Administrator Account',
         subtitle: 'WebApps must always have at least one internal administrator account!',
         component: 'AdministratorUser',
         path: '/install/administrator',
     },
     {
+        step: '5',
         title: 'Installation Complete',
         subtitle: 'WebApps is installed!',
         component: 'SetupComplete',
@@ -67,14 +72,16 @@ const icons = {
 };
 
 const Install = () => {
+    const [success, setSuccess] = useState([false, false, false, false, false]);
+
     return (
         <div className="py-6 px-24 text-gray-700 bg-gray-200 dark:bg-gray-900 dark:text-white">
             <div className="grid grid-cols-5">
-                <Step title="Check System Requirements" step="1" icon={icons.requirements} />
-                <Step title="Database Setup" step="2" icon={icons.database} />
-                <Step title="WebApps Setup" step="3" icon={icons.settings} />
-                <Step title="Administrator Account" step="4" icon={icons.administrator} />
-                <Step title="Setup Complete!" step="5" icon={icons.complete} />
+                <Step route={routes[0]} icon={icons.requirements} success={success[0]} />
+                <Step route={routes[1]} icon={icons.database} success={success[1]} />
+                <Step route={routes[2]} icon={icons.settings} success={success[2]} />
+                <Step route={routes[3]} icon={icons.administrator} success={success[3]} />
+                <Step route={routes[4]} icon={icons.complete} success={success[4]} />
             </div>
 
             <Switch>
@@ -84,7 +91,7 @@ const Install = () => {
                         return route.component ? (
                             <Route key={idx} path={route.path} exact name={route.title}
                                 render={props => (
-                                    (C !== undefined) ? <C routedata={route} {...props} />
+                                    (C !== undefined) ? <C routedata={route} {...props} setSuccess={setSuccess} />
                                         : <div>Error: Component '{route.component}' not found!</div>
                                 )} />
                         ) : (null);

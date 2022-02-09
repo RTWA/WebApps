@@ -19,6 +19,7 @@ const AdministratorUser = ({ color, ...props }) => {
     const [errors, setErrors] = useState(null);
 
     useEffect(() => {
+        props.setSuccess([true, true, true, false, false]);
         if (!fields) {
             axios.get('/api/install/administrator')
                 .then(json => {

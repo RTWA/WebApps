@@ -18,6 +18,7 @@ const DatabaseSetup = (props) => {
     const [sample, setSample] = useState(null);
 
     useEffect(async () => {
+        props.setSuccess([true, false, false, false, false]);
         if (fields) {
             await axios.get('/api/install/database')
                 .then(json => {

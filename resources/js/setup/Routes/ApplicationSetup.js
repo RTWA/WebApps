@@ -18,6 +18,7 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
     const [errors, setErrors] = useState(null);
 
     useEffect(() => {
+        props.setSuccess([true, true, false, false, false]);
         if (!settings) {
             axios.get('/api/install/application')
                 .then(json => {
