@@ -106,11 +106,11 @@ class DatabaseController extends Controller
 
     public function installSampleData()
     {
-        $string = "Creating User Accounts\r\n";        
+        $string = "Creating User Accounts\r\n";
         Artisan::call('db:seed', ["--class" => 'UserSeeder', "--force" => true], $this->outputLog);
         $string .= $this->outputLog->fetch();
         
-        $string .= "Creating Sample Blocks\r\n";        
+        $string .= "Creating Sample Blocks\r\n";
         Artisan::call('db:seed', ["--class" => 'BlockSeeder', "--force" => true], $this->outputLog);
         $string .= $this->outputLog->fetch();
 
