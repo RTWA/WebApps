@@ -13,7 +13,8 @@
         "production": "mix --production"
     },
     "dependencies": {
-        "@sentry/browser": "^6.17.3"
+        "@sentry/browser": "^6.17.3",
+        "react-router": "^6.2.1"
     },
     "devDependencies": {
         "@babel/core": "^7.16.12",
@@ -64,6 +65,7 @@
         "react-user-avatar": "^1.10.0",
         "simple-react-validator": "^1.6.1",
         "tailwindcss": "^2.2.19",
+        "tiny-invariant": "^1.2.0",
         "url": "^0.11.0",
         "values.js": "^2.0.0",
         "webapps-react": "^1.7.6",
