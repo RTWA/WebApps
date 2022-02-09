@@ -20,6 +20,7 @@ class DatabaseController extends Controller
     {
         $this->outputLog = new BufferedOutput();
     }
+    
     public function getCurrentEnvironment()
     {
         return response()->json([
