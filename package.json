@@ -64,7 +64,7 @@
         "tailwindcss": "^2.2.19",
         "url": "^0.11.0",
         "values.js": "^2.0.0",
-        "webapps-react": "^1.7.6",
+        "webapps-react": "^1.8.0",
         "whatwg-fetch": "^3.6.2"
     }
 }
