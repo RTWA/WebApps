@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Button, Input, useToasts, withAuth } from 'webapps-react';
+import { APIClient, Button, Input, useToasts, withAuth } from 'webapps-react';
 
 const ChangePassword = ({ user }) => {
     const [states, setStates] = useState({ currentPassword: {}, newPassword: {}, confirmedPassword: {} });
@@ -54,13 +54,7 @@ const ChangePassword = ({ user }) => {
         }
 
         if (!hasError) {
-            let formData = new FormData();
-            formData.append('id', user.id);
-            formData.append('current_password', currentPassword);
-            formData.append('password', newPassword);
-            formData.append('password_confirmation', confirmedPassword);
-
-            await axios.post('/api/user/password', formData)
+            await APIClient('/api/user/password', {id: user.id, current_password: currentPassword, password: newPassword, password_confirmation: confirmedPassword})
                 .then(json => {
                     if (json.data.success) {
                         setCurrentPassword('');
@@ -70,8 +64,8 @@ const ChangePassword = ({ user }) => {
                     }
                 })
                 .catch(error => {
-                    if (error.response.status === 422) {
-                        let errors = error.response.data.errors;
+                    if (error.status.code === 422) {
+                        let errors = error.data.errors;
                         if (errors.current_password) {
                             states.currentPassword = {
                                 state: 'error',
