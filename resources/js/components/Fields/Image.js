@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useToasts, withWebApps } from 'webapps-react';
+import { APIClient, useToasts, withWebApps } from 'webapps-react';
 
 const Image = ({ UI, ...props }) => {
     const {
@@ -42,9 +41,7 @@ const Image = ({ UI, ...props }) => {
         if (file !== null) {
             addToast('Uploading image...', '', { appearence: 'info', autoDismiss: false }, id => toastId = id);
 
-            let formData = new FormData();
-            formData.append('file', file);
-            await axios.post('/api/media/upload', formData)
+            await APIClient('/api/media/upload', { file: file })
                 .then(json => {
                     value.text = `${json.data.media['original_filename']} (${json.data.media['filesize']})`;
                     value.label = 'Uploaded:';
