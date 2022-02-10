@@ -1,8 +1,7 @@
 import React from 'react';
-import axios from 'axios';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { APIClient, WebApps } from 'webapps-react';
 
 import * as mockData from '../../resources/js/__mocks__/mockData';
 
@@ -13,7 +12,7 @@ const loginUser = async (username, password) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Perform sign in
-      await axios.post(`/login`, { username, password });
+      await APIClient(`/login`, { username, password });
       // When correct, return the user object
       return resolve(mockData.User);
     } catch (error) {
