@@ -24,8 +24,10 @@ const DatabaseSetup = (props) => {
                     setFields(json.data);
                 })
                 .catch(error => {
-                    // TODO: Handle Errors
-                    console.log(error);
+                    if (!error.status.isAbort) {
+                        // TODO: Handle errors
+                        console.error(error);
+                    }
                 })
         }
     }, []);
@@ -49,16 +51,20 @@ const DatabaseSetup = (props) => {
                         setOutput(json.data);
                     })
                     .catch(error => {
-                        // TODO: Handle Errors
-                        console.log(error.response);
+                        if (!error.status.isAbort) {
+                            // TODO: Handle errors
+                            console.error(error);
+                        }
                     });
             })
             .catch(error => {
                 if (error.response.status === 422) {
                     setErrors(error.response.data.errors)
                 } else {
-                    // TODO: Handle Errors
-                    console.log(error.response);
+                    if (!error.status.isAbort) {
+                        // TODO: Handle errors
+                        console.error(error);
+                    }
                 }
             });
     }
@@ -73,8 +79,10 @@ const DatabaseSetup = (props) => {
                 setSampling(false);
             })
             .catch(error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     }
 

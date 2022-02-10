@@ -37,8 +37,12 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: Handle errors
-                console.error(error);
+                if (!error.status.isAbort) {
+                    if (!error.status.isAbort) {
+                        // TODO: Handle errors
+                        console.error(error);
+                    }
+                }
             });
 
         // Get first set of Blocks
@@ -69,8 +73,10 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: handle errors
-                console.error(error)
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
 
         return /* istanbul ignore next */ () => _mounted = false;
@@ -125,8 +131,10 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    // TODO: handle errors
-                    console.error(error)
+                    if (!error.status.isAbort) {
+                        // TODO: Handle errors
+                        console.error(error);
+                    }
                 });
         }
     };

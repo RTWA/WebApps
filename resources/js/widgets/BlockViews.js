@@ -13,8 +13,10 @@ const BlockViews = () => {
                 setViews(json.data.views);
             })
             .catch(error => {
-                // TODO: Handle errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }, []);
 

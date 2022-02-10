@@ -73,8 +73,10 @@ const Azure = ({ UI, ...props }) => {
                 setGroupMappings(json.data.mappings);
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     }
 
@@ -91,8 +93,10 @@ const Azure = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }
 

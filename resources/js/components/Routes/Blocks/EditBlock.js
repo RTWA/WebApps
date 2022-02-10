@@ -78,8 +78,10 @@ const EditBlock = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: handle errors
-                console.error(error)
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }
 

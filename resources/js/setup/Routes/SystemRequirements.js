@@ -23,8 +23,10 @@ const SystemRequirements = (props) => {
                     setPermissions(json.data.permissions);
                 })
                 .catch(error => {
-                    // TODO: Handle Errors
-                    console.log(error);
+                    if (!error.status.isAbort) {
+                        // TODO: Handle errors
+                        console.error(error);
+                    }
                 })
         }
     }, []);

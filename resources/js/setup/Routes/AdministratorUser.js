@@ -30,8 +30,10 @@ const AdministratorUser = ({ color, ...props }) => {
                     }
                 })
                 .catch(error => {
-                    // TODO: Handle Errors
-                    console.log(error);
+                    if (!error.status.isAbort) {
+                        // TODO: Handle errors
+                        console.error(error);
+                    }
                 })
         }
     }, []);
@@ -54,8 +56,10 @@ const AdministratorUser = ({ color, ...props }) => {
                 if (error.response.status === 422) {
                     setErrors(error.response.data.errors)
                 } else {
-                    // TODO: Handle Errors
-                    console.log(error.response);
+                    if (!error.status.isAbort) {
+                        // TODO: Handle errors
+                        console.error(error);
+                    }
                 }
             });
     }

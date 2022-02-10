@@ -43,8 +43,10 @@ const ViewBlock = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: handle errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }
 

@@ -18,8 +18,10 @@ const SetupComplete = (props) => {
                 setMessage(json.data.message);
             })
             .catch(error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     }, []);
 

@@ -87,8 +87,10 @@ const ChangePassword = ({ user }) => {
                             setStates({ ...states });
                         }
                     } else {
-                        // TODO: handle errors better!
-                        console.log(error.response);
+                        if (!error.status.isAbort) {
+                            // TODO: Handle errors
+                            console.error(error);
+                        }
                     }
                 });
         }

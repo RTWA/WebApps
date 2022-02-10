@@ -16,8 +16,10 @@ const ThemeProvider = props => {
             })
             .catch(error => {
                 // Not relevant?
-                // TODO: Handle Errors
-                console.log(error)
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     });
 
@@ -27,8 +29,10 @@ const ThemeProvider = props => {
                 setColor(value);
             })
             .catch(error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     }
 
@@ -38,8 +42,10 @@ const ThemeProvider = props => {
             setDark(mode);
         })
         .catch(error => {
-            // TODO: Handle Errors
-            console.log(error);
+            if (!error.status.isAbort) {
+                // TODO: Handle errors
+                console.error(error);
+            }
         })
     }
 

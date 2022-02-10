@@ -13,8 +13,10 @@ const BlockCount = () => {
                 setCount(json.data.count);
             })
             .catch(error => {
-                // TODO: Handle errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }, []);
 
