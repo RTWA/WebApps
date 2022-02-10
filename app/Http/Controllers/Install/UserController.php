@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Install;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -18,21 +16,21 @@ class UserController extends Controller
     public function administrator()
     {
         if (User::role('Administrators')->count() <> 0) {
-            return view('install.adminexists');
+            return response()->json([
+                'exists' => true,
+            ], 200);
         }
 
-        $fields = [
+        return response()->json([
             'username' => 'administrator',
             'password' => ''
-        ];
-
-        return view('install.admin', compact('fields'));
+        ], 200);
     }
 
     /**
      * Create the administrator account
      */
-    public function createAdministrator(Request $input, Redirector $redirect)
+    public function createAdministrator(Request $input)
     {
         $rules = [
             'username' => 'required|string|max:50',
@@ -42,20 +40,14 @@ class UserController extends Controller
             'required' => 'This field is required'
         ];
 
-        $fields = $input->all();
-        $validator = Validator::make($fields, $rules, $messages);
-
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return view('install.admin', compact('errors', 'fields'));
-        }
+        $validatedData = $input->validate($rules, $messages);
 
         DB::table('users')->insert([
             'name' => 'Administrator',
-            'username' => $fields['username'],
-            'password' => Hash::make($fields['password'])
+            'username' => $validatedData['username'],
+            'password' => Hash::make($validatedData['password'])
         ]);
 
-        return $redirect->route('Install::final');
+        return response(null, 204);
     }
 }

@@ -64,40 +64,29 @@ class InstallerTest extends TestCase
         $response->assertRedirect('/');
     }
 
-    public function testLoadsInstallerPage()
+    public function testCheckRequirementsApi()
     {
         if (file_exists(storage_path('webapps/installed.json'))) {
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->get('/install');
+        $response = $this->get('/api/install/requirements');
 
         $response->assertSuccessful();
-        $response->assertSeeTextInOrder([
-            'PHP Version and Extensions',
-            'File and Folder Permissions',
-            'Setup Database'
-        ]);
     }
 
-    public function testLoadsDatabaseSetupForm()
+    public function testLoadsDatabaseSetupFormDataApi()
     {
         if (file_exists(storage_path('webapps/installed.json'))) {
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->get('/install/database');
+        $response = $this->get('/api/install/database');
 
         $response->assertSuccessful();
-        $response->assertSeeTextInOrder([
-            'Database Setup',
-            'Database Type',
-            'Database Name',
-            'Create Tables',
-        ]);
     }
 
-    public function testSaveDatabaseSetupForm()
+    public function testSaveDatabaseSetupFormApi()
     {
         if (file_exists(storage_path('webapps/installed.json'))) {
             unlink(storage_path('webapps/installed.json'));
@@ -105,17 +94,23 @@ class InstallerTest extends TestCase
 
         Config::set('installer.database.allowEmptyPassword', true);
 
-        Livewire::test(Database::class)
-            ->set('DB_CONNECTION', 'sqlite')
-            ->set('DB_HOST', 'localhost')
-            ->set('DB_DATABASE', ':memory:')
-            ->set('DB_USERNAME', 'none')
-            ->call('submitForm')
-            ->assertSee('Database Setup Complete!')
-            ->assertSee('Install Sample Data');
+        $response = $this->post('/api/install/database', [
+            'DB_CONNECTION' => 'sqlite',
+            'DB_HOST' => 'localhost',
+            'DB_DATABASE' => ':memory:',
+            'DB_USERNAME' => 'none',
+            'DB_PASSWORD' => null,
+            'DB_PORT' => null
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJsonStructure([
+            'title',
+            'body'
+        ]);
     }
 
-    public function testSaveDatabaseSetupFormWithIncorrectDatabase()
+    public function testSaveDatabaseSetupFormWithIncorrectDatabaseApi()
     {
         if (file_exists(storage_path('webapps/installed.json'))) {
             unlink(storage_path('webapps/installed.json'));
@@ -123,16 +118,19 @@ class InstallerTest extends TestCase
 
         Config::set('installer.database.allowEmptyPassword', true);
 
-        Livewire::test(Database::class)
-            ->set('DB_CONNECTION', 'sqlite')
-            ->set('DB_HOST', 'localhost')
-            ->set('DB_DATABASE', '__:memory:__')
-            ->set('DB_USERNAME', 'none')
-            ->call('submitForm')
-            ->assertHasErrors('DB_CONNECTION');
+        $response = $this->post('/api/install/database', [
+            'DB_CONNECTION' => 'sqlite',
+            'DB_HOST' => 'localhost',
+            'DB_DATABASE' => '__:memory:__',
+            'DB_USERNAME' => 'none',
+            'DB_PASSWORD' => null,
+            'DB_PORT' => null
+        ]);
+
+        $response->assertStatus(302);
     }
 
-    public function testCannotSaveDatabaseSetupFormWithValidationErrors()
+    public function testCannotSaveDatabaseSetupFormWithValidationErrorsApi()
     {
         if (file_exists(storage_path('webapps/installed.json'))) {
             unlink(storage_path('webapps/installed.json'));
@@ -140,52 +138,47 @@ class InstallerTest extends TestCase
 
         Config::set('installer.database.allowEmptyPassword', false);
 
-        Livewire::test(Database::class)
-            ->set('DB_CONNECTION', '')
-            ->set('DB_HOST', '')
-            ->set('DB_DATABASE', '')
-            ->set('DB_USERNAME', '')
-            ->set('DB_PASSWORD', '')
-            ->call('submitForm')
-            ->assertHasErrors([
-                'DB_CONNECTION' => 'required',
-                'DB_HOST' => 'required',
-                'DB_DATABASE' => 'required',
-                'DB_USERNAME' => 'required',
-                'DB_PASSWORD' => 'required',
-            ]);
+        $response = $this->post('/api/install/database', [
+            'DB_CONNECTION' => '',
+            'DB_HOST' => '',
+            'DB_DATABASE' => '',
+            'DB_USERNAME' => '',
+            'DB_PASSWORD' => '',
+            'DB_PORT' => ''
+        ]);
+
+        $response->assertStatus(302);
     }
 
-    public function testCanInstallSampleData()
+    public function testCanMigrateAndSeedApi()
     {
         if (file_exists(storage_path('webapps/installed.json'))) {
             unlink(storage_path('webapps/installed.json'));
         }
 
-        Livewire::test(Database::class)
-            ->set('show', 'output')
-            ->call('installSampleData')
-            ->assertSee('Installed Sample Data!');
-    }
-
-    public function testLoadsApplicationSetupPage()
-    {
-        if (file_exists(storage_path('webapps/installed.json'))) {
-            unlink(storage_path('webapps/installed.json'));
-        }
-
-        $response = $this->get('/install/application');
+        $response = $this->post('/api/install/database/migrate');
 
         $response->assertSuccessful();
-        $response->assertSeeTextInOrder([
-            'WebApps URL',
-            'Indigo',
-            'Light Mode Only',
-            'Create Administrator',
+        $response->assertJsonFragment([
+            'title' => "Database Setup Complete!"
         ]);
     }
 
-    public function testSaveApplicationSetupData()
+    public function testCanInstallSampleDataApi()
+    {
+        if (file_exists(storage_path('webapps/installed.json'))) {
+            unlink(storage_path('webapps/installed.json'));
+        }
+
+        $response = $this->post('/api/install/database/sample');
+
+        $response->assertSuccessful();
+        $response->assertJsonFragment([
+            'title' => "Installed Sample Data!"
+        ]);
+    }
+
+    public function testGetApplicationSetupDataApi()
     {
         $this->seed();
 
@@ -193,39 +186,38 @@ class InstallerTest extends TestCase
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->post('/install/application', [
+        $response = $this->get('/api/install/application');
+
+        $response->assertSuccessful();
+        $response->assertJsonStructure([
+            'APP_URL',
+            'theme',
+            'dark_mode',
+            'error_reporting'
+        ]);
+    }
+
+    public function testSaveApplicationSetupDataApi()
+    {
+        $this->seed();
+
+        if (file_exists(storage_path('webapps/installed.json'))) {
+            unlink(storage_path('webapps/installed.json'));
+        }
+
+        $response = $this->post('/api/install/application', [
             'APP_URL' => 'http://localhost',
-            'theme' => 'indigo',
-            'dark_mode' => 'light',
-            'error_reporting' => false
-        ]);
-
-        $response->assertRedirect('/install/administrator');
-        $this->assertTrue(ApplicationSettings::get('core.ui.theme') === 'indigo');
-        $this->assertTrue(ApplicationSettings::get('core.ui.dark_mode') === 'light');
-    }
-
-    public function testCannotSaveApplicationSetupDataWithValidationErrors()
-    {
-        $this->seed();
-
-        if (file_exists(storage_path('webapps/installed.json'))) {
-            unlink(storage_path('webapps/installed.json'));
-        }
-
-        $response = $this->post('/install/application', [
-            'APP_URL' => '',
-            'theme' => '',
-            'dark_mode' => '',
+            'theme' => 'red',
+            'dark_mode' => 'user',
             'error_reporting' => false
         ]);
 
         $response->assertSuccessful();
-        $response->assertViewIs('install.setup');
-        $response->assertSeeText('This field is required');
+        $this->assertTrue(ApplicationSettings::get('core.ui.theme') === 'red');
+        $this->assertTrue(ApplicationSettings::get('core.ui.dark_mode') === 'user');
     }
 
-    public function testLoadsAdministratorSetupPage()
+    public function testLoadsAdministratorSetupDataApi()
     {
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'RolePermissionsSeeder']);
@@ -235,18 +227,16 @@ class InstallerTest extends TestCase
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->get('/install/administrator');
+        $response = $this->get('/api/install/administrator');
 
         $response->assertSuccessful();
-        $response->assertSeeTextInOrder([
-            'Username',
-            'Password',
-            'Confirm Password',
-            'Complete Installation',
+        $response->assertJsonStructure([
+            'username',
+            'password'
         ]);
     }
 
-    public function testLoadsAdministratorSetupPageWhenAdministratorAlreadyExists()
+    public function testLoadsAdministratorSetupDataWhenAdministratorAlreadyExistsApi()
     {
         $this->seed();
 
@@ -254,18 +244,15 @@ class InstallerTest extends TestCase
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->get('/install/administrator');
+        $response = $this->get('/api/install/administrator');
 
         $response->assertSuccessful();
-        $response->assertSeeTextInOrder([
-            'Create Administrator Account',
-            'WebApps must always have at least one internal administrator account!',
-            'An account already exists in the group Administrators, you can skip this step.',
-            'Complete Installation',
+        $response->assertJson([
+            'exists' => true,
         ]);
     }
 
-    public function testCreateAdministratorAccount()
+    public function testCreateAdministratorAccountApi()
     {
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'RolePermissionsSeeder']);
@@ -275,17 +262,16 @@ class InstallerTest extends TestCase
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->post('/install/administrator', [
+        $response = $this->post('/api/install/administrator', [
             'username' => 'administrator',
             'password' => 'password',
             'password_confirmation' => 'password'
         ]);
 
-        $response->assertRedirect('/install/complete');
-        $this->assertNotNull(User::where('username', 'administrator')->first());
+        $response->assertStatus(204);
     }
 
-    public function testCannotCreateAdministratorAccountWithValidationErrors()
+    public function testLoadsSetupCompleteApi()
     {
         $this->seed();
 
@@ -293,18 +279,12 @@ class InstallerTest extends TestCase
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->post('/install/administrator', [
-            'username' => '',
-            'password' => 'password',
-            'password_confirmation' => 'password123'
-        ]);
+        $response = $this->get('/api/install/complete');
 
         $response->assertSuccessful();
-        $response->assertViewIs('install.admin');
-        $response->assertSeeText('This field is required');
     }
 
-    public function testLoadsSetupCompletePage()
+    public function testLoadsThemeDataApi()
     {
         $this->seed();
 
@@ -312,13 +292,44 @@ class InstallerTest extends TestCase
             unlink(storage_path('webapps/installed.json'));
         }
 
-        $response = $this->get('/install/complete');
+        $response = $this->get('/api/theme');
 
         $response->assertSuccessful();
-        $response->assertSeeTextInOrder([
-            'WebApps is installed!',
-            'Installation Completed!',
-            'Go to WebApps',
+        $response->assertJsonStructure([
+            'core.ui.theme',
+            'core.ui.dark_mode'
         ]);
+    }
+
+    public function testSetThemeColorApi()
+    {
+        $this->seed();
+
+        if (file_exists(storage_path('webapps/installed.json'))) {
+            unlink(storage_path('webapps/installed.json'));
+        }
+
+        $response = $this->post('/api/color', [
+            'theme' => 'gray'
+        ]);
+
+        $response->assertSuccessful();
+        $this->assertTrue(ApplicationSettings::get('core.ui.theme') === 'gray');
+    }
+
+    public function testSetDarkModeApi()
+    {
+        $this->seed();
+
+        if (file_exists(storage_path('webapps/installed.json'))) {
+            unlink(storage_path('webapps/installed.json'));
+        }
+
+        $response = $this->post('/api/dark', [
+            'mode' => 'user'
+        ]);
+
+        $response->assertSuccessful();
+        $this->assertTrue(ApplicationSettings::get('core.ui.dark_mode') === 'user');
     }
 }

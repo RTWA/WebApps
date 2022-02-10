@@ -4,8 +4,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OAuth2Controller;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BlocksController;
-use App\Http\Controllers\Install\InstallController;
-use App\Http\Controllers\Install\UserController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MSGraphController;
 use App\Http\Controllers\Update\UpdateController;
@@ -30,18 +28,7 @@ Route::group([
     'as' => 'Install::',
     'middleware' => ['can.install']
 ], function () {
-    Route::get('/', [InstallController::class, 'start'])->name('start');
-    Route::view('/database', 'install.database')->name('database');
-    Route::get('/application', [InstallController::class, 'setup'])->name('application');
-    Route::post('/application', [InstallController::class, 'setupSave'])->name('application.save');
-    Route::get('/administrator', [UserController::class, 'administrator'])->name('administrator');
-    Route::post('/administrator', [UserController::class, 'createAdministrator'])->name('administrator.create');
-});
-Route::group([
-    'prefix' => 'install',
-    'as' => 'Install::'
-], function () {
-    Route::get('/complete', [InstallController::class, 'finish'])->name('final');
+    Route::view('/', 'setup')->name('start');
 });
 
 Route::group([
