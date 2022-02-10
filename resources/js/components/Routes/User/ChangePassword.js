@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import { APIClient, Button, Input, useToasts, withAuth } from 'webapps-react';
 
