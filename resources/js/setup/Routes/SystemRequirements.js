@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader } from 'webapps-react';
 
+import { withTheme } from '../Context';
 import Card from '../Components/Card';
 
-const SystemRequirements = (props) => {
+const SystemRequirements = ({color, routedata}) => {
     const {
         title,
         subtitle
-    } = props.routedata
+    } = routedata;
 
     const [requirements, setRequirements] = useState(null);
     const [phpSupportInfo, setPHPSupportInfo] = useState(null);
@@ -43,7 +44,7 @@ const SystemRequirements = (props) => {
         } else {
             return (
                 <Link to="/install/database"
-                    className="ml-auto flex flex-row px-2 py-2 rounded-md border border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-600 dark:hover:bg-indigo-400 hover:text-white dark:hover:text-white">
+                    className={`ml-auto flex flex-row px-2 py-2 rounded-md border border-${color}-600 dark:border-${color}-400 text-${color}-600 dark:text-${color}-400 font-medium hover:bg-${color}-600 dark:hover:bg-${color}-400 hover:text-white dark:hover:text-white`}>
                     <span className="pt-2">Setup Database</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -143,4 +144,4 @@ const SystemRequirements = (props) => {
     )
 }
 
-export default SystemRequirements;
+export default withTheme(SystemRequirements);
