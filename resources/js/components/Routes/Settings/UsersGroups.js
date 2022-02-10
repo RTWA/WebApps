@@ -1,8 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import classNames from 'classnames';
 import ContentLoader from "react-content-loader"
-import { Button, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, useToasts, withWebApps } from 'webapps-react';
 import { CreateGroupFlyout, CreateUserFlyout, GroupFlyout, UserFlyout } from './Flyouts';
 import { GroupList, UserList } from './Lists';
 
@@ -45,7 +44,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const getEnabledUsers = async () => {
-        await axios.get('/api/users')
+        await APIClient('/api/users')
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -69,7 +68,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const getDisabledUsers = async () => {
-        await axios.get('/api/users/disabled')
+        await APIClient('/api/users/disabled')
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -87,7 +86,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast('An error occurred loading user data!','', { appearance: 'error' });
+                    addToast('An error occurred loading user data!', '', { appearance: 'error' });
                 }
             });
     }
@@ -156,10 +155,7 @@ const UsersGroups = ({ UI, ...props }) => {
         }
 
         let group_id = e.target.value;
-        let formData = new FormData();
-        formData.append('group_id', group_id);
-        formData.append('username', user.username);
-        await axios.post('/api/user/group', formData)
+        await APIClient('/api/user/group', { group_id: group_id, username: user.username })
             .then(async json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -225,11 +221,7 @@ const UsersGroups = ({ UI, ...props }) => {
             selectedGroup.state = 'saving';
             setSelectedGroup({ ...selectedGroup });
 
-            let formData = new FormData();
-            formData.append('_method', 'PATCH');
-            formData.append('old_name', old_name);
-            formData.append('new_name', selectedGroup.name);
-            await axios.post('/api/group', formData)
+            await APIClient('/api/group', { old_name: old_name, new_name: selectGroup.name, _method: 'PATCH' }, { method: '_PATCH' })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -275,10 +267,7 @@ const UsersGroups = ({ UI, ...props }) => {
             return;
         }
 
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-
-        await axios.post(`/api/user/${user.id}`, formData)
+        await APIClient(`/api/user/${user.id}`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -308,7 +297,7 @@ const UsersGroups = ({ UI, ...props }) => {
     const enable = async e => {
         e.preventDefault();
 
-        await axios.get(`/api/user/${user.id}/enable`)
+        await APIClient(`/api/user/${user.id}/enable`)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -335,10 +324,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const deleteUser = async () => {
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-
-        await axios.post(`/api/user/${user.id}/hard`, formData)
+        await APIClient(`/api/user/${user.id}/hard`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -363,11 +349,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const deleteGroup = async () => {
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-        formData.append('name', selectedGroup.name);
-
-        await axios.post('/api/group', formData)
+        await APIClient('/api/group', { name: selectGroup.name, _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {

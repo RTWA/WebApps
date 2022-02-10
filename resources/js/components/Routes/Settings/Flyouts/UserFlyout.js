@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import classNames from 'classnames';
-import { Button, ConfirmDeleteButton, Input, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, ConfirmDeleteButton, Input, useToasts, withWebApps } from 'webapps-react';
 
 import { FlyoutsContext } from '../UsersGroups';
 
@@ -66,12 +65,7 @@ const UserFlyout = ({ UI, ...props }) => {
         }
 
         if (!hasError) {
-            let formData = new FormData();
-            formData.append('user_id', user.id);
-            formData.append('password', newPassword);
-            formData.append('password_confirmation', confirmedPassword);
-
-            await axios.post('/api/admin/user.password/reset', formData)
+            await APIClient('/api/admin/user.password/reset', { user_id: user.id, password: newPassword, password_confirmation: confirmedPassword })
                 .then(json => {
                     // istanbul ignore else
                     if (json.data.success) {
