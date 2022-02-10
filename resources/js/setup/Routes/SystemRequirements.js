@@ -1,7 +1,6 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader } from 'webapps-react';
+import { APIClient, Loader } from 'webapps-react';
 
 import Card from '../Components/Card';
 
@@ -15,9 +14,9 @@ const SystemRequirements = (props) => {
     const [phpSupportInfo, setPHPSupportInfo] = useState(null);
     const [permissions, setPermissions] = useState(null);
 
-    useEffect(() => {
+    useEffect(async () => {
         if (!requirements && !phpSupportInfo && !permissions) {
-            axios.get('/api/install/requirements')
+            APIClient('/api/install/requirements')
                 .then(json => {
                     setRequirements(json.data.requirements);
                     setPHPSupportInfo(json.data.phpSupportInfo);

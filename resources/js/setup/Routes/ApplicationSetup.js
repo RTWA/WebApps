@@ -1,7 +1,6 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Loader } from 'webapps-react';
+import { APIClient, Loader } from 'webapps-react';
 
 import { withTheme } from '../Context';
 import Card from '../Components/Card';
@@ -17,10 +16,10 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
     const [settings, setSettings] = useState(null);
     const [errors, setErrors] = useState(null);
 
-    useEffect(() => {
+    useEffect(async () => {
         props.setSuccess([true, true, false, false, false]);
         if (!settings) {
-            axios.get('/api/install/application')
+            APIClient('/api/install/application')
                 .then(json => {
                     setSettings(json.data);
                 })
@@ -75,7 +74,7 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
     }
 
     const saveSettings = async () => {
-        await axios.post('/api/install/application', settings)
+        await APIClient('/api/install/application', settings)
             .then(json => {
                 let path = `/install/administrator`;
                 history.push(path);

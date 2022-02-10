@@ -1,7 +1,6 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader } from 'webapps-react';
+import { APIClient, Loader } from 'webapps-react';
 
 import Card from '../Components/Card';
 
@@ -20,7 +19,7 @@ const DatabaseSetup = (props) => {
     useEffect(async () => {
         props.setSuccess([true, false, false, false, false]);
         if (fields) {
-            await axios.get('/api/install/database')
+            await APIClient('/api/install/database')
                 .then(json => {
                     setFields(json.data);
                 })
@@ -42,10 +41,10 @@ const DatabaseSetup = (props) => {
     const submitForm = async e => {
         e.preventDefault();
 
-        await axios.post('/api/install/database', fields)
+        await APIClient('/api/install/database', fields)
             .then(async json => {
                 setOutput(json.data);
-                await axios.post('/api/install/database/migrate')
+                await APIClient('/api/install/database/migrate', {})
                     .then(json => {
                         setOutput(json.data);
                     })
@@ -68,7 +67,7 @@ const DatabaseSetup = (props) => {
         e.preventDefault();
         setSampling(true);
 
-        await axios.post('/api/install/database/sample')
+        await APIClient('/api/install/database/sample', {})
             .then(json => {
                 setSample(json.data);
                 setSampling(false);

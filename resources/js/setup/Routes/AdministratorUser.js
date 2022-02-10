@@ -1,7 +1,6 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Loader } from 'webapps-react';
+import { APIClient, Loader } from 'webapps-react';
 
 import { withTheme } from '../Context';
 import Card from '../Components/Card';
@@ -18,10 +17,10 @@ const AdministratorUser = ({ color, ...props }) => {
     const [fields, setFields] = useState(null);
     const [errors, setErrors] = useState(null);
 
-    useEffect(() => {
+    useEffect(async () => {
         props.setSuccess([true, true, true, false, false]);
         if (!fields) {
-            axios.get('/api/install/administrator')
+            await APIClient('/api/install/administrator')
                 .then(json => {
                     if (json.data.exists) {
                         setExists(true);
@@ -46,7 +45,7 @@ const AdministratorUser = ({ color, ...props }) => {
     }
 
     const completeSetup = async () => {
-        await axios.post('/api/install/administrator', fields)
+        await APIClient('/api/install/administrator', fields)
             .then(json => {
                 let path = `/install/complete`;
                 history.push(path);
