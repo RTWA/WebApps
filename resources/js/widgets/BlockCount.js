@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import CountUp from 'react-countup';
+import { APIClient } from 'webapps-react';
 
 // import ReactDOM from 'react-dom';
 
 const BlockCount = () => {
     const [count, setCount] = useState(null);
 
-    useEffect(() => {
-        axios.get('/api/blocks/count')
+    useEffect(async () => {
+        await APIClient('/api/blocks/count')
             .then(json => {
                 setCount(json.data.count);
             })

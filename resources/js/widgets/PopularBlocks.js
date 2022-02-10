@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import Moment from 'react-moment';
-import { Loader, WebApps, WebAppsContext } from 'webapps-react';
+import { APIClient, Loader, WebApps, WebAppsContext } from 'webapps-react';
 
 // import ReactDOM from 'react-dom';
 
@@ -17,12 +16,12 @@ const PopularBlocks = () => {
         }
     }, []);
 
-    const loadPopular = () => {
-        axios.get('/api/blocks?limit=5&offset=0&filter=&sort=views')
+    const loadPopular = async () => {
+        await APIClient('/api/blocks?limit=5&offset=0&filter=&sort=views')
             .then(json => {
                 const { blocks, styles } = json.data;
                 if (blocks !== undefined) {
-                    Object.keys(styles).map(function(i) { 
+                    Object.keys(styles).map(function (i) {
                         if (!document.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document.createElement("style");
                             style.setAttribute("ref", i);
@@ -52,11 +51,8 @@ const PopularBlocks = () => {
         setModals({ ...modals });
     }
 
-    const deleteBlock = () => {
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-
-        axios.post(`/api/blocks/${modals.preview_blocks.block.publicId}`, formData)
+    const deleteBlock = async () => {
+        await APIClient(`/api/blocks/${modals.preview_blocks.block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 Object(blocks).map(function (b, i) {
                     if (b === modals.preview_blocks.block) {
