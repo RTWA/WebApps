@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 
 import { confirmAlert } from 'react-confirm-alert';
 
-import { Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
@@ -30,7 +29,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         _mounted = true;
 
         // Get all available Plugins
-        await axios.get('/api/plugins/active')
+        await APIClient('/api/plugins/active')
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -45,7 +44,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         // Get first set of Blocks
         let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=0`
             : `/api/blocks/user/${username}?limit=${load}&offset=0`
-        await axios.get(uri)
+        await APIClient(uri)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -108,7 +107,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
         if (lastUri !== uri) {
             lastUri = uri;
-            await axios.get(uri)
+            await APIClient(uri)
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -174,11 +173,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             }
         });
 
-        let formData = new FormData();
-        formData.append('_method', "PUT");
-        formData.append('block', JSON.stringify(tmpBlock));
-
-        await axios.post(`/api/blocks/${tmpBlock.publicId}`, formData)
+        await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock), _method: 'PUT' }, { method: 'PUT' })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -223,10 +218,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     }
 
     const deleteBlock = async _block => {
-        let formData = new FormData();
-        formData.append("_method", "DELETE");
-
-        await axios.post(`/api/blocks/${_block.publicId}`, formData)
+        await APIClient(`/api/blocks/${_block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
