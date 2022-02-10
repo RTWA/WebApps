@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Button, Input, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
 
 let testSndBtnText = 'Send test Email';
 
@@ -63,9 +62,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
 
         testSndBtnText = 'Sending...';
 
-        let formData = new FormData();
-        formData.append('to', testTo);
-        await axios.post('/api/email/test', formData)
+        await APIClient('/api/email/test', { to: testTo})
             .then(json => {
                 addToast(
                     "Test Email Sent",
