@@ -44,7 +44,6 @@ const Login = props => {
 
             await props.loginUser(state.username, state.password, history)
                 .catch(error => {
-                    console.log(error);
                     /* istanbul ignore else */
                     if (error.status.code === 422) {
                         /* istanbul ignore else */
@@ -56,7 +55,6 @@ const Login = props => {
                         }
                     } else {
                         if (_mounted) {
-                            console.log(error);
                             state.alert = error.data.message;
                             state.loginActive = false;
                             state.password = '';
