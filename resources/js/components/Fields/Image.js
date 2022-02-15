@@ -72,7 +72,7 @@ const Image = ({ UI, ...props }) => {
                     );
                 })
         } else {
-            addToast('No Image Selected!', '', { appearence: 'warning', autoDismissTimeout: 1000 });
+            updateToast('No Image Selected!', '', { appearence: 'warning', autoDismiss:true, autoDismissTimeout: 1000 });
         }
     }
 
@@ -92,7 +92,7 @@ const Image = ({ UI, ...props }) => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" id={`p_${name}`}>
                     <label htmlFor={name} className="text-gray-500 sm:text-sm">{(value !== undefined) ? value.label : 'Get from URL:'}</label>
                 </div>
-                <input type="text" className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 pl-28`} id={name} name={name} value={(value !== undefined) ? value.text : ''} onChange={urlChange} data-upload="false" readOnly={(value !== undefined) ? value.readonly : false} />
+                <input type="text" className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 pl-28`} id={name} name={name} value={value?.text || ''} onChange={urlChange} data-upload="false" readOnly={value?.readonly || false} />
                 <div className="text-sm text-red-500 hidden" id={`${name}Help`}></div>
             </div>
         </div>
