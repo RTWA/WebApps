@@ -261,27 +261,78 @@ const handlers = [
     }),
 
     rest.get('/api/blocks', (req, res, ctx) => {
-        return res(
-            ctx.status(200),
-            ctx.json({
-                blocks: [mockData.blocks[0]],
-                styles: {
-                    Sample: ".Sample { display:block; }"
-                },
-                total: 1
-            })
-        )
+        let offset = req.url.searchParams.get('offset');
+        let filter = req.url.searchParams.get('filter');
+        if (offset === '0') {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [mockData.blocks[0]],
+                    styles: {
+                        Sample: ".Sample { display:block; }"
+                    },
+                    total: 32
+                })
+            )
+        } else if (filter === 'none') {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [],
+                    styles: [],
+                    total: 0
+                })
+            )
+        } else {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [mockData.blocks[1]],
+                    styles: {
+                        Sample2: ".Sample2 { display:block; }"
+                    },
+                    total: 2
+                })
+            )
+        }
     }),
 
-    rest.get('/api/blocks/user/jest2', (req, res, ctx) => {
-        return res(
-            ctx.status(200),
-            ctx.json({
-                blocks: [],
-                styles: {},
-                total: 0
-            })
-        )
+    rest.get('/api/blocks/user/:username', (req, res, ctx) => {
+        if (req.params.username == 'jest2') {
+            let offset = req.url.searchParams.get('offset');
+            if (offset === '0') {
+                return res(
+                    ctx.status(200),
+                    ctx.json({
+                        blocks: [mockData.blocks[0]],
+                        styles: {
+                            Sample: ".Sample { display:block; }"
+                        },
+                        total: 32
+                    })
+                )
+            } else {
+                return res(
+                    ctx.status(200),
+                    ctx.json({
+                        blocks: [mockData.blocks[1]],
+                        styles: {
+                            Sample2: ".Sample2 { display:block; }"
+                        },
+                        total: 2
+                    })
+                )
+            }
+        } else {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [],
+                    styles: {},
+                    total: 0
+                })
+            )
+        }
     }),
 
     rest.get('/api/blocks/:id', (req, res, ctx) => {
@@ -402,18 +453,8 @@ const handlers = [
         )
     }),
 
-    rest.post('/api/blocks/:id', (req, res, ctx) => {
-        if (req.body.get('_method') === 'DELETE') {
-            return res(
-                ctx.status(200),
-                ctx.json({
-                    message: 'Deleted!'
-                })
-            )
-        }
-
-        let block = JSON.parse(req.body.get('block'));
-
+    rest.put('/api/blocks/:id', (req, res, ctx) => {
+        let block = JSON.parse(req.body.block);
         if (block.settings.message === "Error This" || block.title === "Error This") {
             return res(
                 ctx.status(500),
@@ -424,6 +465,21 @@ const handlers = [
             ctx.status(201),
             ctx.json({
                 message: "Saved!"
+            })
+        )
+    }),
+
+    rest.delete('/api/blocks/:id', (req, res, ctx) => {
+        if (req.params.id === 'testBlock') {
+            return res(
+                ctx.status(500)
+            )
+        }
+
+        return res(
+            ctx.status(200),
+            ctx.json({
+                message: 'Deleted!'
             })
         )
     }),

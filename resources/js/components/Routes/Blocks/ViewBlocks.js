@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { confirmAlert } from 'react-confirm-alert';
 
-import { APIClient, Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, APIController, Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
 let load = 30;
-let _mounted = false;
 
 const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     const username = props.match.params.username;
@@ -25,23 +24,22 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
 
+    const isMountedRef = useRef(true);
+    const isMounted = useCallback(() => isMountedRef.current, []);
+    
     useEffect(async () => {
-        _mounted = true;
-
         // Get all available Plugins
         await APIClient('/api/plugins/active')
             .then(json => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     setPlugins(json.data.plugins);
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                if (!error.status.isAbort) {
-                    if (!error.status.isAbort) {
-                        // TODO: Handle errors
-                        console.error(error);
-                    }
+                if (!error.status?.isAbort && isMounted) {
+                    // TODO: Handle errors
+                    console.error(error);
                 }
             });
 
@@ -51,17 +49,17 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         await APIClient(uri)
             .then(json => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     if (json.data.message === "No blocks found.") {
                         setHasBlocks(false);
                         return;
                     }
                     Object.keys(json.data.styles).map(function (i) {
-                        if (!document.querySelectorAll('style[ref=' + i + ']').length) {
-                            let style = document.createElement("style");
+                        if (!document?.querySelectorAll('style[ref=' + i + ']').length) {
+                            let style = document?.createElement("style");
                             style.setAttribute("ref", i);
                             style.innerHTML = json.data.styles[i];
-                            document.head.appendChild(style);
+                            document?.head.appendChild(style);
                         }
                     });
                     if (json.data.total <= load) {
@@ -73,18 +71,21 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                if (!error.status.isAbort) {
+                if (!error.status?.isAbort && isMounted) {
                     // TODO: Handle errors
                     console.error(error);
                 }
             });
 
-        return /* istanbul ignore next */ () => _mounted = false;
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            void (isMountedRef.current = false);
+        }
     }, []);
 
     useEffect(() => {
         /* istanbul ignore else */
-        if (blocks !== undefined && _mounted) {
+        if (blocks !== undefined && isMounted) {
             if ((blocks.length + load) >= (total + load - 1)) {
                 setHasMore(false);
             }
@@ -93,14 +94,14 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
     useEffect(() => {
         /* istanbul ignore else */
-        if (filter !== null && blocks.length === 0 && _mounted) {
+        if (filter !== null && blocks.length === 0 && isMounted) {
             loadMore();
         }
     }, [filter, blocks]);
 
     useEffect(() => {
         /* istanbul ignore else */
-        if (modals.preview_blocks !== undefined && _mounted) {
+        if (modals.preview_blocks !== undefined && isMounted) {
             modals.preview_blocks.block = curBlock;
             setModals({ ...modals });
         }
@@ -116,7 +117,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             await APIClient(uri)
                 .then(json => {
                     /* istanbul ignore else */
-                    if (_mounted) {
+                    if (document) {
                         Object.keys(json.data.styles).map(function (i) {
                             if (!document.querySelectorAll('style[ref=' + i + ']').length) {
                                 let style = document.createElement("style");
@@ -125,13 +126,15 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                                 document.head.appendChild(style);
                             }
                         });
+                    }
+                    Object.keys(json.data.blocks).map(function (i) { blocks.push(json.data.blocks[i]); });
+                    if (isMounted) {
                         setTotal(json.data.total);
-                        Object.keys(json.data.blocks).map(function (i) { blocks.push(json.data.blocks[i]); });
                         setBlocks([...blocks]);
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    if (!error.status.isAbort) {
+                    if (!error.status?.isAbort && isMounted) {
                         // TODO: Handle errors
                         console.error(error);
                     }
@@ -148,7 +151,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             }
         });
         /* istanbul ignore else */
-        if (_mounted) {
+        if (isMounted) {
             setBlocks(blocks);
             setCurBlock(_block);
         }
@@ -156,7 +159,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
     const renameBlock = e => {
         /* istanbul ignore else */
-        if (_mounted) {
+        if (isMounted) {
             curBlock.title = e.target.value;
             setCurBlock({ ...curBlock });
         }
@@ -184,7 +187,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock), _method: 'PUT' }, { method: 'PUT' })
             .then(json => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     updateToast(
                         toastId,
                         {
@@ -199,7 +202,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             })
             .catch(error => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     updateToast(
                         toastId,
                         {
@@ -229,7 +232,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         await APIClient(`/api/blocks/${_block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     Object(blocks).map(function (b, i) {
                         /* istanbul ignore else */
                         if (b === _block)
@@ -256,7 +259,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             })
             .catch(error => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });
                 }
             })
@@ -264,7 +267,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
     const previewBlock = _block => {
         /* istanbul ignore else */
-        if (_mounted) {
+        if (isMounted) {
             setCurBlock(_block);
             modals.preview_blocks = {
                 show: true,
