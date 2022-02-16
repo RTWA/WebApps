@@ -26,7 +26,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
-    
+
     useEffect(async () => {
         // Get all available Plugins
         await APIClient('/api/plugins/active')
