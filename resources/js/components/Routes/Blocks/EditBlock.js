@@ -114,12 +114,10 @@ const EditBlock = ({ UI, ...props }) => {
                         }
                     );
                     /* istanbul ignore next */
-                    if (props.history) {
-                        props.history.push(`/blocks/view/${block.publicId}`);
-                    }
+                    props.history?.push(`/blocks/view/${block.publicId}`);
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 updateToast(
                     toastId,
                     {

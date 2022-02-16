@@ -445,6 +445,14 @@ const handlers = [
     }),
 
     rest.post('/api/blocks/:id/chown', (req, res, ctx) => {
+        if (req.body.new_owner_id === mockData.users[4].id) {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: "An error occurred"
+                })
+            )
+        }
         return res(
             ctx.status(200),
             ctx.json({
@@ -457,7 +465,7 @@ const handlers = [
         let block = JSON.parse(req.body.block);
         if (block.settings.message === "Error This" || block.title === "Error This") {
             return res(
-                ctx.status(500),
+                ctx.status(500)
             )
         }
 
