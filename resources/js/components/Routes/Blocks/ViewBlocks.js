@@ -258,6 +258,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 }
             })
             .catch(error => {
+                console.log(error);
                 /* istanbul ignore else */
                 if (isMounted) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });

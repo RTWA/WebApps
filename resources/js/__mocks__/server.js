@@ -478,7 +478,7 @@ const handlers = [
     }),
 
     rest.delete('/api/blocks/:id', (req, res, ctx) => {
-        if (req.params.id === 'testBlock') {
+        if (req.params.id === 'test-block-2') {
             return res(
                 ctx.status(500)
             )

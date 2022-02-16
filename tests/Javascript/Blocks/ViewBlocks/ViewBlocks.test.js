@@ -106,17 +106,17 @@ describe('ViewBlocks Component', () => {
     });
 
     test('Can Delete Block Via Context Menu', async () => {
-        expect(screen.getByText("Test-Block-2")).toBeDefined();
-        expect(screen.getByTestId(/context-test-block-2/i)).toBeDefined();
+        expect(screen.getByText(/error this/i)).toBeDefined();
+        expect(screen.getByTestId(/context-testBlock/i)).toBeDefined();
 
         await act(async () => {
-            fireEvent.click(screen.getByTestId(/context-test-block-2/i));
+            fireEvent.click(screen.getByTestId(/context-testBlock/i));
         });
         await waitFor(() =>
-            screen.getAllByRole('link', { name: /delete/i })[1]
+            screen.getAllByRole('link', { name: /delete/i })[0]
         );
         await act(async () => {
-            fireEvent.click(screen.getAllByRole('link', { name: /delete/i })[1]);
+            fireEvent.click(screen.getAllByRole('link', { name: /delete/i })[0]);
         });
         await waitFor(() =>
             screen.getByRole('heading', { name: /are you sure\?/i })
@@ -134,17 +134,17 @@ describe('ViewBlocks Component', () => {
     });
 
     test('Cannot Delete Block Via Context Menu Due To An Error', async () => {
-        expect(screen.getByText(/error this/i)).toBeDefined();
-        expect(screen.getByTestId(/context-testBlock/i)).toBeDefined();
+        expect(screen.getByText("Test-Block-2")).toBeDefined();
+        expect(screen.getByTestId(/context-test-block-2/i)).toBeDefined();
 
         await act(async () => {
-            fireEvent.click(screen.getByTestId(/context-testBlock/i));
+            fireEvent.click(screen.getByTestId(/context-test-block-2/i));
         });
         await waitFor(() =>
-            screen.getAllByRole('link', { name: /delete/i })[0]
+            screen.getAllByRole('link', { name: /delete/i })[1]
         );
         await act(async () => {
-            fireEvent.click(screen.getAllByRole('link', { name: /delete/i })[0]);
+            fireEvent.click(screen.getAllByRole('link', { name: /delete/i })[1]);
         });
         await waitFor(() =>
             screen.getByRole('heading', { name: /are you sure\?/i })
