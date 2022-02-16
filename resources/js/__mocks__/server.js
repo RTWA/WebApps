@@ -263,7 +263,7 @@ const handlers = [
     rest.get('/api/blocks', (req, res, ctx) => {
         let offset = req.url.searchParams.get('offset');
         let filter = req.url.searchParams.get('filter');
-        if (offset === '0') {
+        if (offset === '0' && filter !== 'none') {
             return res(
                 ctx.status(200),
                 ctx.json({
