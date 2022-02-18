@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import classNames from 'classnames';
-import { Switch, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Switch, useToasts, withWebApps } from 'webapps-react';
 
 let _mounted = false;
 
@@ -24,13 +23,9 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
     }, []);
 
     const setPerm = async (group, perm, mode, check_id) => {
-        let formData = new FormData();
-        formData.append("mode", mode);
-        formData.append("group", group.id);
-        formData.append("perm", perm.id);
-        await axios.post('/api/permissions', formData)
+        await APIClient('/api/permissions', { mode: mode, group: group.id, perm: perm.id })
             .then(response => {
-                /* istanbul ignore else */ 
+                /* istanbul ignore else */
                 if (_mounted) {
                     loadNavigation();
 
@@ -38,7 +33,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     setStates({ ...states });
 
                     setTimeout(/* istanbul ignore next */ function () {
-                        if (_mounted) {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
                             setStates({ ...states });
                         }
@@ -46,7 +42,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                 }
             })
             .catch(error => {
-                /* istanbul ignore else */ 
+                /* istanbul ignore else */
                 if (_mounted) {
                     addToast(
                         "Permission failed to update.",
@@ -58,7 +54,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     setStates({ ...states });
 
                     setTimeout(/* istanbul ignore next */ function () {
-                        if (_mounted) {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
                             setStates({ ...states });
                         }
@@ -107,7 +104,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
             setStates({ ...states });
 
             setTimeout(/* istanbul ignore next */ function () {
-                if (_mounted) {
+                // Don't do anything if testing
+                if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     states[check_id] = '';
                     setStates({ ...states });
                 }

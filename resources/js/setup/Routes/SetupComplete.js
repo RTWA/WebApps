@@ -1,6 +1,5 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Loader } from 'webapps-react';
+import { APIClient, Loader } from 'webapps-react';
 
 import Card from '../Components/Card';
 
@@ -14,13 +13,15 @@ const SetupComplete = (props) => {
 
     useEffect(async () => {
         props.setSuccess([true, true, true, true, false]);
-        await axios.get('/api/install/complete')
+        await APIClient('/api/install/complete')
             .then(json => {
                 setMessage(json.data.message);
             })
             .catch(error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     }, []);
 

@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
-import axios from 'axios';
-import { Button, Input, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, useToasts, withWebApps } from 'webapps-react';
 import { FlyoutsContext } from '../UsersGroups';
 
 const CreateGroupFlyout = ({ UI, ...props }) => {
@@ -63,10 +62,7 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
 
     const createGroup = async () => {
         setState('saving');
-        let formData = new FormData();
-        formData.append('name', name);
-
-        await axios.post('/api/group', formData)
+        await APIClient('/api/group', { name: name })
             .then(json => {
                 pushGroup(json.data.group);
                 addToast(json.data.message, '', { appearance: 'success' });
@@ -75,7 +71,7 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
             })
             .catch(error => {
                 setState('error');
-                setError(error.response.data.errors.name[0]);
+                setError(error.data.errors.name[0]);
             });
     }
 

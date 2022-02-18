@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
+import { cleanup } from '@testing-library/react';
 import { server } from './resources/js/__mocks__/server.js';
 
 require('whatwg-fetch');
@@ -36,5 +37,6 @@ afterEach(() => {
     server.resetHandlers()
 });
 afterAll(() => {
+    cleanup()
     server.close()
 });

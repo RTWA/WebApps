@@ -1,13 +1,12 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
-import axios from 'axios';
 
 import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
 
 import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
 import { OrphanedBlock } from './BlockViews';
-import { Button, Icon, Loader, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, Icon, Loader, useToasts, withWebApps } from 'webapps-react';
 
 export const PropertiesContext = createContext({});
 
@@ -63,7 +62,7 @@ const EditBlock = ({ UI, ...props }) => {
     }, [repeater]);
 
     const loadBlockData = async () => {
-        await axios.get(`/api/blocks/${id}?edit=true`)
+        await APIClient(`/api/blocks/${id}?edit=true`)
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
@@ -79,8 +78,10 @@ const EditBlock = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: handle errors
-                console.error(error)
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }
 
@@ -98,10 +99,7 @@ const EditBlock = ({ UI, ...props }) => {
             (id) => toastId = id
         );
 
-        let formData = new FormData();
-        formData.append('_method', 'PUT');
-        formData.append('block', JSON.stringify(block));
-        await axios.post(`/api/blocks/${id}`, formData)
+        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), _method: 'PUT' }, { method: 'PUT' })
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
@@ -116,12 +114,10 @@ const EditBlock = ({ UI, ...props }) => {
                         }
                     );
                     /* istanbul ignore next */
-                    if (props.history) {
-                        props.history.push(`/blocks/view/${block.publicId}`);
-                    }
+                    props.history?.push(`/blocks/view/${block.publicId}`);
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 updateToast(
                     toastId,
                     {

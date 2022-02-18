@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
-
 import { WebApps } from 'webapps-react';
 
 import AppsPlugins from '../../../resources/js/components/Routes/Settings/AppsPlugins';
