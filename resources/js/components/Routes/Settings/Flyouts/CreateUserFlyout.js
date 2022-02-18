@@ -1,8 +1,7 @@
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
-import axios from 'axios';
 import { FlyoutsContext } from '../UsersGroups';
-import { Button, Input, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, useToasts, withWebApps } from 'webapps-react';
 
 const CreateUserFlyout = ({ UI, ...props }) => {
     const {
@@ -78,15 +77,14 @@ const CreateUserFlyout = ({ UI, ...props }) => {
         setState('password', 'saving', '');
         setState('password_confirmation', 'saving', '');
 
-        let formData = new FormData();
-        formData.append('name', (user.name.value === undefined) ? '' : user.name.value);
-        formData.append('username', (user.username.value === undefined) ? '' : user.username.value);
-        formData.append('email', (user.email.value === undefined) ? '' : user.email.value);
-        formData.append('password', (user.password.value === undefined) ? '' : user.password.value);
-        formData.append('password_confirmation', (user.password_confirmation.value === undefined) ? '' : user.password_confirmation.value);
-        formData.append('group', group);
-
-        await axios.post('/api/user', formData)
+        await APIClient('/api/user', {
+            name: (user.name.value === undefined) ? '' : user.name.value,
+            username: (user.username.value === undefined) ? '' : user.username.value,
+            email: (user.email.value === undefined) ? '' : user.email.value,
+            password: (user.password.value === undefined) ? '' : user.password.value,
+            password_confirmation: (user.password_confirmation.value === undefined) ? '' : user.password_confirmation.value,
+            group: group
+        })
             .then(json => {
                 pushUser(json.data.user);
                 addToast(json.data.message, '', { appearance: 'success' });
@@ -94,8 +92,8 @@ const CreateUserFlyout = ({ UI, ...props }) => {
                 resetState();
             })
             .catch(error => {
-                if (error.response.status === 422) {
-                    let errors = error.response.data.errors;
+                if (error.status.code === 422) {
+                    let errors = error.data.errors;
 
                     Object.keys(errors).forEach(function (field) {
                         setState(field, 'error', errors[field][0]);

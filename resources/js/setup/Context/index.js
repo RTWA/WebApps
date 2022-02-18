@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import invariant from 'tiny-invariant';
+import { APIClient } from 'webapps-react';
 
 export const ThemeContext = createContext({});
 
@@ -9,37 +9,43 @@ const ThemeProvider = props => {
     const [dark, setDark] = useState('user');
 
     useEffect(async () => {
-        await axios.get('/api/theme')
+        await APIClient('/api/theme')
             .then(json => {
                 setColor(json.data['core.ui.theme']);
                 setDark(json.data['core.ui.dark_mode']);
             })
             .catch(error => {
                 // Not relevant?
-                // TODO: Handle Errors
-                console.log(error)
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     });
 
     const changeColor = async value => {
-        await axios.post('/api/color', { theme: value })
+        await APIClient('/api/color', { theme: value })
             .then(json => {
                 setColor(value);
             })
             .catch(error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     }
 
     const changeDark = async mode => {
-        await axios.post('/api/dark', { mode: mode })
+        await APIClient('/api/dark', { mode: mode })
         .then(json => {
             setDark(mode);
         })
         .catch(error => {
-            // TODO: Handle Errors
-            console.log(error);
+            if (!error.status.isAbort) {
+                // TODO: Handle errors
+                console.error(error);
+            }
         })
     }
 

@@ -1,112 +1,87 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
+import { WebApps } from 'webapps-react';
 
 import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
-
-import { WebApps } from 'webapps-react';
-
 import AuthenticationSettings from '../../../resources/js/components/Routes/Settings/AuthenticationSettings';
 
-const mockFunction = (e) => {
-    return null;
+const typeValue = (key, value) => {
+    mockData.settings[key] = value;
 }
 
-test('Renders Authentication Settings', () => {
-    render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} roles={mockData.groups} states={{}} /></WebApps>);
+const setValue = (key, value, ce) => {
+    let config_editor = (ce !== undefined);
+    if (config_editor) {
+        key = key.replace('ce-', '');
+    }
+    mockData.settings[key] = value;
+}
 
-    expect(screen.getByText(/allow registration/i)).toBeDefined();
-});
+mockData.settings['azure.graph.client_id'] = '000';
+mockData.settings['azure.graph.client_secret'] = 'abc';
 
-test('Can Enable Registrations', async () => {
-    mockData.settings['auth.internal.registrations'] = 'false';
-    render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} roles={mockData.groups} states={{}} /></WebApps>);
+describe('AuthenticationSettings Component', () => {
+    test('Can Render', () => {
+        render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} roles={mockData.groups} states={{}} /></WebApps>);
 
-    expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
-
-    await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', { name: /allow registration of webapps users/i }));
+        expect(screen.getByText(/allow registration/i)).toBeDefined();
     });
-    await waitFor(() =>
-        screen.getByRole('checkbox', { name: /allow registration of webapps users/i })
-    );
 
-    expect(screen.getByRole('checkbox', { name: /allow registration of webapps users/i })).toBeDefined();
-});
+    test('Can Disable Registrations', async () => {
+        expect(mockData.settings['auth.internal.registrations']).toEqual('true');
+        expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
 
-test('Can Disable Registrations', async () => {
-    mockData.settings['auth.internal.registrations'] = 'true';
-    render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} roles={mockData.groups} states={{}} /></WebApps>);
-
-    expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
-
-    await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', { name: /allow registration of webapps users/i }));
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox', { name: /allow registration of webapps users/i }));
+        });
+        await waitFor(() => expect(mockData.settings['auth.internal.registrations']).toEqual('false'));
     });
-    await waitFor(() =>
-        screen.getByRole('checkbox', { name: /allow registration of webapps users/i })
-    );
 
-    expect(screen.getByRole('checkbox', { name: /allow registration of webapps users/i })).toBeDefined();
-});
-
-test('Cannot See Default User Group on Registration Option If Registrations Are Disabled', async () => {
-    mockData.settings['auth.internal.registrations'] = 'true';
-    render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} roles={mockData.groups} states={{}} /></WebApps>);
-
-    expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
-    expect(screen.getByText(/default user group on registration/i)).toBeDefined();
-    
-    mockData.settings['auth.internal.registrations'] = 'false';
-        
-    await waitForElementToBeRemoved(() =>
-        screen.queryByText(/default user group on registration/i)
-    );
-
-    expect(screen.getByRole('checkbox', { name: /allow registration of webapps users/i })).toBeDefined();
-    expect(screen.queryByText(/default user group on registration/i)).toBeNull();
-});
-
-test('Cant See And Toggle Azure Authentication Options', async () => {
-    mockData.settings['azure.graph.client_id'] = '000';
-    mockData.settings['azure.graph.client_secret'] = 'abc';
-    render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={mockFunction} setValue={mockFunction} roles={mockData.groups} states={{}} /></WebApps>);
-
-    expect(screen.getByText(/enable azure authentication/i)).toBeDefined();
-    expect(screen.getByText(/use azure authentication by default/i)).toBeDefined();
-
-    await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', {  name: /enable azure authentication/i}));
-        mockData.settings['azure.graph.login_enabled'] = 'true';
+    test('Cannot See Default User Group on Registration Option If Registrations Are Disabled', async () => {
+        expect(mockData.settings['auth.internal.registrations']).toEqual('false');
+        expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
+        await waitFor(() => expect(screen.queryByText(/default user group on registration/i)).toBeNull());
     });
-    await waitFor(() =>
-        screen.getByRole('checkbox', {  name: /enable azure authentication/i})
-    );
 
-    await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', {  name: /use azure authentication by default/i}));
-        mockData.settings['azure.graph.default_login'] = 'true';
+    test('Can Enable Registrations', async () => {
+        expect(mockData.settings['auth.internal.registrations']).toEqual('false');
+        expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox', { name: /allow registration of webapps users/i }));
+        });
+        await waitFor(() => expect(mockData.settings['auth.internal.registrations']).toEqual('true'));
     });
-    await waitFor(() =>
-        screen.getByRole('checkbox', {  name: /use azure authentication by default/i})
-    );
 
-    await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', {  name: /enable azure authentication/i}));
-        mockData.settings['azure.graph.login_enabled'] = 'false';
+    test('Can See Default User Group on Registration Option If Registrations Are Enabled', async () => {
+        expect(mockData.settings['auth.internal.registrations']).toEqual('true');
+        expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/default user group on registration/i)).toBeDefined());
     });
-    await waitFor(() =>
-        screen.getByRole('checkbox', {  name: /enable azure authentication/i})
-    );
 
-    await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox', {  name: /use azure authentication by default/i}));
-        mockData.settings['azure.graph.default_login'] = 'false';
+    test('Cant See And Toggle Azure Authentication Options', async () => {
+        expect(screen.getByText(/enable azure authentication/i)).toBeDefined();
+        expect(screen.getByText(/use azure authentication by default/i)).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox', { name: /enable azure authentication/i }));
+        });
+        await waitFor(() => expect(mockData.settings['azure.graph.login_enabled']).toEqual('true'));
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox', { name: /use azure authentication by default/i }));
+        });
+        await waitFor(() => expect(mockData.settings['azure.graph.default_login']).toEqual('true'));
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox', { name: /enable azure authentication/i }));
+        });
+        await waitFor(() => expect(mockData.settings['azure.graph.login_enabled']).toEqual('false'));
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox', { name: /use azure authentication by default/i }));
+        });
+        await waitFor(() => expect(mockData.settings['azure.graph.default_login']).toEqual('false'));
     });
-    await waitFor(() =>
-        screen.getByRole('checkbox', {  name: /use azure authentication by default/i})
-    );
-
-    expect(screen.getByRole('checkbox', {  name: /enable azure authentication/i})).toBeDefined();
-    expect(screen.getByRole('checkbox', {  name: /use azure authentication by default/i})).toBeDefined();
 });

@@ -2,10 +2,9 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 
-import * as mockData from '../../../resources/js/__mocks__/mockData';
-
 import { WebApps } from 'webapps-react';
 
+import * as mockData from '../../../resources/js/__mocks__/mockData';
 import ViewBlock from '../../../resources/js/components/Routes/Blocks/ViewBlock';
 
 test('Can View A Block', async () => {

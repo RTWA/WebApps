@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Button, Input, Switch, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, Switch, withWebApps } from 'webapps-react';
 import moment from 'moment';
 
 let _mounted = false;
@@ -50,9 +49,7 @@ const Azure = ({ UI, ...props }) => {
             graphApp.tenantId = settings['azure.graph.tenant'];
             setGraphApp({ ...graphApp });
         } else {
-            let formData = new FormData();
-            formData.append("key", "azure.graph.tenant");
-            await axios.post('/api/setting', formData)
+            await APIClient('/api/setting', { key: 'azure.graph.tenant' })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -64,20 +61,22 @@ const Azure = ({ UI, ...props }) => {
     };
 
     const RequestAccessToken = async () => {
-        await axios.get('/api/graph/token')
+        await APIClient('/api/graph/token')
             .then(json => {
                 setAccessToken(json.data.token.access_token);
             });
     }
 
     const getGroupMaps = async () => {
-        await axios.get('/api/group/mappings')
+        await APIClient('/api/group/mappings')
             .then(json => {
                 setGroupMappings(json.data.mappings);
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             })
     }
 
@@ -85,11 +84,7 @@ const Azure = ({ UI, ...props }) => {
         let group = e.target.id;
         let azGroup = e.target.value;
 
-        let formData = new FormData();
-        formData.append('group_id', group);
-        formData.append('azure_group_id', azGroup);
-
-        await axios.post('/api/group/mapping', formData)
+        await APIClient('/api/group/mapping', { group_id: group, azure_group_id: azGroup })
             .then(json => {
                 /* istanbul ignore else */
                 if (json.data.success) {
@@ -98,8 +93,10 @@ const Azure = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: Handle Errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }
 
@@ -120,7 +117,7 @@ const Azure = ({ UI, ...props }) => {
 
     const syncAzureNow = async () => {
         setSyncBtnText('Syncing');
-        await axios.get('/api/azure/sync');
+        await APIClient('/api/azure/sync');
     }
 
     const onChange = e => {
@@ -335,11 +332,11 @@ const Azure = ({ UI, ...props }) => {
                                         <div className="flex flex-col xl:flex-row p-4">
                                             <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="azure.graph.last_sync">Last Synced</label>
                                             <div className="relative w-full">
-                                            <Input name="azure.graph.last_sync"
-                                                        id="azure.graph.last_sync"
-                                                        type="text"
-                                                        value={moment(settings['azure.graph.last_sync']).calendar()}
-                                                        readOnly disabled />
+                                                <Input name="azure.graph.last_sync"
+                                                    id="azure.graph.last_sync"
+                                                    type="text"
+                                                    value={moment(settings['azure.graph.last_sync']).calendar()}
+                                                    readOnly disabled />
 
                                                 <div className="w-full sm:w-auto sm:absolute inset-y-0 right-0 sm:flex items-center">
                                                     <Button style="ghost" color="gray" size="small" square

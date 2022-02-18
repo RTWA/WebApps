@@ -1,8 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import classNames from 'classnames';
 import ContentLoader from "react-content-loader"
-import { Button, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, useToasts, withWebApps } from 'webapps-react';
 import { CreateGroupFlyout, CreateUserFlyout, GroupFlyout, UserFlyout } from './Flyouts';
 import { GroupList, UserList } from './Lists';
 
@@ -45,7 +44,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const getEnabledUsers = async () => {
-        await axios.get('/api/users')
+        await APIClient('/api/users')
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -69,7 +68,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const getDisabledUsers = async () => {
-        await axios.get('/api/users/disabled')
+        await APIClient('/api/users/disabled')
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -87,7 +86,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast('An error occurred loading user data!','', { appearance: 'error' });
+                    addToast('An error occurred loading user data!', '', { appearance: 'error' });
                 }
             });
     }
@@ -156,10 +155,7 @@ const UsersGroups = ({ UI, ...props }) => {
         }
 
         let group_id = e.target.value;
-        let formData = new FormData();
-        formData.append('group_id', group_id);
-        formData.append('username', user.username);
-        await axios.post('/api/user/group', formData)
+        await APIClient('/api/user/group', { group_id: group_id, username: user.username })
             .then(async json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -218,18 +214,12 @@ const UsersGroups = ({ UI, ...props }) => {
 
     const saveRenameGroup = async e => {
         e.preventDefault();
-
         /* istanbul ignore else */
         if (old_name !== selectedGroup.name) {
-
             selectedGroup.state = 'saving';
             setSelectedGroup({ ...selectedGroup });
 
-            let formData = new FormData();
-            formData.append('_method', 'PATCH');
-            formData.append('old_name', old_name);
-            formData.append('new_name', selectedGroup.name);
-            await axios.post('/api/group', formData)
+            await APIClient('/api/group', { old_name: old_name, new_name: selectedGroup.name, _method: 'PATCH' }, { method: 'PATCH' })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -245,7 +235,8 @@ const UsersGroups = ({ UI, ...props }) => {
                         selectedGroup.state = 'saved';
                         setSelectedGroup({ ...selectedGroup });
                         setTimeout(/* istanbul ignore next */function () {
-                            if (_mounted) {
+                            // Don't do anything if testing
+                            if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                                 selectedGroup.status = '';
                                 setSelectedGroup({ ...selectedGroup });
                             }
@@ -256,10 +247,10 @@ const UsersGroups = ({ UI, ...props }) => {
                     /* istanbul ignore else */
                     if (_mounted) {
                         selectedGroup.state = 'error';
-                        if (error.response.data.errors.old_name !== undefined) {
-                            selectedGroup.error = error.response.data.errors.old_name[0]
-                        } else /* istanbul ignore else */ if (error.response.data.errors.new_name !== undefined) {
-                            selectedGroup.error = error.response.data.errors.new_name[0];
+                        if (error.data.errors.old_name !== undefined) {
+                            selectedGroup.error = error.data.errors.old_name[0]
+                        } else /* istanbul ignore else */ if (error.data.errors.new_name !== undefined) {
+                            selectedGroup.error = error.data.errors.new_name[0];
                         }
                         setSelectedGroup({ ...selectedGroup });
                     }
@@ -275,10 +266,7 @@ const UsersGroups = ({ UI, ...props }) => {
             return;
         }
 
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-
-        await axios.post(`/api/user/${user.id}`, formData)
+        await APIClient(`/api/user/${user.id}`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -299,8 +287,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    console.log(error.response);
-                    addToast(error.response.data.message, '', { appearance: 'error' });
+                    addToast(error.data.message, '', { appearance: 'error' });
                 }
             });
     }
@@ -308,7 +295,7 @@ const UsersGroups = ({ UI, ...props }) => {
     const enable = async e => {
         e.preventDefault();
 
-        await axios.get(`/api/user/${user.id}/enable`)
+        await APIClient(`/api/user/${user.id}/enable`)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -328,28 +315,26 @@ const UsersGroups = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
+                console.log(error);
                 if (_mounted) {
-                    addToast(error.response.data.message, '', { appearance: 'error' });
+                    addToast(error.data.message, '', { appearance: 'error' });
                 }
             });
     }
 
     const deleteUser = async () => {
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-
-        await axios.post(`/api/user/${user.id}/hard`, formData)
+        await APIClient(`/api/user/${user.id}/hard`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
+                // TODO: Surely this can be improved?
+                let _disabled = [];
+                disabled.map(function (u) {
+                    if (u.id !== user.id) {
+                        _disabled.push(u)
+                    }
+                });
+
                 /* istanbul ignore else */
                 if (_mounted) {
-                    // TODO: Surely this can be improved?
-                    let _disabled = [];
-                    disabled.map(function (u) {
-                        if (u.id !== user.id) {
-                            _disabled.push(u)
-                        }
-                    });
-
                     setDisabled(_disabled);
                     setUser([]);
                     toggleUserModal();
@@ -357,17 +342,13 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast(error.response.data.message, '', { appearance: 'error' });
+                    addToast(error.data.message, '', { appearance: 'error' });
                 }
             });
     }
 
     const deleteGroup = async () => {
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-        formData.append('name', selectedGroup.name);
-
-        await axios.post('/api/group', formData)
+        await APIClient('/api/group', { name: selectGroup.name, _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -385,8 +366,9 @@ const UsersGroups = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
+                console.log(error);
                 if (_mounted) {
-                    addToast(error.response.data.errors.name[0], '', { appearance: 'error' });
+                    addToast(error.data.errors?.name[0], '', { appearance: 'error' });
                 }
             });
     }

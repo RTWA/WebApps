@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import CountUp from 'react-countup';
+import { APIClient } from 'webapps-react';
 
 // import ReactDOM from 'react-dom';
 
 const BlockViews = () => {
     const [views, setViews] = useState(null);
 
-    useEffect(() => {
-        axios.get('/api/blocks/views')
+    useEffect(async () => {
+        await APIClient('/api/blocks/views')
             .then(json => {
                 setViews(json.data.views);
             })
             .catch(error => {
-                // TODO: Handle errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }, []);
 

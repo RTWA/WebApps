@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Button, Input, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { APIClient, APIController, Button, Input, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
 
 let testSndBtnText = 'Send test Email';
 
 const EmailSettings = ({ user, UI, ...props }) => {
+    const isMountedRef = useRef(true);
+    const isMounted = useCallback(() => isMountedRef.current, []);
+
     const {
         settings,
         setValue,
@@ -17,6 +19,13 @@ const EmailSettings = ({ user, UI, ...props }) => {
     const { addToast } = useToasts();
 
     const [testTo, setTestTo] = useState(/* istanbul ignore next */(user) ? user.email : '');
+
+    useEffect(() => {
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            void (isMountedRef.current = false);
+        }
+    }, []);
 
     const onChange = e => {
         let key = e.target.id;
@@ -32,24 +41,32 @@ const EmailSettings = ({ user, UI, ...props }) => {
     const changeDriver = e => {
         /* istanbul ignore else */
         if (e.target.id === 'mail.driver.smtp') {
-            setValue('mail.driver', 'smtp');
-
-            driverStates['smtp'] = 'saved';
-            setDriverStates({ ...driverStates });
+            if (isMounted()) {
+                setValue('mail.driver', 'smtp');
+                driverStates['smtp'] = 'saved';
+                setDriverStates({ ...driverStates });
+            }
 
             setTimeout(function () {
-                driverStates['smtp'] = '';
-                setDriverStates({ ...driverStates });
+                // Don't do anything if testing
+                if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                    driverStates['smtp'] = '';
+                    setDriverStates({ ...driverStates });
+                }
             }, 2500);
         } else if (e.target.id === 'mail.driver.msgraph') {
-            setValue('mail.driver', 'msgraph');
-
-            driverStates['msgraph'] = 'saved';
-            setDriverStates({ ...driverStates });
+            if (isMounted()) {
+                setValue('mail.driver', 'msgraph');
+                driverStates['msgraph'] = 'saved';
+                setDriverStates({ ...driverStates });
+            }
 
             setTimeout(function () {
-                driverStates['msgraph'] = '';
-                setDriverStates({ ...driverStates });
+                // Don't do anything if testing
+                if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                    driverStates['msgraph'] = '';
+                    setDriverStates({ ...driverStates });
+                }
             }, 2500);
         }
     }
@@ -63,33 +80,35 @@ const EmailSettings = ({ user, UI, ...props }) => {
 
         testSndBtnText = 'Sending...';
 
-        let formData = new FormData();
-        formData.append('to', testTo);
-        await axios.post('/api/email/test', formData)
+        await APIClient('/api/email/test', { to: testTo })
             .then(json => {
-                addToast(
-                    "Test Email Sent",
-                    '',
-                    { appearance: 'success' }
-                );
-                testSndBtnText = 'Send test Email';
+                if (isMounted) {
+                    addToast(
+                        "Test Email Sent",
+                        '',
+                        { appearance: 'success' }
+                    );
+                    testSndBtnText = 'Send test Email';
+                }
             })
             .catch(error => {
-                /* istanbul ignore next */
-                if (error.response.data.exception) {
-                    addToast(
-                        "Unable to send test Email",
-                        error.response.data.exception,
-                        { appearance: 'error' }
-                    );
-                } else {
-                    addToast(
-                        "Unable to send test Email",
-                        '',
-                        { appearance: 'error' }
-                    );
+                if (isMounted) {
+                    /* istanbul ignore next */
+                    if (error.data.exception) {
+                        addToast(
+                            "Unable to send test Email",
+                            error.data.exception,
+                            { appearance: 'error' }
+                        );
+                    } else {
+                        addToast(
+                            "Unable to send test Email",
+                            '',
+                            { appearance: 'error' }
+                        );
+                    }
+                    testSndBtnText = 'Send test Email';
                 }
-                testSndBtnText = 'Send test Email';
             })
     }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import classNames from 'classnames';
 import ReactHtmlParser from 'react-html-parser';
 
@@ -6,6 +6,9 @@ import { Button, ConfirmDeleteButton, withWebApps } from 'webapps-react';
 import UseBlock from './UseBlock';
 
 const PreviewModal = ({ modals, setModals, UI }) => {
+    const isMountedRef = useRef(true);
+    const isMounted = useCallback(() => isMountedRef.current, []);
+
     const [tab, setTab] = useState(0);
 
     const previewModal = (modals.preview_blocks === undefined) ? false : modals.preview_blocks.show;
@@ -68,6 +71,13 @@ const PreviewModal = ({ modals, setModals, UI }) => {
         (tab === id) ? 'block' : 'hidden'
     )
 
+    const deleteAction = () => {
+        if (isMounted) {
+            deleteBlock(curBlock);
+            closeModal();
+        }
+    }
+
     if (curBlock === undefined || curBlock === null) {
         return null;
     }
@@ -122,7 +132,7 @@ const PreviewModal = ({ modals, setModals, UI }) => {
                                 <UseBlock block={curBlock} />
                             </div>
                             <div className={classNames(paneClass(2), 'py-20')}>
-                                <ConfirmDeleteButton text="Delete Block" onClick={() => { deleteBlock(curBlock); closeModal(); }} square size="large" className="mx-auto" />
+                                <ConfirmDeleteButton text="Delete Block" onClick={deleteAction} square size="large" className="mx-auto" />
                             </div>
                         </div>
                         <div className={`border-t border-${UI.theme}-600 dark:border-${UI.theme}-500`}>

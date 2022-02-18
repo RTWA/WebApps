@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 
 import ReactHtmlParser from "react-html-parser";
 import UseBlock from './UseBlock';
-import { Button, Icon, Loader, withWebApps } from 'webapps-react';
+import { APIClient, Button, Icon, Loader, withWebApps } from 'webapps-react';
 
 let _mounted = false;
 
@@ -27,7 +26,7 @@ const ViewBlock = ({ UI, ...props }) => {
     }, [block]);
 
     const loadBlockData = async () => {
-        await axios.get(`/api/blocks/${props.match.params.id}`)
+        await APIClient(`/api/blocks/${props.match.params.id}`)
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -44,8 +43,10 @@ const ViewBlock = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                // TODO: handle errors
-                console.log(error);
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
             });
     }
 

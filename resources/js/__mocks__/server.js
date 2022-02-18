@@ -43,7 +43,7 @@ const handlers = [
     }),
 
     rest.post('/api/user', (req, res, ctx) => {
-        if (req.body.get('username') === mockData.User.username) {
+        if (req.body.username === mockData.User.username) {
             return res(
                 ctx.status(422),
                 ctx.json({
@@ -53,7 +53,7 @@ const handlers = [
                     }
                 })
             )
-        } else if (req.body.get('name') === 'unknown') {
+        } else if (req.body.name === 'unknown') {
             return res(
                 ctx.status(500)
             )
@@ -64,9 +64,9 @@ const handlers = [
                     success: true,
                     message: "User created successfully",
                     user: {
-                        name: req.body.get('name'),
-                        username: req.body.get('username'),
-                        email: req.body.get('email'),
+                        name: req.body.name,
+                        username: req.body.username,
+                        email: req.body.email,
                         active: true
                     }
                 })
@@ -102,8 +102,14 @@ const handlers = [
         )
     }),
 
-    rest.post('/api/user/9999', (req, res, ctx) => {
-        var user = { ...mockData.User };
+    rest.delete('/api/user/:id', (req, res, ctx) => {
+        var { users } = mockData;
+        var user = {};
+        users.map(function (u) {
+            if (u.id == req.params.id) {
+                user = u;
+            }
+        });
         user.active = false;
 
         return res(
@@ -115,8 +121,14 @@ const handlers = [
         )
     }),
 
-    rest.get('/api/user/10000/enable', (req, res, ctx) => {
-        var user = { ...mockData.users[2] };
+    rest.get('/api/user/:id/enable', (req, res, ctx) => {
+        var { users } = mockData;
+        var user = {};
+        users.map(function (u) {
+            if (u.id == req.params.id) {
+                user = u;
+            }
+        });
         user.active = true;
 
         return res(
@@ -128,7 +140,7 @@ const handlers = [
         )
     }),
 
-    rest.post('/api/user/10000/hard', (req, res, ctx) => {
+    rest.delete('/api/user/:id/hard', (req, res, ctx) => {
         return res(
             ctx.status(200),
             ctx.json({
@@ -138,79 +150,80 @@ const handlers = [
     }),
 
     rest.post('/api/group', (req, res, ctx) => {
-        if (!req.body.get('_method')) {
-            if (req.body.get('name') === mockData.groups[0].name) {
-                return res(
-                    ctx.status(422),
-                    ctx.json({
-                        message: "The given data was invalid.",
-                        errors: {
-                            name: ["The name has already been taken."]
-                        }
-                    })
-                )
-            } else {
-                return res(
-                    ctx.json({
-                        success: true,
-                        message: "Group created successfully",
-                        group: {
-                            name: req.body.get('name'),
-                            id: 10,
-                            guard_name: "web",
-                            permissions: [
-                                mockData.groups[0].permissions[0]
-                            ]
-                        }
-                    })
-                )
-            }
-        } else if (req.body.get('_method') === 'PATCH') {
-            if (req.body.get('new_name') === 'invalid') {
-                return res(
-                    ctx.status(422),
-                    ctx.json({
-                        message: "The given data was invalid.",
-                        errors: {
-                            new_name: ["This is invalid."]
-                        }
-                    })
-                )
-            } else if (req.body.get('new_name') === 'old_name_error') {
-                return res(
-                    ctx.status(422),
-                    ctx.json({
-                        message: "The given data was invalid.",
-                        errors: {
-                            old_name: ["The old name must exist."]
-                        }
-                    })
-                )
-            } else {
-                var group = { ...mockData.groups[0] };
-                group.name = req.body.get('new_name');
+        if (req.body.name === mockData.groups[0].name) {
+            return res(
+                ctx.status(422),
+                ctx.json({
+                    message: "The given data was invalid.",
+                    errors: {
+                        name: ["The name has already been taken."]
+                    }
+                })
+            )
+        }
+        return res(
+            ctx.json({
+                success: true,
+                message: "Group created successfully",
+                group: {
+                    name: req.body.name,
+                    id: 10,
+                    guard_name: "web",
+                    permissions: [
+                        mockData.groups[0].permissions[0]
+                    ]
+                }
+            })
+        )
+    }),
 
-                return res(
-                    ctx.status(200),
-                    ctx.json({
-                        success: true,
-                        message: "Group renamed successfully",
-                        group: group
-                    })
-                )
-            }
-        } else if (req.body.get('_method') === 'DELETE') {
+    rest.patch('/api/group', (req, res, ctx) => {
+        if (req.body.new_name === 'invalid') {
+            return res(
+                ctx.status(422),
+                ctx.json({
+                    message: "The given data was invalid.",
+                    errors: {
+                        new_name: ["This is invalid."]
+                    }
+                })
+            )
+        } else if (req.body.new_name === 'old_name_error') {
+            return res(
+                ctx.status(422),
+                ctx.json({
+                    message: "The given data was invalid.",
+                    errors: {
+                        old_name: ["The old name must exist."]
+                    }
+                })
+            )
+        } else {
+            var group = { ...mockData.groups[0] };
+            group.name = req.body.new_name;
+
             return res(
                 ctx.status(200),
                 ctx.json({
-                    success: true
+                    success: true,
+                    message: "Group renamed successfully",
+                    group: group
                 })
             )
         }
     }),
 
+    rest.delete('/api/group', (req, res, ctx) => {
+        return res(
+            ctx.status(200),
+            ctx.json({
+                success: true
+            })
+        )
+    }),
+
     rest.post('/api/permissions', (req, res, ctx) => {
-        if (req.body.get('perm') == '10000') {
+        if (req.body.perm == '10000') {
             return res(
                 ctx.status(500),
             )
@@ -261,27 +274,78 @@ const handlers = [
     }),
 
     rest.get('/api/blocks', (req, res, ctx) => {
-        return res(
-            ctx.status(200),
-            ctx.json({
-                blocks: [mockData.blocks[0]],
-                styles: {
-                    Sample: ".Sample { display:block; }"
-                },
-                total: 1
-            })
-        )
+        let offset = req.url.searchParams.get('offset');
+        let filter = req.url.searchParams.get('filter');
+        if (offset === '0' && filter !== 'none') {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [mockData.blocks[0]],
+                    styles: {
+                        Sample: ".Sample { display:block; }"
+                    },
+                    total: 32
+                })
+            )
+        } else if (filter === 'none') {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [],
+                    styles: [],
+                    total: 0
+                })
+            )
+        } else {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [mockData.blocks[1]],
+                    styles: {
+                        Sample2: ".Sample2 { display:block; }"
+                    },
+                    total: 2
+                })
+            )
+        }
     }),
 
-    rest.get('/api/blocks/user/jest2', (req, res, ctx) => {
-        return res(
-            ctx.status(200),
-            ctx.json({
-                blocks: [],
-                styles: {},
-                total: 0
-            })
-        )
+    rest.get('/api/blocks/user/:username', (req, res, ctx) => {
+        if (req.params.username == 'jest2') {
+            let offset = req.url.searchParams.get('offset');
+            if (offset === '0') {
+                return res(
+                    ctx.status(200),
+                    ctx.json({
+                        blocks: [mockData.blocks[0]],
+                        styles: {
+                            Sample: ".Sample { display:block; }"
+                        },
+                        total: 32
+                    })
+                )
+            } else {
+                return res(
+                    ctx.status(200),
+                    ctx.json({
+                        blocks: [mockData.blocks[1]],
+                        styles: {
+                            Sample2: ".Sample2 { display:block; }"
+                        },
+                        total: 2
+                    })
+                )
+            }
+        } else {
+            return res(
+                ctx.status(200),
+                ctx.json({
+                    blocks: [],
+                    styles: {},
+                    total: 0
+                })
+            )
+        }
     }),
 
     rest.get('/api/blocks/:id', (req, res, ctx) => {
@@ -394,6 +458,14 @@ const handlers = [
     }),
 
     rest.post('/api/blocks/:id/chown', (req, res, ctx) => {
+        if (req.body.new_owner_id === mockData.users[4].id) {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: "An error occurred"
+                })
+            )
+        }
         return res(
             ctx.status(200),
             ctx.json({
@@ -402,21 +474,11 @@ const handlers = [
         )
     }),
 
-    rest.post('/api/blocks/:id', (req, res, ctx) => {
-        if (req.body.get('_method') === 'DELETE') {
-            return res(
-                ctx.status(200),
-                ctx.json({
-                    message: 'Deleted!'
-                })
-            )
-        }
-
-        let block = JSON.parse(req.body.get('block'));
-
+    rest.put('/api/blocks/:id', (req, res, ctx) => {
+        let block = JSON.parse(req.body.block);
         if (block.settings.message === "Error This" || block.title === "Error This") {
             return res(
-                ctx.status(500),
+                ctx.status(500)
             )
         }
 
@@ -424,6 +486,21 @@ const handlers = [
             ctx.status(201),
             ctx.json({
                 message: "Saved!"
+            })
+        )
+    }),
+
+    rest.delete('/api/blocks/:id', (req, res, ctx) => {
+        if (req.params.id === 'test-block-2') {
+            return res(
+                ctx.status(500)
+            )
+        }
+
+        return res(
+            ctx.status(200),
+            ctx.json({
+                message: 'Deleted!'
             })
         )
     }),
@@ -454,14 +531,14 @@ const handlers = [
     }),
 
     rest.post('/api/email/test', (req, res, ctx) => {
-        if (req.body.get('to') === 'test@test.com') {
+        if (req.body.to === 'test@test.com') {
             return res(
                 ctx.status(200),
                 ctx.json({
                     settings: [],
                 }),
             )
-        } else if (req.body.get('to') === 'error@test.com') {
+        } else if (req.body.to === 'error@test.com') {
             return res(
                 ctx.status(500),
             )
@@ -469,7 +546,7 @@ const handlers = [
     }),
 
     rest.post('/api/admin/user.password/reset', (req, res, ctx) => {
-        if (req.body.get('password') === 'ThisIsInvalid') {
+        if (req.body.password === 'ThisIsInvalid') {
             return res(
                 ctx.status(422),
                 ctx.json({
@@ -480,7 +557,7 @@ const handlers = [
                     }
                 })
             )
-        } else if (req.body.get('password') === 'unknown') {
+        } else if (req.body.password === 'unknown') {
             return res(
                 ctx.status(500)
             )

@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import classNames from 'classnames';
 import UserAvatar from 'react-user-avatar';
-import { Button, UserSuggest, withAuth, useToasts, withWebApps } from 'webapps-react';
+import { Button, UserSuggest, withAuth, useToasts, withWebApps, APIClient } from 'webapps-react';
 import { PropertiesContext } from '../EditBlock';
 
 let _mounted = false;
@@ -47,7 +46,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
     useEffect(async () => {
         /* istanbul ignore else */
         if (users.length === 0) {
-            await axios.get('/api/users')
+            await APIClient('/api/users')
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -81,11 +80,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
             return;
         }
 
-        let formData = new FormData();
-        formData.append('old_owner_id', block.owner);
-        formData.append('new_owner_id', newOwner.id);
-
-        await axios.post(`/api/blocks/${block.publicId}/chown`, formData)
+        await APIClient(`/api/blocks/${block.publicId}/chown`, { old_owner_id: block.owner, new_owner_id: newOwner.id })
             .then(response => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -96,7 +91,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
                     block.user = newOwner;
                     setBlock(block);
 
-                    addToast('Owner changed successfully!', '',{ appearance: 'success' });
+                    addToast('Owner changed successfully!', '', { appearance: 'success' });
                     setChown(false);
                     setNewOwner({});
                 }
@@ -104,7 +99,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
             .catch(error => {
                 /* istanbul ignore else */
                 if (_mounted) {
-                    addToast(error.response.data.message, '', { appearance: 'error' });
+                    addToast(error.data.message, '', { appearance: 'error' });
                     setChown(false);
                     setNewOwner({});
                 }

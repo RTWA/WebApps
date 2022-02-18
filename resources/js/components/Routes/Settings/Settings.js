@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
-import axios from 'axios';
 
-import { Loader, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Loader, useToasts, withWebApps } from 'webapps-react';
 import { Apps, Plugins } from './Online';
 import ApplicationSettings from './ApplicationSettings';
 import EmailSettings from './EmailSettings';
@@ -40,7 +39,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }, []);
 
     const loadProductInfo = async () => {
-        await axios.get('/api/product')
+        await APIClient('/api/product')
             .then(json => {
                 if (_mounted) {
                     setProductInfo(json.data);
@@ -49,7 +48,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const loadGroups = async () => {
-        await axios.get('/api/groups')
+        await APIClient('/api/groups')
             .then(json => {
                 if (_mounted) {
                     setGroups(json.data.groups);
@@ -58,7 +57,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const loadPermissions = async () => {
-        await axios.get('/api/permissions')
+        await APIClient('/api/permissions')
             .then(json => {
                 if (_mounted) {
                     setPermissions(json.data.permissions);
@@ -67,9 +66,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const loadSettings = async () => {
-        let formData = new FormData();
-        formData.append("key", "*");
-        await axios.post('/api/setting', formData)
+        await APIClient('/api/setting', {key: '*'})
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -79,7 +76,7 @@ const Settings = ({ UI, loadNavigation }) => {
 
     const checkForUpdate = async () => {
         setUpdateCheck(<p>Checking for updates...</p>);
-        await axios.get('/api/update-check')
+        await APIClient('/api/update-check')
             .then(json => {
                 if (_mounted && json.data.available) {
                     const content = (
@@ -102,10 +99,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const createKey = async key => {
-        let formData = new FormData();
-        formData.append('_method', 'PUT')
-        formData.append('value', '');
-        await axios.post(`/api/setting/${key}`, formData)
+        await APIClient(`/api/setting/${key}`, {value: '', '_method': 'PUT'}, {method:'PUT'})
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -121,9 +115,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const deleteKey = async key => {
-        let formData = new FormData();
-        formData.append('_method', 'DELETE');
-        await axios.post(`/api/setting/${key}`, formData)
+        await APIClient(`/api/setting/${key}`, {_method:'DELETE'},{method:'DELETE'})
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -153,10 +145,7 @@ const Settings = ({ UI, loadNavigation }) => {
             setSettings({ ...settings });
         }
 
-        let formData = new FormData();
-        formData.append("_method", "PUT")
-        formData.append("value", value);
-        await axios.post(`/api/setting/${key}`, formData)
+        await APIClient(`/api/setting/${key}`, {value: value, _method:'PUT'}, {method:'PUT'})
             .then(json => {
                 key = (config_editor) ? ce_key : key;
 
