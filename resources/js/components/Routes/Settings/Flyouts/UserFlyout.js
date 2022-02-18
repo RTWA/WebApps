@@ -76,8 +76,8 @@ const UserFlyout = ({ UI, ...props }) => {
                     }
                 })
                 .catch(error => {
-                    if (error.response.status === 422) {
-                        let errors = error.response.data.errors;
+                    if (error.status.code === 422) {
+                        let errors = error.data.errors;
                         // istanbul ignore else
                         if (errors.password) {
                             states.newPassword = {

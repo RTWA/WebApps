@@ -98,7 +98,7 @@ const users = [
         name: 'Jest Second User',
         email: 'jest@test',
         active: false,
-        azure_id: 123,
+        azure_id: null,
         number_of_blocks: 0,
         roles: []
     },
@@ -181,14 +181,18 @@ const permissions = {
 const settings = {
     "core.mocked.data_mocked": "true",
     "core.ui.theme": 'indigo',
+    "core.ui.dark_mode": "user",
     "core.ui.branding": "[\"#EEF2FF\", \"#E0E7FF\", \"#C7D2FE\", \"#A5B4FC\", \"#818CF8\", \"#6366F1\", \"#4F46E5\", \"#4338CA\", \"#3730A3\", \"#312E81\"]",
     "core.cms.display_link": 'true',
+    "core.cms.url": "",
+    "core.cms.text": "",
     "auth.internal.registrations": 'true',
     "auth.internal.default_group": groups[0].name,
-    "azure.graph.tenant": '',
+    "azure.graph.tenant": '123',
     "azure.graph.client_id": '',
     "azure.graph.client_secret": '',
     "mail.driver": 'smtp',
+    "mail.smtp.host": '',
 };
 
 const navigation = {

@@ -214,14 +214,12 @@ const UsersGroups = ({ UI, ...props }) => {
 
     const saveRenameGroup = async e => {
         e.preventDefault();
-
         /* istanbul ignore else */
         if (old_name !== selectedGroup.name) {
-
             selectedGroup.state = 'saving';
             setSelectedGroup({ ...selectedGroup });
 
-            await APIClient('/api/group', { old_name: old_name, new_name: selectGroup.name, _method: 'PATCH' }, { method: '_PATCH' })
+            await APIClient('/api/group', { old_name: old_name, new_name: selectedGroup.name, _method: 'PATCH' }, { method: 'PATCH' })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -237,7 +235,8 @@ const UsersGroups = ({ UI, ...props }) => {
                         selectedGroup.state = 'saved';
                         setSelectedGroup({ ...selectedGroup });
                         setTimeout(/* istanbul ignore next */function () {
-                            if (_mounted) {
+                            // Don't do anything if testing
+                            if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                                 selectedGroup.status = '';
                                 setSelectedGroup({ ...selectedGroup });
                             }
@@ -248,10 +247,10 @@ const UsersGroups = ({ UI, ...props }) => {
                     /* istanbul ignore else */
                     if (_mounted) {
                         selectedGroup.state = 'error';
-                        if (error.response.data.errors.old_name !== undefined) {
-                            selectedGroup.error = error.response.data.errors.old_name[0]
-                        } else /* istanbul ignore else */ if (error.response.data.errors.new_name !== undefined) {
-                            selectedGroup.error = error.response.data.errors.new_name[0];
+                        if (error.data.errors.old_name !== undefined) {
+                            selectedGroup.error = error.data.errors.old_name[0]
+                        } else /* istanbul ignore else */ if (error.data.errors.new_name !== undefined) {
+                            selectedGroup.error = error.data.errors.new_name[0];
                         }
                         setSelectedGroup({ ...selectedGroup });
                     }
@@ -288,8 +287,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    console.log(error.response);
-                    addToast(error.response.data.message, '', { appearance: 'error' });
+                    addToast(error.data.message, '', { appearance: 'error' });
                 }
             });
     }
@@ -317,8 +315,9 @@ const UsersGroups = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
+                console.log(error);
                 if (_mounted) {
-                    addToast(error.response.data.message, '', { appearance: 'error' });
+                    addToast(error.data.message, '', { appearance: 'error' });
                 }
             });
     }
@@ -326,16 +325,16 @@ const UsersGroups = ({ UI, ...props }) => {
     const deleteUser = async () => {
         await APIClient(`/api/user/${user.id}/hard`, { _method: 'DELETE' }, { method: 'DELETE' })
             .then(json => {
+                // TODO: Surely this can be improved?
+                let _disabled = [];
+                disabled.map(function (u) {
+                    if (u.id !== user.id) {
+                        _disabled.push(u)
+                    }
+                });
+
                 /* istanbul ignore else */
                 if (_mounted) {
-                    // TODO: Surely this can be improved?
-                    let _disabled = [];
-                    disabled.map(function (u) {
-                        if (u.id !== user.id) {
-                            _disabled.push(u)
-                        }
-                    });
-
                     setDisabled(_disabled);
                     setUser([]);
                     toggleUserModal();
@@ -343,7 +342,7 @@ const UsersGroups = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (_mounted) {
-                    addToast(error.response.data.message, '', { appearance: 'error' });
+                    addToast(error.data.message, '', { appearance: 'error' });
                 }
             });
     }
@@ -367,8 +366,9 @@ const UsersGroups = ({ UI, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
+                console.log(error);
                 if (_mounted) {
-                    addToast(error.response.data.errors.name[0], '', { appearance: 'error' });
+                    addToast(error.data.errors?.name[0], '', { appearance: 'error' });
                 }
             });
     }

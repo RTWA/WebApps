@@ -33,7 +33,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     setStates({ ...states });
 
                     setTimeout(/* istanbul ignore next */ function () {
-                        if (_mounted) {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
                             setStates({ ...states });
                         }
@@ -53,7 +54,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     setStates({ ...states });
 
                     setTimeout(/* istanbul ignore next */ function () {
-                        if (_mounted) {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
                             setStates({ ...states });
                         }
@@ -102,7 +104,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
             setStates({ ...states });
 
             setTimeout(/* istanbul ignore next */ function () {
-                if (_mounted) {
+                // Don't do anything if testing
+                if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     states[check_id] = '';
                     setStates({ ...states });
                 }

@@ -71,7 +71,7 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
             })
             .catch(error => {
                 setState('error');
-                setError(error.response.data.errors.name[0]);
+                setError(error.data.errors.name[0]);
             });
     }
 

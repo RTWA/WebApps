@@ -92,8 +92,8 @@ const CreateUserFlyout = ({ UI, ...props }) => {
                 resetState();
             })
             .catch(error => {
-                if (error.response.status === 422) {
-                    let errors = error.response.data.errors;
+                if (error.status.code === 422) {
+                    let errors = error.data.errors;
 
                     Object.keys(errors).forEach(function (field) {
                         setState(field, 'error', errors[field][0]);
