@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Laravel\Socialite\Facades\Socialite;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 
@@ -63,10 +64,11 @@ class OAuth2Controller extends Controller
     private function makeDriver()
     {
         $clientId = ApplicationSettings::get('azure.graph.client_id');
-        $clientSecret = ApplicationSettings::get('azure.graph.client_secret');
+        $clientSecret = Crypt::decryptString(ApplicationSettings::get('azure.graph.client_secret'));
+        $tenant = ApplicationSettings::get('azure.graph.tenant');
         $redirect = URL::to('/').'/login/oauth2/azure/callback';
 
-        $config = new \SocialiteProviders\Manager\Config($clientId, $clientSecret, $redirect, []);
+        $config = new \SocialiteProviders\Manager\Config($clientId, $clientSecret, $redirect, ['tenant' => $tenant]);
         return Socialite::driver('azure')->setConfig($config);
     }
 }

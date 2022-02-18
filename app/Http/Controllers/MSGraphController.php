@@ -17,7 +17,7 @@ class MSGraphController extends Controller
         if ($request->input('admin_consent') === 'True') {
             ApplicationSettings::set('azure.graph.tenant', $request->input('tenant'));
         }
-        
+
         return redirect('/settings/azure');
     }
 
@@ -48,10 +48,10 @@ class MSGraphController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_URL =>
-                "https://login.microsoftonline.com/".
-                ApplicationSettings::get('azure.graph.tenant')."/oauth2/v2.0/token",
+            "https://login.microsoftonline.com/" .
+                ApplicationSettings::get('azure.graph.tenant') . "/oauth2/v2.0/token",
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYHOST =>false,
+            CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -59,7 +59,7 @@ class MSGraphController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS =>
-                "grant_type=client_credentials&client_id=".$client_id."&client_secret=".$secret."&scope=".$scope,
+            "grant_type=client_credentials&client_id=" . $client_id . "&client_secret=" . $secret . "&scope=" . $scope,
             CURLOPT_HTTPHEADER => [
                 "content-type: application/x-www-form-urlencoded"
             ],
@@ -70,7 +70,7 @@ class MSGraphController extends Controller
 
         $token = MSGraphToken::create([
             'access_token' => $content['access_token'],
-            'expires' => (time()+$content['expires_in']),
+            'expires' => (time() + $content['expires_in']),
         ]);
 
         return response()->json(['token' => $token]);
@@ -85,14 +85,14 @@ class MSGraphController extends Controller
         }
         $token = json_decode($this->getAccessToken()->content(), true)['token']['access_token'];
 
-        $photo = $this->getGraphAPI('users/'.$azure_id.'/photo/$value', $token, true);
-        
+        $photo = $this->getGraphAPI('users/' . $azure_id . '/photo/$value', $token, true);
+
         if (!isset($photo['error'])) {
             $image = str_replace('data:image/png;base64,', '', $photo);
             $image = str_replace(' ', '+', $image);
             return $image;
         }
-        
+
         return null;
     }
 
@@ -117,7 +117,7 @@ class MSGraphController extends Controller
 
         foreach ($users as $user) {
             $azUser = $this->getGraphAPI(
-                'users/'.$user['azure_id'].'?$select=userPrincipalName,displayName,mail,accountEnabled',
+                'users/' . $user['azure_id'] . '?$select=userPrincipalName,displayName,mail,accountEnabled',
                 $token
             );
             if ($user->username !== $azUser['userPrincipalName']) {
@@ -142,23 +142,28 @@ class MSGraphController extends Controller
 
         foreach ($groupMappings['mappings'] as $group => $azGroup) {
             $group = Role::findById($group, 'web');
-            $groupMembers = $this->getGraphAPI("groups/".$azGroup."/members", $token)['value'];
+            $groupMembers = $this->getGraphAPI("groups/" . $azGroup . "/members", $token)['value'];
 
             foreach ($groupMembers as $member) {
-                $user = User::where('azure_id', $member['id'])->first();
+                $user = User::where('azure_id', $member['id'])->orWhere('email', $member['mail'])->first();
                 if (!$user) {
                     // Create User
                     $user = User::create([
                         'username' => $member['userPrincipalName'],
-                        'password' => Hash::make(rand().$member['mail'].$member['id'].time().rand()),
+                        'password' => Hash::make(rand() . $member['mail'] . $member['id'] . time() . rand()),
                         'email' => $member['mail'],
                         'name' => $member['displayName'],
                         'active' => true,
                         'azure_id' => $member['id'],
                     ]);
-                    // Assign new User to Group
-                    $user->syncRoles([$group]);
-                } elseif (!$user->hasRole($group)) {
+                } else {
+                    $user->username = $member['userPrincipalName'];
+                    $user->email = $member['mail'];
+                    $user->azure_id = $member['id'];
+                    $user->save();
+                }
+
+                if (!$user->hasRole($group)) {
                     $user->syncRoles([$group]);
                     $user->touch();
                 }
@@ -170,9 +175,9 @@ class MSGraphController extends Controller
     {
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => "https://graph.microsoft.com/v1.0/".$endpoint,
+            CURLOPT_URL => "https://graph.microsoft.com/v1.0/" . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYHOST =>false,
+            CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -180,7 +185,7 @@ class MSGraphController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer ".$token
+                "Authorization: Bearer " . $token
             ],
         ]);
         $content = curl_exec($curl);
