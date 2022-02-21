@@ -165,7 +165,8 @@ class MSGraphController extends Controller
                     $user->save();
                 }
 
-                if (!$user->hasRole($group)) {
+                // Set the group for the user, but don't override an Administrator!
+                if (!$user->hasRole($group) && !$user->hasRole('Administrators')) {
                     $user->syncRoles([$group]);
                     $user->touch();
                 }
