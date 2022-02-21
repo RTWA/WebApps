@@ -595,7 +595,8 @@ class SecurityRoutesTest extends TestCase
 
         GroupToAzureGroup::create([
             'role_id' => $role_id,
-            'azure_group_id' => 'PHPUnit_Test_Group'
+            'azure_group_id' => 'PHPUnit_Test_Group_ID',
+            'azure_display_name' => 'PHPUnit_Test_Group',
         ]);
 
         $response = $this->getJson('/api/group/mappings');
@@ -603,7 +604,10 @@ class SecurityRoutesTest extends TestCase
         $response->assertSuccessful();
         $response->assertJsonFragment([
             'mappings' => [
-                $role_id => "PHPUnit_Test_Group"
+                $role_id => [
+                    'azure_group_id' => "PHPUnit_Test_Group-ID",
+                    'azure_display_name' => "PHPUnit_Test_Group",
+                ]
             ]
         ]);
     }
@@ -621,12 +625,14 @@ class SecurityRoutesTest extends TestCase
 
         GroupToAzureGroup::create([
             'role_id' => $role_id,
-            'azure_group_id' => 'PHPUnit_Test_Group'
+            'azure_group_id' => 'PHPUnit_Test_Group_ID',
+            'azure_display_name' => 'PHPUnit_Test_Group',
         ]);
 
         $response = $this->postJson('/api/group/mapping', [
             'group_id' => $role_id,
-            'azure_group_id' => 'PHPUnit_Second_Test_Group'
+            'azure_group_id' => "PHPUnit_Second_Test_Group-ID",
+            'azure_display_name' => "PHPUnit_Second_Test_Group",
         ]);
 
         $response->assertSuccessful();
@@ -648,7 +654,8 @@ class SecurityRoutesTest extends TestCase
 
         $response = $this->postJson('/api/group/mapping', [
             'group_id' => $role_id,
-            'azure_group_id' => 'PHPUnit_Second_Test_Group'
+            'azure_group_id' => "PHPUnit_Second_Test_Group-ID",
+            'azure_display_name' => "PHPUnit_Second_Test_Group",
         ]);
 
         $response->assertSuccessful();
