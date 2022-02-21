@@ -29,9 +29,8 @@ describe('Azure Component - Configured', () => {
         expect(screen.getByText(/azure app registration information/i)).toBeDefined();
         expect(screen.getByText(/map azure groups to webapps groups/i)).toBeDefined();
         expect(screen.getByText(/azure synchronisation status/i)).toBeDefined();
-        expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined();
 
-        await waitFor(async () => expect(screen.getByRole('textbox', { name: /administrators/i }).children).toHaveLength(3));
+        await waitFor(async () => expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined());
     });
 
     test('Can Enable Azure Authentication', async () => {
