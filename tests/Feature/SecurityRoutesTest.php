@@ -605,7 +605,7 @@ class SecurityRoutesTest extends TestCase
         $response->assertJsonFragment([
             'mappings' => [
                 $role_id => [
-                    'azure_group_id' => "PHPUnit_Test_Group-ID",
+                    'azure_group_id' => "PHPUnit_Test_Group_ID",
                     'azure_display_name' => "PHPUnit_Test_Group",
                 ]
             ]
