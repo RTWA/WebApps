@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Input } from 'webapps-react';
 
 const GroupSearch = ({ id, groupData, setData, accessToken, saveChange, ...props }) => {
