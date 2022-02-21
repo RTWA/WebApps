@@ -29,9 +29,8 @@ describe('Azure Component - Configured', () => {
         expect(screen.getByText(/azure app registration information/i)).toBeDefined();
         expect(screen.getByText(/map azure groups to webapps groups/i)).toBeDefined();
         expect(screen.getByText(/azure synchronisation status/i)).toBeDefined();
-        expect(screen.getByRole('combobox', { name: /administrators/i })).toBeDefined();
 
-        await waitFor(async () => expect(screen.getByRole('combobox', { name: /administrators/i }).children).toHaveLength(3));
+        await waitFor(async () => expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined());
     });
 
     test('Can Enable Azure Authentication', async () => {
@@ -72,19 +71,19 @@ describe('Azure Component - Configured', () => {
 
     // FIXME: This is not correctly testing a result
     // test('Can Add A Group Mapping', async () => {
-    //     expect(screen.getByRole('combobox', { name: /administrators/i })).toBeDefined();
+    //     expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined();
 
     //     await waitFor(async () => {
-    //         expect(screen.getByRole('combobox', { name: /administrators/i }).children).toHaveLength(3);
+    //         expect(screen.getByRole('textbox', { name: /administrators/i }).children).toHaveLength(3);
     //     });
 
-    //     expect(screen.getByRole('combobox', { name: /administrators/i }).children).toHaveLength(3);
+    //     expect(screen.getByRole('textbox', { name: /administrators/i }).children).toHaveLength(3);
 
     //     await act(async () => {
-    //         fireEvent.change(screen.getByRole('combobox', { name: /administrators/i }), { target: { value: '001' } });
-    //         await screen.getByRole('combobox', { name: /administrators/i }).value === '001';
+    //         fireEvent.change(screen.getByRole('textbox', { name: /administrators/i }), { target: { value: '001' } });
+    //         await screen.getByRole('textbox', { name: /administrators/i }).value === '001';
     //     });
-    //     await waitFor(() => expect(screen.getByRole('combobox', { name: /administrators/i }).children).toHaveLength(3));
+    //     await waitFor(() => expect(screen.getByRole('textbox', { name: /administrators/i }).children).toHaveLength(3));
     // });
 
     test('Can Request A Manual Azure Sync', async () => {

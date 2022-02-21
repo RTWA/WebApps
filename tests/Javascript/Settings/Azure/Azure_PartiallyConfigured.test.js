@@ -46,9 +46,7 @@ describe('Azure Component - Partially Configured', () => {
         await waitFor(async () => {
             expect(screen.getByText(/map azure groups to webapps groups/i)).toBeDefined();
             expect(screen.getByText(/azure synchronisation status/i)).toBeDefined();
-            expect(screen.getByRole('combobox', { name: /administrators/i }).children).toHaveLength(3);
+            expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined();
         });
-
-        expect(screen.getByRole('combobox', { name: /administrators/i }).children).toHaveLength(3);
     });
 });

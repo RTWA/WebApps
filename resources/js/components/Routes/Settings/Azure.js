@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { APIClient, Button, Input, Switch, withWebApps } from 'webapps-react';
 import moment from 'moment';
 
+import GroupSearch from './GroupSearch/GroupSearch';
+
 let _mounted = false;
 /* istanbul ignore next */
 let webapps = `${location.protocol}//${location.hostname}${(location.port ? `:${location.port}` : '')}`;
@@ -20,8 +22,7 @@ const Azure = ({ UI, ...props }) => {
 
     const [graphApp, setGraphApp] = useState({});
     const [accessToken, setAccessToken] = useState(null);
-    const [groupMappings, setGroupMappings] = useState({});
-    const [azGroups, setAzGroups] = useState([]);
+    const [groupData, setGroupData] = useState([]);
     const [syncBtnText, setSyncBtnText] = useState('Sync Now');
 
     useEffect(() => {
@@ -40,7 +41,7 @@ const Azure = ({ UI, ...props }) => {
     useEffect(() => {
         if (accessToken) {
             getGroupMaps();
-            getAzGroups();
+            // getAzGroups();
         }
     }, [accessToken]);
 
@@ -70,49 +71,68 @@ const Azure = ({ UI, ...props }) => {
     const getGroupMaps = async () => {
         await APIClient('/api/group/mappings')
             .then(json => {
-                setGroupMappings(json.data.mappings);
+                Object.keys(json.data.mappings).map(function (group) {
+                    let map = json.data.mappings[group];
+
+                    groupData[group] = {
+                        value: map.azure_display_name,
+                        selected: {
+                            id: map.azure_group_id,
+                            displayName: map.azure_display_name
+                        }
+                    };
+                });
+                setGroupData(groupData);
             })
             .catch(/* istanbul ignore next */ error => {
-                if (!error.status.isAbort) {
+                if (!error.status?.isAbort) {
                     // TODO: Handle errors
                     console.error(error);
                 }
             })
     }
 
-    const setGroupMapping = async e => {
-        let group = e.target.id;
-        let azGroup = e.target.value;
+    const setGroupMapping = async group => {
+        groupData[group].state = 'saving';
+        setGroupData([...groupData]);
 
-        await APIClient('/api/group/mapping', { group_id: group, azure_group_id: azGroup })
+        await APIClient('/api/group/mapping', {
+            group_id: group,
+            azure_group_id: groupData[group].selected.id,
+            azure_display_name: groupData[group].selected.displayName,
+        })
             .then(json => {
                 /* istanbul ignore else */
                 if (json.data.success) {
-                    groupMappings[group] = azGroup;
-                    setGroupMappings({ ...groupMappings });
+                    groupData[group].state = 'saved';
+                    setGroupData([...groupData]);
+
+                    setTimeout(/* istanbul ignore next */ function () {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                            groupData[group].state = '';
+                            setGroupData([...groupData]);
+                        }
+                    }, 2500);
                 }
             })
             .catch(/* istanbul ignore next */ error => {
                 if (!error.status.isAbort) {
                     // TODO: Handle errors
                     console.error(error);
+
+                    groupData[group].state = 'error';
+                    setGroupData([...groupData]);
+
+                    setTimeout(/* istanbul ignore next */ function () {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                            groupData[group].state = '';
+                            setGroupData([...groupData]);
+                        }
+                    }, 2500);
                 }
             });
-    }
-
-    const getAzGroups = () => {
-        let headers = new Headers();
-        let bearer = `Bearer ${accessToken}`;
-        headers.append('Authorization', bearer);
-        let options = {
-            method: "GET",
-            headers: headers,
-        };
-        let graphEndpoint = 'https://graph.microsoft.com/v1.0/groups?$select=id,displayName';
-
-        fetch(graphEndpoint, options)
-            .then(response => response.json())
-            .then(data => setAzGroups(data.value));
     }
 
     const syncAzureNow = async () => {
@@ -294,32 +314,34 @@ const Azure = ({ UI, ...props }) => {
                                                 return (
                                                     <div className="flex flex-col xl:flex-row p-4" key={i}>
                                                         <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor={`${group.id}`}>{group.name}</label>
-                                                        <select name={group.id}
+                                                        <GroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
+                                                        {/* <Input name={group.id} id={group.id} value={groupData[group.id]?.value || ''} onChange={searchAzGroups} onFocus={focusGroupSearch} onBlur={blurGroupSearch} /> */}
+                                                        {/* <select name={group.id}
                                                             id={group.id}
                                                             value={groupMappings[group.id]}
                                                             onChange={setGroupMapping}
                                                             className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}
                                                         >
-                                                            <option value="">Not Mapped</option>
-                                                            {
-                                                                Object(azGroups).map(function (azGroup, i) {
-                                                                    let used = [];
-                                                                    Object.keys(groupMappings).map(function (gid) {
-                                                                        /* istanbul ignore else */
-                                                                        if (gid != group.id) {
-                                                                            used.push(groupMappings[gid]);
-                                                                        }
-                                                                    });
+                                                            <option value="">Not Mapped</option> */}
+                                                        {
+                                                            // Object(azGroups).map(function (azGroup, i) {
+                                                            //     let used = [];
+                                                            //     Object.keys(groupMappings).map(function (gid) {
+                                                            //         /* istanbul ignore else */
+                                                            //         if (gid != group.id) {
+                                                            //             used.push(groupMappings[gid]);
+                                                            //         }
+                                                            //     });
 
-                                                                    /* istanbul ignore else */
-                                                                    if (!used.includes(azGroup.id)) {
-                                                                        return <option key={i} value={azGroup.id}>{azGroup.displayName}</option>
-                                                                    } else {
-                                                                        return <option key={i} value={azGroup.id} disabled>{azGroup.displayName}</option>
-                                                                    }
-                                                                })
-                                                            }
-                                                        </select>
+                                                            //     /* istanbul ignore else */
+                                                            //     if (!used.includes(azGroup.id)) {
+                                                            //         return <option key={i} value={azGroup.id}>{azGroup.displayName}</option>
+                                                            //     } else {
+                                                            //         return <option key={i} value={azGroup.id} disabled>{azGroup.displayName}</option>
+                                                            //     }
+                                                            // })
+                                                        }
+                                                        {/* </select> */}
                                                     </div>
                                                 )
                                             })

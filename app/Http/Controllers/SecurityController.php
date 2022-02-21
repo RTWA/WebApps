@@ -116,7 +116,8 @@ class SecurityController extends Controller
         $mappings = [];
 
         foreach ($maps as $map) {
-            $mappings[$map->role_id] = $map->azure_group_id;
+            $mappings[$map->role_id]['azure_group_id'] = $map->azure_group_id;
+            $mappings[$map->role_id]['azure_display_name'] = $map->azure_display_name;
         }
 
         return response()->json([
@@ -131,16 +132,19 @@ class SecurityController extends Controller
     {
         $group = $request->input('group_id');
         $azGroup = $request->input('azure_group_id');
+        $azDisplay = $request->input('azure_display_name');
 
         $current = GroupToAzureGroup::where('role_id', $group)->first();
 
         if ($current && $current->azure_group_id <> $azGroup) {
             $current->azure_group_id = $azGroup;
+            $current->azure_display_name = $azDisplay;
             $current->save();
         } elseif (!$current) {
             GroupToAzureGroup::create([
                 'role_id' => $group,
-                'azure_group_id' => $azGroup
+                'azure_group_id' => $azGroup,
+                'azure_display_name' => $azDisplay,
             ]);
         }
 

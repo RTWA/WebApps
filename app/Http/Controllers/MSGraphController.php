@@ -66,8 +66,10 @@ class MSGraphController extends Controller
         ]);
         $content = json_decode(curl_exec($curl), true);
         curl_close($curl);
-        // TODO: Should handle errors in this
-
+        if (isset($content['error'])) {
+            abort(500, $content['error_description']);
+        }
+        
         $token = MSGraphToken::create([
             'access_token' => $content['access_token'],
             'expires' => (time() + $content['expires_in']),
@@ -163,7 +165,8 @@ class MSGraphController extends Controller
                     $user->save();
                 }
 
-                if (!$user->hasRole($group)) {
+                // Set the group for the user, but don't override an Administrator!
+                if (!$user->hasRole($group) && !$user->hasRole('Administrators')) {
                     $user->syncRoles([$group]);
                     $user->touch();
                 }
