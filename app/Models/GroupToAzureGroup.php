@@ -12,5 +12,6 @@ class GroupToAzureGroup extends Model
     protected $fillable = [
         'role_id',
         'azure_group_id',
+        'azure_display_name',
     ];
 }
