@@ -2,44 +2,37 @@ const colors = require('tailwindcss/colors');
 
 module.exports = {
   important: true,
-  purge: {
-    content: [
-      './storage/framework/views/*.php',
-      './resources/**/*.blade.php',
-      './resources/**/*.js',
-      './node_modules/webapps-react/dist/*.js'
-    ],
-    options: {
-      safelist: [
-        /.*flex-/,
-        /.*bg-/,
-        /.*text-/,
-        /.*border-/,
-        /.*m(b|t|l|r|x|y)?-/,
-        /.*p(b|t|l|r|x|y)?-/,
-        /.*h-/,
-        /.*w-/,
-        /.*top-/,
-        /.*right-/,
-        /.*bottom-/,
-        /.*left-/,
-        /.*UserAvatar/,
-        /.*max-/,
-        /.*opacity-/,
-        /.*grid-cols-/,
-        /.*translate-/,
-      ]
-    }
-  },
+  content: [
+    './storage/framework/views/*.php',
+    './resources/**/*.blade.php',
+    './resources/**/*.js',
+    './node_modules/webapps-react/dist/*.js'
+  ],
+  safelist: [
+    { pattern: /.*flex-/ },
+    { pattern: /.*bg-/ },
+    { pattern: /.*text-/ },
+    { pattern: /.*border-/ },
+    { pattern: /.*m(b|t|l|r|x|y)?-/ },
+    { pattern: /.*p(b|t|l|r|x|y)?-/ },
+    { pattern: /.*h-/ },
+    { pattern: /.*w-/ },
+    { pattern: /.*top-/ },
+    { pattern: /.*right-/ },
+    { pattern: /.*bottom-/ },
+    { pattern: /.*left-/ },
+    { pattern: /.*UserAvatar/ },
+    { pattern: /.*max-/ },
+    { pattern: /.*opacity-/ },
+    { pattern: /.*grid-cols-/ },
+    { pattern: /.*translate-/ },
+  ],
   darkMode: 'class', // false or 'media' or 'class'
   theme: {
     extend: {
       colors: {
-        'gray': colors.trueGray,
+        'gray': colors.neutral,
         'light-blue': colors.sky,
-        'orange': colors.orange,
-        'lime': colors.lime,
-        'fuchsia': colors.fuchsia
       },
       zIndex: {
         '-10': '-10',
@@ -54,16 +47,7 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {
-      backgroundColor: ["checked"],
-      borderColor: ["checked"],
-      inset: ["checked"],
-      fontWeight: ["hover"],
-    },
-  },
   plugins: [
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/forms')
+    require('flowbite/plugin')
   ],
 }

@@ -171,9 +171,7 @@
         max-width: 49.8rem !important;
     }
 
-    @variants responsive {
-        .w-1\/2-gap-3 {
-            width: 48.8% !important;
-        }
+    .w-1\/2-gap-3 {
+        width: 48.8% !important;
     }
 }
