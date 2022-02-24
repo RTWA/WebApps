@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
-import { withAuth, withWebApps } from 'webapps-react';
+import React, { useEffect, useState } from 'react';
+import { ColorGridSelect, withAuth, withWebApps } from 'webapps-react';
 
 const Preferences = ({ user, preferences, setPreference, UI }) => {
+    const [darkOptions, setDarkOptions] = useState([]);
 
     useEffect(() => {
         // Workaround for current bug in Auth Context
@@ -10,6 +11,27 @@ const Preferences = ({ user, preferences, setPreference, UI }) => {
             preferences = JSON.parse(user.preferences);
             setPreference('dark_mode', preferences.dark_mode);
         }
+
+        setDarkOptions([
+            {
+                value: 'light',
+                bgClasses: 'bg-gray-200',
+                name: 'Light Mode Only',
+                selected: (preferences?.dark_mode === 'light'),
+            },
+            {
+                value: 'dark',
+                bgClasses: 'bg-gray-900',
+                name: 'Dark Mode Only',
+                selected: (preferences?.dark_mode === 'dark'),
+            },
+            {
+                value: '',
+                bgClasses: 'bg-gradient-to-r from-gray-200 to-gray-900',
+                name: 'Use System Settings',
+                selected: (preferences?.dark_mode === ''),
+            }
+        ]);
     }, [preferences]);
 
     const setDarkMode = value => {
@@ -45,30 +67,12 @@ const Preferences = ({ user, preferences, setPreference, UI }) => {
 
                 <div className="mt-5 md:mt-0 md:col-span-2">
                     <div className="px-4 py-5 bg-white dark:bg-gray-800 sm:p-6 shadow sm:rounded-md">
-                        <div className="grid grid-cols-6 gap-6">
-                            <div className="col-span-6 sm:col-span-4 md:col-span-6 lg:col-span-4">
-                                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300" htmlFor="dark_mode">
-                                    Dark Mode Option
-                                </label>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                                    <div onClick={() => setDarkMode('light')} className={`border-2 border-white dark:border-gray-700 w-full bg-white dark:bg-gray-700 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer ${(preferences?.dark_mode === 'light') ? `ring-4 ring-${UI.theme}-600 dark:ring-${UI.theme}-500 ring-opacity-50` : ''}`}>
-                                        <div className="selector h-10 bg-gray-200 not-sr-only"></div>
-                                        <div className="text-center">Light Mode Only</div>
-                                    </div>
-                                    <div onClick={() => setDarkMode('dark')} className={`border-2 border-white dark:border-gray-700 w-full bg-white dark:bg-gray-700 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer ${(preferences?.dark_mode === 'dark') ? `ring-4 ring-${UI.theme}-600 dark:ring-${UI.theme}-500 ring-opacity-50` : ''}`}>
-                                        <div className="selector h-10 bg-gray-900 not-sr-only"></div>
-                                        <div className="text-center">Dark Mode Only</div>
-                                    </div>
-                                    <div onClick={() => setDarkMode('')} className={`border-2 border-white dark:border-gray-700 w-full bg-white dark:bg-gray-700 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer ${(preferences?.dark_mode === '') ? `ring-4 ring-${UI.theme}-600 dark:ring-${UI.theme}-500 ring-opacity-50` : ''}`}>
-                                        <div className="flex flex-row w-full h-10">
-                                            <div className="selector h-10 w-full bg-gray-200 not-sr-only"></div>
-                                            <div className="selector h-10 w-full bg-gray-900 not-sr-only"></div>
-                                        </div>
-                                        <div className="text-center">Use System Settings</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <ColorGridSelect
+                            id="core.ui.dark_mode"
+                            label="Dark Mode Option"
+                            colors={darkOptions}
+                            onSelect={setDarkMode}
+                        />
                     </div>
                 </div>
             </div>

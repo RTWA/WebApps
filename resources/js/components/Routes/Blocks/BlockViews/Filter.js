@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { WebAppsContext } from 'webapps-react';
+import { Input, Select, WebAppsContext } from 'webapps-react';
 
 const Filter = props => {
     const {
@@ -14,11 +14,11 @@ const Filter = props => {
             <div className="hidden xl:block col-span-2">&nbsp;</div>
             <div>
                 <label htmlFor="filter-search" className="sr-only">Filter by Search</label>
-                <input type="text" className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 bg-transparent`} placeholder="Search..." onKeyUp={blockFilter} id="filter-search" />
+                <Input type="text" placeholder="Search..." onKeyUp={blockFilter} id="filter-search" inputClassName="bg-gray-200" />
             </div>
             <div>
                 <label htmlFor="filter-plugin" className="sr-only">Filter by Plugin</label>
-                <select className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500 bg-transparent`} onChange={blockFilter} id="filter-plugin">
+                <Select onChange={blockFilter} id="filter-plugin" selectClassName="bg-gray-200">
                     <option value="">Show All Block Types</option>
                     {
                         plugins.map(function (plugin, i) {
@@ -27,7 +27,7 @@ const Filter = props => {
                             )
                         })
                     }
-                </select>
+                </Select>
             </div>
         </div>
     );

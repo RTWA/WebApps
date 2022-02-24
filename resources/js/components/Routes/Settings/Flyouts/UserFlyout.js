@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { APIClient, Button, ConfirmDeleteButton, Input, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, ConfirmDeleteButton, Input, Select, useToasts, withWebApps } from 'webapps-react';
 
 import { FlyoutsContext } from '../UsersGroups';
 
@@ -170,25 +170,22 @@ const UserFlyout = ({ UI, ...props }) => {
                                     <h1 className="text-lg font-medium">{user.name}</h1>
                                     <p className="italic text-gray-500">{user.username}</p>
                                     <h4 className="mt-2 font-medium text-md">{user.email}</h4>
-                                    <div className="mt-8 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="usrSecGroup">Change Security Group</label>
-                                        <div className="w-full">
-                                            <select name="usrSecGroup"
-                                                id="usrSecGroup"
-                                                onChange={setGroup}
-                                                value={user._CurrentGroupId}
-                                                className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
-                                                <option value="0">No group assigned</option>
-                                                {
-                                                    Object(groups).map(function (group, i) {
-                                                        return (
-                                                            <option value={group.id} key={i}>{group.name}</option>
-                                                        )
-                                                    })
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <Select
+                                        id="usrSecGroup"
+                                        name="usrSecGroup"
+                                        label="Change Security Group"
+                                        wrapperClassName="w-full mt-8"
+                                        onChange={setGroup}
+                                        value={user._CurrentGroupId}>
+                                        <option value="0">No group assigned</option>
+                                        {
+                                            Object(groups).map(function (group, i) {
+                                                return (
+                                                    <option value={group.id} key={i}>{group.name}</option>
+                                                )
+                                            })
+                                        }
+                                    </Select>
                                     <h4 className="mt-8 w-full font-medium text-sm">Blocks</h4>
                                     <div className="sm:flex sm:flex-row sm:gap-x-6">
                                         <p>

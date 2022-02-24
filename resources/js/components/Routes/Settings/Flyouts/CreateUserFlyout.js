@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { FlyoutsContext } from '../UsersGroups';
-import { APIClient, Button, Input, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, Select, useToasts, withWebApps } from 'webapps-react';
 
 const CreateUserFlyout = ({ UI, ...props }) => {
     const {
@@ -134,85 +134,68 @@ const CreateUserFlyout = ({ UI, ...props }) => {
                         <div className="my-6 relative flex-1 px-4 sm:px-6">
                             <div className="absolute inset-0 px-4 sm:px-6 overflow-y-auto">
                                 <div className="h-full" aria-hidden="true">
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="name_cuf">User's Name</label>
-                                        <Input name="name"
-                                            type="text"
-                                            id="name_cuf"
-                                            value={user.name.value || ''}
-                                            error={user.name.error || ''}
-                                            state={user.name.state || ''}
-                                            onChange={typeValue}
-                                            className="w-full" />
-                                    </div>
+                                    <Input
+                                        id="name_cuf"
+                                        name="name"
+                                        label="User's Name"
+                                        type="text"
+                                        value={user.name.value || ''}
+                                        error={user.name.error || ''}
+                                        state={user.name.state || ''}
+                                        onChange={typeValue} />
+                                    <Input
+                                        id="username_cuf"
+                                        name="username"
+                                        label="Username"
+                                        type="text"
+                                        value={user.username.value || ''}
+                                        error={user.username.error || ''}
+                                        state={user.username.state || ''}
+                                        onChange={typeValue} />
+                                    <Input
+                                        id="email_cuf"
+                                        name="email"
+                                        label="E-Mail Address"
+                                        type="text"
+                                        value={user.email.value || ''}
+                                        error={user.email.error || ''}
+                                        state={user.email.state || ''}
+                                        onChange={typeValue} />
+                                    <Input
+                                        id="password_cuf"
+                                        name="password"
+                                        label="Enter Password"
+                                        type="password"
+                                        value={user.password.value || ''}
+                                        error={user.password.error || ''}
+                                        state={user.password.state || ''}
+                                        onChange={typeValue} />
 
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="username_cuf">Username</label>
-                                        <Input name="username"
-                                            type="text"
-                                            id="username_cuf"
-                                            value={user.username.value || ''}
-                                            error={user.username.error || ''}
-                                            state={user.username.state || ''}
-                                            onChange={typeValue}
-                                            className="w-full" />
-                                    </div>
-
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="email_cuf">E-Mail Address</label>
-                                        <Input name="email"
-                                            type="text"
-                                            id="email_cuf"
-                                            value={user.email.value || ''}
-                                            error={user.email.error || ''}
-                                            state={user.email.state || ''}
-                                            onChange={typeValue}
-                                            className="w-full" />
-                                    </div>
-
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="password_cuf">Enter Password</label>
-                                        <Input name="password"
-                                            type="password"
-                                            id="password_cuf"
-                                            value={user.password.value || ''}
-                                            error={user.password.error || ''}
-                                            state={user.password.state || ''}
-                                            onChange={typeValue}
-                                            className="w-full" />
-                                    </div>
-
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="password_confirmation_cuf">Confirm Password</label>
-                                        <Input name="password_confirmation"
-                                            type="password"
-                                            id="password_confirmation_cuf"
-                                            value={user.password_confirmation.value || ''}
-                                            error={user.password_confirmation.error || ''}
-                                            state={user.password_confirmation.state || ''}
-                                            onChange={typeValue}
-                                            className="w-full" />
-                                    </div>
-
-                                    <div className="mt-8 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="secGroup_cuf">Select Security Group</label>
-                                        <div className="w-full">
-                                            <select name="group"
-                                                id="secGroup_cuf"
-                                                onChange={typeValue}
-                                                value={group}
-                                                className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
-                                                <option value="0">Select Group...</option>
-                                                {
-                                                    Object(groups).map(function (role, i) {
-                                                        return (
-                                                            <option value={role.id} key={i}>{role.name}</option>
-                                                        )
-                                                    })
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <Input
+                                        id="password_confirmation_cuf"
+                                        name="password_confirmation"
+                                        label="Confirm Password"
+                                        type="password"
+                                        value={user.password_confirmation.value || ''}
+                                        error={user.password_confirmation.error || ''}
+                                        state={user.password_confirmation.state || ''}
+                                        onChange={typeValue} />
+                                    <Select
+                                        id="secGroup_cuf"
+                                        name="group"
+                                        label="Select Security Group"
+                                        onChange={typeValue}
+                                        value={group}
+                                        wrapperClassName="mt-8">
+                                        <option value="0">Select Group...</option>
+                                        {
+                                            Object(groups).map(function (role, i) {
+                                                return (
+                                                    <option value={role.id} key={i}>{role.name}</option>
+                                                )
+                                            })
+                                        }
+                                    </Select>
                                 </div>
                             </div>
                         </div>

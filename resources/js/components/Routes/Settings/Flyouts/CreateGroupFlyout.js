@@ -87,17 +87,16 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
                         <div className="my-6 relative flex-1 px-4 sm:px-6 overflow-y-auto">
                             <div className="absolute inset-0 px-4 sm:px-6">
                                 <div className="h-full" aria-hidden="true">
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="name_cgf">Groups Name</label>
-                                        <Input name="name"
-                                            type="text"
-                                            id="name_cgf"
-                                            value={name}
-                                            onChange={typeValue}
-                                            error={error}
-                                            state={state}
-                                            className="w-full" />
-                                    </div>
+                                    <Input
+                                        id="name_cgf"
+                                        name="name"
+                                        label="Groups Name"
+                                        type="text"
+                                        value={name}
+                                        onChange={typeValue}
+                                        error={error}
+                                        state={state}
+                                        wrapperClassName="mt-4" />
                                 </div>
                             </div>
                         </div>

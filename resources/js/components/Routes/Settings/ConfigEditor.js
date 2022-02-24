@@ -94,7 +94,7 @@ const ConfigEditor = ({ UI, ...props }) => {
                                                     <div className="py-2 col-span-3 font-semibold lg:font-normal">{key}</div>
                                                     <div className="col-span-4 grid grid-cols-4">
                                                         <Input type="text"
-                                                            className={classNames(inputClasses, (i % 2) ? 'col-span-3 bg-gray-100 dark:bg-gray-700' : 'col-span-3 dark:bg-gray-800')}
+                                                            wrapperClassName={classNames(inputClasses, (i % 2) ? 'col-span-3 bg-gray-100 dark:bg-gray-700' : 'col-span-3 dark:bg-gray-800')}
                                                             id={`ce-${key}`}
                                                             value={value}
                                                             onChange={onType}
