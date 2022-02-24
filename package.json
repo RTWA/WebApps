@@ -27,6 +27,7 @@
         "@dnd-kit/modifiers": "^3.0.0",
         "@dnd-kit/sortable": "^4.0.0",
         "@dnd-kit/utilities": "^2.0.0",
+        "@tailwindcss/typography": "^0.5.2",
         "@testing-library/jest-dom": "^5.16.1",
         "@testing-library/react": "^11.2.7",
         "ajv": "^7.2.4",
@@ -64,7 +65,7 @@
         "tiny-invariant": "^1.2.0",
         "url": "^0.11.0",
         "values.js": "^2.0.0",
-        "webapps-react": "^1.9.1",
+        "webapps-react": "^1.10.2",
         "whatwg-fetch": "^3.6.2"
     }
 }
