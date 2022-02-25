@@ -7,8 +7,10 @@ import { APIClient } from 'webapps-react';
 const BlockCount = () => {
     const [count, setCount] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
-        await APIClient('/api/blocks/count')
+        await APIClient('/api/blocks/count', undefined, { signal: APIController.signal })
             .then(json => {
                 setCount(json.data.count);
             })
@@ -18,6 +20,10 @@ const BlockCount = () => {
                     console.error(error);
                 }
             });
+
+        return () => {
+            APIController.abort();
+        }
     }, []);
 
     if (count === null) {

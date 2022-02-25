@@ -11,16 +11,19 @@ const RecentBlocks = () => {
     const [blocks, setBlocks] = useState(null);
     const [noAccess, setNoAccess] = useState(false);
 
+    const APIController = new AbortController();
+
     useEffect(() => {
         loadRecent();
         return () => {
+            APIController.abort();
             delete modals.preview_blocks;
             setModals({ ...modals });
         }
     }, []);
 
     const loadRecent = async () => {
-        await APIClient('/api/blocks?limit=5&offset=0&filter=')
+        await APIClient('/api/blocks?limit=5&offset=0&filter=', undefined, { signal: APIController.signal })
             .then(json => {
                 const { blocks, styles } = json.data;
                 if (blocks !== undefined) {
@@ -54,7 +57,7 @@ const RecentBlocks = () => {
     }
 
     const deleteBlock = async () => {
-        await APIClient(`/api/blocks/${modals.preview_blocks.block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE' })
+        await APIClient(`/api/blocks/${modals.preview_blocks.block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 Object(blocks).map(function (b, i) {
                     if (b === modals.preview_blocks.block) {

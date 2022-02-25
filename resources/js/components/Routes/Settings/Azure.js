@@ -25,11 +25,20 @@ const Azure = ({ UI, ...props }) => {
     const [groupData, setGroupData] = useState([]);
     const [syncBtnText, setSyncBtnText] = useState('Sync Now');
 
+    const APIController = new AbortController();
+    let timer = null;
+
     useEffect(() => {
         _mounted = true;
         getTenantId();
 
-        return () => _mounted = false;
+        return () => {
+            APIController.abort();
+            if (timer) {
+                clearTimeout(timer);
+            }
+            _mounted = false;
+        }
     }, []);
 
     useEffect(async () => {
@@ -50,7 +59,7 @@ const Azure = ({ UI, ...props }) => {
             graphApp.tenantId = settings['azure.graph.tenant'];
             setGraphApp({ ...graphApp });
         } else {
-            await APIClient('/api/setting', { key: 'azure.graph.tenant' })
+            await APIClient('/api/setting', { key: 'azure.graph.tenant' }, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -62,14 +71,14 @@ const Azure = ({ UI, ...props }) => {
     };
 
     const RequestAccessToken = async () => {
-        await APIClient('/api/graph/token')
+        await APIClient('/api/graph/token', undefined, { signal: APIController.signal })
             .then(json => {
                 setAccessToken(json.data.token.access_token);
             });
     }
 
     const getGroupMaps = async () => {
-        await APIClient('/api/group/mappings')
+        await APIClient('/api/group/mappings', undefined, { signal: APIController.signal })
             .then(json => {
                 Object.keys(json.data.mappings).map(function (group) {
                     let map = json.data.mappings[group];
@@ -100,7 +109,7 @@ const Azure = ({ UI, ...props }) => {
             group_id: group,
             azure_group_id: groupData[group].selected.id,
             azure_display_name: groupData[group].selected.displayName,
-        })
+        }, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (json.data.success) {
@@ -124,11 +133,12 @@ const Azure = ({ UI, ...props }) => {
                     groupData[group].state = 'error';
                     setGroupData([...groupData]);
 
-                    setTimeout(/* istanbul ignore next */ function () {
+                    let timer = setTimeout(/* istanbul ignore next */ function () {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
                             setGroupData([...groupData]);
+                            timer = null;
                         }
                     }, 2500);
                 }
@@ -137,7 +147,7 @@ const Azure = ({ UI, ...props }) => {
 
     const syncAzureNow = async () => {
         setSyncBtnText('Syncing');
-        await APIClient('/api/azure/sync');
+        await APIClient('/api/azure/sync', undefined, { signal: APIController.signal });
     }
 
     const onChange = e => {

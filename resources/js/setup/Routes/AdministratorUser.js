@@ -17,10 +17,12 @@ const AdministratorUser = ({ color, ...props }) => {
     const [fields, setFields] = useState(null);
     const [errors, setErrors] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
         props.setSuccess([true, true, true, false, false]);
         if (!fields) {
-            await APIClient('/api/install/administrator')
+            await APIClient('/api/install/administrator', undefined, { signal: APIController.signal })
                 .then(json => {
                     if (json.data.exists) {
                         setExists(true);
@@ -36,6 +38,10 @@ const AdministratorUser = ({ color, ...props }) => {
                     }
                 })
         }
+
+        return () => {
+            APIController.abort();
+        }
     }, []);
 
     const changeInput = e => {
@@ -47,7 +53,7 @@ const AdministratorUser = ({ color, ...props }) => {
     }
 
     const completeSetup = async () => {
-        await APIClient('/api/install/administrator', fields)
+        await APIClient('/api/install/administrator', fields, { signal: APIController.signal })
             .then(json => {
                 let path = `/install/complete`;
                 history.push(path);

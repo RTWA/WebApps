@@ -11,9 +11,11 @@ const SetupComplete = ({ color, routedate, setSuccess }) => {
 
     const [message, setMessage] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
         props.setSuccess([true, true, true, true, false]);
-        await APIClient('/api/install/complete')
+        await APIClient('/api/install/complete', undefined, { signal: APIController.signal })
             .then(json => {
                 setMessage(json.data.message);
             })
@@ -23,6 +25,10 @@ const SetupComplete = ({ color, routedate, setSuccess }) => {
                     console.error(error);
                 }
             })
+
+        return () => {
+            APIController.abort();
+        }
     }, []);
 
     const CardAction = () => {

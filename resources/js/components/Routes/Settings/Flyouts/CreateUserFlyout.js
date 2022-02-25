@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { FlyoutsContext } from '../UsersGroups';
 import { APIClient, Button, Input, Select, useToasts, withWebApps } from 'webapps-react';
@@ -14,6 +14,14 @@ const CreateUserFlyout = ({ UI, ...props }) => {
     const {
         createUserFlyout, toggleCreateUserFlyout,
     } = useContext(FlyoutsContext);
+
+    const APIController = new AbortController();
+
+    useEffect(() => {
+        return () => {
+            APIController.abort();
+        }
+    }, []);
 
     const init = {
         name: [],
@@ -84,7 +92,7 @@ const CreateUserFlyout = ({ UI, ...props }) => {
             password: (user.password.value === undefined) ? '' : user.password.value,
             password_confirmation: (user.password_confirmation.value === undefined) ? '' : user.password_confirmation.value,
             group: group
-        })
+        }, { signal: APIController.signal })
             .then(json => {
                 pushUser(json.data.user);
                 addToast(json.data.message, '', { appearance: 'success' });

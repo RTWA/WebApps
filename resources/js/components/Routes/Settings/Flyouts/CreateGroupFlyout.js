@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { APIClient, Button, Input, useToasts, withWebApps } from 'webapps-react';
 import { FlyoutsContext } from '../UsersGroups';
@@ -17,6 +17,14 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
     const [name, setName] = useState('');
     const [state, setState] = useState('');
     const [error, setError] = useState('');
+
+    const APIController = new AbortController();
+
+    useEffect(() => {
+        return () => {
+            APIController.abort();
+        }
+    }, []);
 
     const flyoutClass = classNames(
         'absolute',
@@ -62,7 +70,7 @@ const CreateGroupFlyout = ({ UI, ...props }) => {
 
     const createGroup = async () => {
         setState('saving');
-        await APIClient('/api/group', { name: name })
+        await APIClient('/api/group', { name: name }, { signal: APIController.signal })
             .then(json => {
                 pushGroup(json.data.group);
                 addToast(json.data.message, '', { appearance: 'success' });

@@ -25,6 +25,8 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
 
     const { addToast } = useToasts();
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
         _mounted = true;
 
@@ -40,13 +42,16 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
             setCanChown(true);
         }
 
-        return /* istanbul ignore next */ () => { _mounted = false; }
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            _mounted = false;
+        }
     }, []);
 
     useEffect(async () => {
         /* istanbul ignore else */
         if (users.length === 0) {
-            await APIClient('/api/users')
+            await APIClient('/api/users', undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -80,7 +85,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
             return;
         }
 
-        await APIClient(`/api/blocks/${block.publicId}/chown`, { old_owner_id: block.owner, new_owner_id: newOwner.id })
+        await APIClient(`/api/blocks/${block.publicId}/chown`, { old_owner_id: block.owner, new_owner_id: newOwner.id }, { signal: APIController.signal })
             .then(response => {
                 /* istanbul ignore else */
                 if (_mounted) {

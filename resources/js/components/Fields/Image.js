@@ -11,6 +11,14 @@ const Image = ({ UI, ...props }) => {
     const { addToast, updateToast } = useToasts();
     let toastId = '';
 
+    const APIController = new AbortController();
+
+    useEffect(() => {
+        return () => {
+            APIController.abort();
+        }
+    }, []);
+
     useEffect(() => {
         props.update(name, value, props.for, props.index);
     }, [value]);
@@ -41,7 +49,7 @@ const Image = ({ UI, ...props }) => {
         if (file !== null) {
             addToast('Uploading image...', '', { appearence: 'info', autoDismiss: false }, id => toastId = id);
 
-            await APIClient('/api/media/upload', { file: file })
+            await APIClient('/api/media/upload', { file: file }, { signal: APIController.signal })
                 .then(json => {
                     value.text = `${json.data.media['original_filename']} (${json.data.media['filesize']})`;
                     value.label = 'Uploaded:';

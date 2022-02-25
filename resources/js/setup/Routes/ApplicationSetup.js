@@ -16,10 +16,12 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
     const [settings, setSettings] = useState(null);
     const [errors, setErrors] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
         props.setSuccess([true, true, false, false, false]);
         if (!settings) {
-            APIClient('/api/install/application')
+            APIClient('/api/install/application', undefined, { signal: APIController.signal })
                 .then(json => {
                     setSettings(json.data);
                 })
@@ -29,6 +31,10 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
                         console.error(error);
                     }
                 })
+        }
+
+        return () => {
+            APIController.abort();
         }
     }, []);
 
@@ -76,7 +82,7 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
     }
 
     const saveSettings = async () => {
-        await APIClient('/api/install/application', settings)
+        await APIClient('/api/install/application', settings, { signal: APIController.signal })
             .then(json => {
                 let path = `/install/administrator`;
                 history.push(path);

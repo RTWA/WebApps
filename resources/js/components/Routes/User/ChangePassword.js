@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { APIClient, Button, Input, useToasts, withAuth } from 'webapps-react';
 
 const ChangePassword = ({ user }) => {
@@ -8,6 +8,14 @@ const ChangePassword = ({ user }) => {
     const [confirmedPassword, setConfirmedPassword] = useState('');
 
     const { addToast } = useToasts();
+
+    const APIController = new AbortController();
+
+    useEffect(() => {
+        return () => {
+            APIController.abort();
+        }
+    }, []);
 
     const update = e => {
         if (e.target.id === "currentPassword") {
@@ -58,7 +66,7 @@ const ChangePassword = ({ user }) => {
                 current_password: currentPassword,
                 password: newPassword,
                 password_confirmation: confirmedPassword
-            })
+            }, { signal: APIController.signal })
                 .then(json => {
                     if (json.data.success) {
                         setCurrentPassword('');

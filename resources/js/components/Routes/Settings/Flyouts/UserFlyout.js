@@ -25,6 +25,14 @@ const UserFlyout = ({ UI, ...props }) => {
         userModal, toggleUserModal,
     } = useContext(FlyoutsContext);
 
+    const APIController = new AbortController();
+
+    useEffect(() => {
+        return () => {
+            APIController.abort();
+        }
+    }, []);
+
     useEffect(() => {
         setPasswordResetShowing(false);
     }, [user]);
@@ -65,7 +73,11 @@ const UserFlyout = ({ UI, ...props }) => {
         }
 
         if (!hasError) {
-            await APIClient('/api/admin/user.password/reset', { user_id: user.id, password: newPassword, password_confirmation: confirmedPassword })
+            await APIClient('/api/admin/user.password/reset', {
+                user_id: user.id,
+                password: newPassword,
+                password_confirmation: confirmedPassword
+            }, { signal: APIController.signal })
                 .then(json => {
                     // istanbul ignore else
                     if (json.data.success) {

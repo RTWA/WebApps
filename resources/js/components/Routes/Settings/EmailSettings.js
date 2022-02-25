@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { APIClient, APIController, Button, Input, Select, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, Select, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
 
 const EmailSettings = ({ user, UI, ...props }) => {
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
+
+    const APIController = new AbortController();
+    let timers = [null, null];
 
     const {
         settings,
@@ -21,6 +24,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
     useEffect(() => {
         return /* istanbul ignore next */ () => {
             APIController.abort();
+            if (timers[0]) {
+                clearTimeout(timers[0]);
+            }
+            if (timers[1]) {
+                clearTimeout(timers[1]);
+            }
             void (isMountedRef.current = false);
         }
     }, []);
@@ -45,11 +54,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 setDriverStates({ ...driverStates });
             }
 
-            setTimeout(function () {
+            timers[0] = setTimeout(function () {
                 // Don't do anything if testing
                 if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     driverStates['smtp'] = '';
                     setDriverStates({ ...driverStates });
+                    timers[0] = null;
                 }
             }, 2500);
         } else if (e.target.id === 'mail.driver.msgraph') {
@@ -59,11 +69,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 setDriverStates({ ...driverStates });
             }
 
-            setTimeout(function () {
+            timers[0] = setTimeout(function () {
                 // Don't do anything if testing
                 if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     driverStates['msgraph'] = '';
                     setDriverStates({ ...driverStates });
+                    timers[0] = null;
                 }
             }, 2500);
         }
@@ -83,7 +94,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
             setTestMailsate({ ...testMailState });
         }
 
-        await APIClient('/api/email/test', { to: testTo })
+        await APIClient('/api/email/test', { to: testTo }, { signal: APIController.signal })
             .then(json => {
                 if (isMounted) {
                     addToast(
@@ -98,10 +109,11 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         testMailState.state = 'saved';
                         setTestMailsate({ ...testMailState });
 
-                        setTimeout(/* istanbul ignore next */ function () {
+                        timers[1] = setTimeout(/* istanbul ignore next */ function () {
                             if (isMounted) {
                                 testMailState.state = '';
                                 setTestMailsate({ ...testMailState });
+                                timers[1] = null;
                             }
                         }, 2500);
                     }
@@ -122,11 +134,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         testMailState.error = error.data?.exception
                         setTestMailsate({ ...testMailState });
 
-                        setTimeout(function () {
+                        timers[1] = setTimeout(function () {
                             if (isMounted) {
                                 testMailState.state = '';
                                 testMailState.error = '';
                                 setTestMailsate({ ...testMailState });
+                                timers[1] = null;
                             }
                         }, 5000);
                     }

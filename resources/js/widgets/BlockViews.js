@@ -7,8 +7,10 @@ import { APIClient } from 'webapps-react';
 const BlockViews = () => {
     const [views, setViews] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
-        await APIClient('/api/blocks/views')
+        await APIClient('/api/blocks/views', undefined, { signal: APIController.signal })
             .then(json => {
                 setViews(json.data.views);
             })
@@ -18,6 +20,10 @@ const BlockViews = () => {
                     console.error(error);
                 }
             });
+
+        return () => {
+            APIController.abort();
+        }
     }, []);
 
     if (views === null) {

@@ -15,15 +15,27 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
 
     const [tab, setTab] = useState(0);
     const [states, setStates] = useState({});
+    
+    const APIController = new AbortController();
+    let timers = [null, null];
 
     useEffect(() => {
         _mounted = true;
 
-        return () => _mounted = false;
+        return () => {
+            APIController.abort();
+            if (timers[0]) {
+                clearTimeout(timers[0]);
+            }
+            if (timers[1]) {
+                clearTimeout(timers[1]);
+            }
+            _mounted = false;
+        }
     }, []);
 
     const setPerm = async (group, perm, mode, check_id) => {
-        await APIClient('/api/permissions', { mode: mode, group: group.id, perm: perm.id })
+        await APIClient('/api/permissions', { mode: mode, group: group.id, perm: perm.id }, { signal: APIController.signal })
             .then(response => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -32,7 +44,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     states[check_id] = 'saved';
                     setStates({ ...states });
 
-                    setTimeout(/* istanbul ignore next */ function () {
+                    timers[0] = setTimeout(/* istanbul ignore next */ function () {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
@@ -53,7 +65,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     states[check_id] = 'error';
                     setStates({ ...states });
 
-                    setTimeout(/* istanbul ignore next */ function () {
+                    timers[0] = setTimeout(/* istanbul ignore next */ function () {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
@@ -103,7 +115,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
             states[check_id] = 'error';
             setStates({ ...states });
 
-            setTimeout(/* istanbul ignore next */ function () {
+            timers[1] = setTimeout(/* istanbul ignore next */ function () {
                 // Don't do anything if testing
                 if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     states[check_id] = '';

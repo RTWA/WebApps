@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { confirmAlert } from 'react-confirm-alert';
 
-import { APIClient, APIController, Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
@@ -27,9 +27,11 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
         // Get all available Plugins
-        await APIClient('/api/plugins/active')
+        await APIClient('/api/plugins/active', undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (isMounted) {
@@ -46,7 +48,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         // Get first set of Blocks
         let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=0`
             : `/api/blocks/user/${username}?limit=${load}&offset=0`
-        await APIClient(uri)
+        await APIClient(uri, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (isMounted) {
@@ -114,7 +116,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
         if (lastUri !== uri) {
             lastUri = uri;
-            await APIClient(uri)
+            await APIClient(uri, undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
                     if (document) {
@@ -184,7 +186,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             }
         });
 
-        await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock), _method: 'PUT' }, { method: 'PUT' })
+        await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock), _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (isMounted) {
@@ -229,7 +231,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     }
 
     const deleteBlock = async _block => {
-        await APIClient(`/api/blocks/${_block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE' })
+        await APIClient(`/api/blocks/${_block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (isMounted) {
