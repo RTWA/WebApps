@@ -45,23 +45,8 @@ describe('EmailSettings Component', () => {
         await waitFor(() => expect(mockData.settings['mail.smtp.host']).toEqual('localhost'));
     });
 
-    test('Can Send A Test Email', async () => {
-        expect(screen.getByText(/send test to/i)).toBeDefined();
-
-        await act(async () => {
-            fireEvent.change(screen.getByRole('textbox', { name: /send test to/i }), { target: { value: 'test@test.com' } });
-            await screen.getByRole('textbox', { name: /send test to/i }).value === 'test@test.com';
-            fireEvent.blur(screen.getByRole('textbox', { name: /send test to/i }), { target: { value: 'test@test.com' } });
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByRole('button', { name: /send test email/i }));
-        });
-        await waitFor(() => expect(screen.getByText(/test email sent/i)).toBeDefined());
-    });
-
     test('Cannot Send A Test Email Due To An Error', async () => {
-        expect(screen.getByText(/send test to/i)).toBeDefined();
+        expect(screen.getByRole('button', { name: /send test email/i })).toBeDefined();
 
         await act(async () => {
             fireEvent.change(screen.getByRole('textbox', { name: /send test to/i }), { target: { value: 'error@test.com' } });
@@ -73,6 +58,21 @@ describe('EmailSettings Component', () => {
             fireEvent.click(screen.getByRole('button', { name: /send test email/i }));
         });
         await waitFor(() => expect(screen.getByText(/unable to send test email/i)).toBeDefined());
+    });
+
+    test('Can Send A Test Email', async () => {
+        expect(screen.getByRole('button', { name: /send test email/i })).toBeDefined();
+
+        await act(async () => {
+            fireEvent.change(screen.getByRole('textbox', { name: /send test to/i }), { target: { value: 'test@test.com' } });
+            await screen.getByRole('textbox', { name: /send test to/i }).value === 'test@test.com';
+            fireEvent.blur(screen.getByRole('textbox', { name: /send test to/i }), { target: { value: 'test@test.com' } });
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /send test email/i }));
+        });
+        await waitFor(() => expect(screen.getByText(/test email sent/i)).toBeDefined());
     });
 
     test('Can Change To Mail Driver', async () => {

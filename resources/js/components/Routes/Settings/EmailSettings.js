@@ -76,8 +76,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
     const sendTest = async e => {
         e.preventDefault();
 
-        testMailState.state = 'saving';
-        setTestMailsate({ ...testMailState });
+        // Don't do anything if testing
+        /* istanbul ignore next */
+        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+            testMailState.state = 'saving';
+            setTestMailsate({ ...testMailState });
+        }
 
         await APIClient('/api/email/test', { to: testTo })
             .then(json => {
@@ -87,39 +91,45 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         '',
                         { appearance: 'success' }
                     );
-                    testMailState.state = 'saved';
-                    setTestMailsate({ ...testMailState });
 
-                    setTimeout(/* istanbul ignore next */ function () {
-                        // Don't do anything if testing
-                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
-                            testMailState.state = '';
-                            setTestMailsate({ ...testMailState });
-                        }
-                    }, 2500);
+                    // Don't do anything if testing
+                    /* istanbul ignore next */
+                    if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                        testMailState.state = 'saved';
+                        setTestMailsate({ ...testMailState });
+
+                        setTimeout(/* istanbul ignore next */ function () {
+                            if (isMounted) {
+                                testMailState.state = '';
+                                setTestMailsate({ ...testMailState });
+                            }
+                        }, 2500);
+                    }
                 }
             })
             .catch(error => {
                 if (isMounted) {
-                    /* istanbul ignore next */
                     addToast(
                         "Unable to send test Email",
                         '',
                         { appearance: 'error' }
                     );
 
-                    testMailState.state = 'error';
-                    testMailState.error = error.data?.exception
-                    setTestMailsate({ ...testMailState });
+                    // Don't do anything if testing
+                    /* istanbul ignore next */
+                    if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                        testMailState.state = 'error';
+                        testMailState.error = error.data?.exception
+                        setTestMailsate({ ...testMailState });
 
-                    setTimeout(/* istanbul ignore next */ function () {
-                        // Don't do anything if testing
-                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
-                            testMailState.state = '';
-                            testMailState.error = '';
-                            setTestMailsate({ ...testMailState });
-                        }
-                    }, 5000);
+                        setTimeout(function () {
+                            if (isMounted) {
+                                testMailState.state = '';
+                                testMailState.error = '';
+                                setTestMailsate({ ...testMailState });
+                            }
+                        }, 5000);
+                    }
                 }
             })
     }
