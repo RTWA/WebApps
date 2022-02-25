@@ -90,7 +90,7 @@ const GroupSearch = ({ id, groupData, setData, accessToken, saveChange, ...props
         if (groupData[id].data?.length) {
             let count = 1;
             DataListComponent = (
-                <ul className="z-50 absolute inset-x-0 bg-white dark:bg-gray-700 rounded-b border border-gray-200 dark:border-gray-600 text-gray-900 text-sm font-medium dark:text-white cursor-pointer">
+                <ul className="z-50 absolute mx-1.5 inset-x-0 bg-white dark:bg-gray-700 rounded-b border border-gray-200 dark:border-gray-600 text-gray-900 text-sm font-medium dark:text-white cursor-pointer">
                     {
                         groupData[id].data.map((data, index) => {
                             if (count <= 5) {
@@ -110,7 +110,7 @@ const GroupSearch = ({ id, groupData, setData, accessToken, saveChange, ...props
             )
         } else {
             DataListComponent = (
-                <ul className="z-50 absolute inset-x-0 bg-white dark:bg-gray-700 rounded-b border border-gray-200 dark:border-gray-600 text-gray-900 text-sm font-medium dark:text-white cursor-pointer">
+                <ul className="z-50 absolute mx-1.5 inset-x-0 bg-white dark:bg-gray-700 rounded-b border border-gray-200 dark:border-gray-600 text-gray-900 text-sm font-medium dark:text-white cursor-pointer">
                     <li className="px-4 py-2 text-center"><em>No matching groups found!</em></li>
                 </ul>
             );
@@ -118,8 +118,8 @@ const GroupSearch = ({ id, groupData, setData, accessToken, saveChange, ...props
     }
 
     return (
-        <div className="relative w-full">
-            <Input type="text" id={`${id}`} value={groupData[id]?.value || ''} onChange={change} onKeyDown={onKeyDown} state={groupData[id]?.state} {...props} />
+        <div className="relative mb-6">
+            <Input type="text" id={`${id}`} value={groupData[id]?.value || ''} onChange={change} onKeyDown={onKeyDown} state={groupData[id]?.state} wrapperClassName="" {...props} />
             {DataListComponent}
         </div>
     );
