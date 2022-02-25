@@ -100,6 +100,7 @@ const ConfigEditor = ({ UI, ...props }) => {
                                                             onChange={onType}
                                                             onBlur={onChange}
                                                             data-testid={`edit_${key}`}
+                                                            inputClassName="border rounded-none"
                                                             state={states[`ce-${key}`]} />
                                                         <Button style="link" color="red" onClick={() => sendDeleteKey(key)} data-testid={`delete_${key}`}>
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
