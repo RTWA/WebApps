@@ -119,7 +119,7 @@ const GroupSearch = ({ id, groupData, setData, accessToken, saveChange, ...props
 
     return (
         <div className="relative w-full">
-            <Input type="text" id={id} value={groupData[id]?.value || ''} onChange={change} onKeyDown={onKeyDown} state={groupData[id]?.state} {...props} />
+            <Input type="text" id={`${id}`} value={groupData[id]?.value || ''} onChange={change} onKeyDown={onKeyDown} state={groupData[id]?.state} {...props} />
             {DataListComponent}
         </div>
     );
