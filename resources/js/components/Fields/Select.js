@@ -1,5 +1,5 @@
 import React from 'react';
-import { withWebApps } from 'webapps-react';
+import { Select as WASelect, withWebApps } from 'webapps-react';
 
 const Select = ({ UI, ...props }) => {
     const {
@@ -18,24 +18,21 @@ const Select = ({ UI, ...props }) => {
     }
 
     return (
-        <div className="flex flex-col lg:flex-row px-4 py-4" data-for={name}>
-            <label className="w-full lg:w-4/12 lg:py-2 font-medium lg:font-normal text-sm lg:text-base" htmlFor={name}>{field.label}</label>
-            <div className="w-full lg:w-8/12">
-                <select name={name}
-                    id={name}
-                    value={value}
-                    onChange={onChange}
-                    className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
-                    {
-                        Object.keys(field.options).map(function (f, i) {
-                            return (
-                                <option key={i} value={f}>{field.options[f]}</option>
-                            )
-                        })
-                    }
-                </select>
-                <div className="text-red-500" id={`${name}Help`} />
-            </div>
+        <div className="p-4" data-for={name}>
+            <WASelect
+                id={name}
+                name={name}
+                label={field.label}
+                value={value}
+                onChange={onChange}>
+                {
+                    Object.keys(field.options).map(function (f, i) {
+                        return (
+                            <option key={i} value={f}>{field.options[f]}</option>
+                        )
+                    })
+                }
+            </WASelect>
         </div>
     )
 }

@@ -5,7 +5,7 @@ import { APIClient, Loader } from 'webapps-react';
 import { withTheme } from '../Context';
 import Card from '../Components/Card';
 
-const SystemRequirements = ({color, routedata}) => {
+const SystemRequirements = ({ color, routedata }) => {
     const {
         title,
         subtitle
@@ -15,9 +15,11 @@ const SystemRequirements = ({color, routedata}) => {
     const [phpSupportInfo, setPHPSupportInfo] = useState(null);
     const [permissions, setPermissions] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
         if (!requirements && !phpSupportInfo && !permissions) {
-            APIClient('/api/install/requirements')
+            APIClient('/api/install/requirements', undefined, { signal: APIController.signal })
                 .then(json => {
                     setRequirements(json.data.requirements);
                     setPHPSupportInfo(json.data.phpSupportInfo);
@@ -29,6 +31,10 @@ const SystemRequirements = ({color, routedata}) => {
                         console.error(error);
                     }
                 })
+        }
+
+        return () => {
+            APIController.abort();
         }
     }, []);
 

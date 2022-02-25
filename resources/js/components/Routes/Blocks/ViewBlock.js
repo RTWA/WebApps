@@ -9,11 +9,16 @@ let _mounted = false;
 const ViewBlock = ({ UI, ...props }) => {
     const [block, setBlock] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(() => {
         _mounted = true;
         loadBlockData();
 
-        return () => _mounted = false;
+        return () => {
+            APIController.abort();
+           _mounted = false
+        };
     }, []);
 
     useEffect(() => {
@@ -26,7 +31,7 @@ const ViewBlock = ({ UI, ...props }) => {
     }, [block]);
 
     const loadBlockData = async () => {
-        await APIClient(`/api/blocks/${props.match.params.id}`)
+        await APIClient(`/api/blocks/${props.match.params.id}`, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {

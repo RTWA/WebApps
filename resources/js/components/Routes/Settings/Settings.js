@@ -25,6 +25,9 @@ const Settings = ({ UI, loadNavigation }) => {
 
     const { addToast } = useToasts();
 
+    const APIController = new AbortController();
+    let timer = null;
+
     useEffect(async () => {
         _mounted = true;
         await loadProductInfo();
@@ -34,12 +37,16 @@ const Settings = ({ UI, loadNavigation }) => {
         await checkForUpdate();
 
         return () => {
+            APIController.abort();
+            if (timer) {
+                clearTimeout(timer);
+            }
             _mounted = false;
         }
     }, []);
 
     const loadProductInfo = async () => {
-        await APIClient('/api/product')
+        await APIClient('/api/product', undefined, { signal: APIController.signal })
             .then(json => {
                 if (_mounted) {
                     setProductInfo(json.data);
@@ -48,7 +55,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const loadGroups = async () => {
-        await APIClient('/api/groups')
+        await APIClient('/api/groups', undefined, { signal: APIController.signal })
             .then(json => {
                 if (_mounted) {
                     setGroups(json.data.groups);
@@ -57,7 +64,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const loadPermissions = async () => {
-        await APIClient('/api/permissions')
+        await APIClient('/api/permissions', undefined, { signal: APIController.signal })
             .then(json => {
                 if (_mounted) {
                     setPermissions(json.data.permissions);
@@ -66,7 +73,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const loadSettings = async () => {
-        await APIClient('/api/setting', {key: '*'})
+        await APIClient('/api/setting', { key: '*' }, {signal: APIController.signal})
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -76,7 +83,7 @@ const Settings = ({ UI, loadNavigation }) => {
 
     const checkForUpdate = async () => {
         setUpdateCheck(<p>Checking for updates...</p>);
-        await APIClient('/api/update-check')
+        await APIClient('/api/update-check', undefined, { signal: APIController.signal })
             .then(json => {
                 if (_mounted && json.data.available) {
                     const content = (
@@ -99,7 +106,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const createKey = async key => {
-        await APIClient(`/api/setting/${key}`, {value: '', '_method': 'PUT'}, {method:'PUT'})
+        await APIClient(`/api/setting/${key}`, { value: '', '_method': 'PUT' }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -115,7 +122,7 @@ const Settings = ({ UI, loadNavigation }) => {
     }
 
     const deleteKey = async key => {
-        await APIClient(`/api/setting/${key}`, {_method:'DELETE'},{method:'DELETE'})
+        await APIClient(`/api/setting/${key}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 if (_mounted) {
                     setSettings(json.data.settings);
@@ -145,16 +152,17 @@ const Settings = ({ UI, loadNavigation }) => {
             setSettings({ ...settings });
         }
 
-        await APIClient(`/api/setting/${key}`, {value: value, _method:'PUT'}, {method:'PUT'})
+        await APIClient(`/api/setting/${key}`, { value: value, _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 key = (config_editor) ? ce_key : key;
 
                 states[key] = 'saved';
                 setStates({ ...states });
 
-                setTimeout(function () {
+                timer = setTimeout(function () {
                     states[key] = '';
                     setStates({ ...states });
+                    timer = null;
                 }, 2500);
 
                 if (key.includes("core.cms.")) {
@@ -173,9 +181,10 @@ const Settings = ({ UI, loadNavigation }) => {
                 states[key] = 'error';
                 setStates({ ...states });
 
-                setTimeout(function () {
+                timer = setTimeout(function () {
                     states[key] = '';
                     setStates({ ...states });
+                    timer = null;
                 }, 2500);
             })
     }

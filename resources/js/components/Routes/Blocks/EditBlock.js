@@ -33,11 +33,16 @@ const EditBlock = ({ UI, ...props }) => {
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
 
+    const APIController = new AbortController();
+
     useEffect(() => {
         mounted = true;
         loadBlockData();
 
-        return () => mounted = false;
+        return () => {
+            APIController.abort();
+            mounted = false
+        };
     }, []);
 
     useEffect((block) => {
@@ -62,7 +67,7 @@ const EditBlock = ({ UI, ...props }) => {
     }, [repeater]);
 
     const loadBlockData = async () => {
-        await APIClient(`/api/blocks/${id}?edit=true`)
+        await APIClient(`/api/blocks/${id}?edit=true`, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
@@ -99,7 +104,7 @@ const EditBlock = ({ UI, ...props }) => {
             (id) => toastId = id
         );
 
-        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), _method: 'PUT' }, { method: 'PUT' })
+        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {

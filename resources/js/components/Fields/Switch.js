@@ -21,12 +21,15 @@ const Switch = props => {
     }
 
     return (
-        <div className="flex flex-col lg:flex-row px-4 py-4" data-for={name}>
-            <label className="w-full lg:w-4/12 lg:py-2 font-medium lg:font-normal text-sm lg:text-base" htmlFor={name}>{field.label}</label>
-            
-            <div className="relative inline-block w-10 mr-2 align-middle select-none mt-1 lg:mt-0" data-for={name}>
-                <WASwitch name={name} defaultChecked={(value === "true")} onChange={onChange} state={state} />
-            </div>
+        <div className="p-4" data-for={name}>
+            <WASwitch
+                id={name}
+                name={name}
+                label={field.label}
+                defaultChecked={(value === "true")}
+                onChange={onChange}
+                state={state}
+            />
         </div>
     )
 }

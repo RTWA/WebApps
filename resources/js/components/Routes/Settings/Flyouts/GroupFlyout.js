@@ -67,18 +67,17 @@ const GroupFlyout = ({ UI, ...props }) => {
                         <div className="my-6 relative flex-1 px-4 sm:px-6">
                             <div className="absolute inset-0 px-4 sm:px-6 overflow-y-auto">
                                 <div className="h-full" aria-hidden="true">
-                                    <div className="mt-4 flex flex-col">
-                                        <label className="w-full font-medium text-sm" htmlFor="name_gf">Group Name</label>
-                                        <Input type="text"
-                                            name="groupName"
-                                            id="name_gf"
-                                            value={group.name || ''}
-                                            onChange={renameGroup}
-                                            onBlur={saveRenameGroup}
-                                            error={group.error || ''}
-                                            state={group.state || ''}
-                                            className="w-full" />
-                                    </div>
+                                    <Input
+                                        id="name_gf"
+                                        name="groupName"
+                                        label="Group Name"
+                                        type="text"
+                                        value={group.name || ''}
+                                        onChange={renameGroup}
+                                        onBlur={saveRenameGroup}
+                                        error={group.error || ''}
+                                        state={group.state || ''}
+                                        wrapperClassName="mt-4" />
                                 </div>
                             </div>
                         </div>

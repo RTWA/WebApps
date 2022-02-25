@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import UserAvatar from 'react-user-avatar';
-import { Button, UserSuggest, withAuth, useToasts, withWebApps, APIClient } from 'webapps-react';
+import { Button, UserSuggest, withAuth, useToasts, withWebApps, APIClient, Input } from 'webapps-react';
 import { PropertiesContext } from '../EditBlock';
 
 let _mounted = false;
@@ -25,6 +25,8 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
 
     const { addToast } = useToasts();
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
         _mounted = true;
 
@@ -40,13 +42,16 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
             setCanChown(true);
         }
 
-        return /* istanbul ignore next */ () => { _mounted = false; }
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            _mounted = false;
+        }
     }, []);
 
     useEffect(async () => {
         /* istanbul ignore else */
         if (users.length === 0) {
-            await APIClient('/api/users')
+            await APIClient('/api/users', undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -80,7 +85,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
             return;
         }
 
-        await APIClient(`/api/blocks/${block.publicId}/chown`, { old_owner_id: block.owner, new_owner_id: newOwner.id })
+        await APIClient(`/api/blocks/${block.publicId}/chown`, { old_owner_id: block.owner, new_owner_id: newOwner.id }, { signal: APIController.signal })
             .then(response => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -157,21 +162,20 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
                         <div className="mt-6 relative flex-1 px-4 sm:px-6">
                             <div className="absolute inset-0 px-4 sm:px-6">
                                 <div className="h-full" aria-hidden="true">
-                                    <div className="text-gray-500"><label htmlFor="prop-title">Block Title:</label></div>
-                                    <input name="title"
-                                        type="text"
+                                    <Input
                                         id="prop-title"
-                                        value={block.title || ''}
-                                        onChange={update}
-                                        className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`} />
-
-                                    <div className="mt-5 text-gray-500"><label htmlFor="notes">Block Notes:</label></div>
-                                    <textarea name="notes"
+                                        name="title"
+                                        label="Block Title:"
                                         type="text"
+                                        value={block.title || ''}
+                                        onChange={update} />
+                                    <Input
                                         id="notes"
+                                        name="notes"
+                                        label="Block Notes:"
+                                        type="text"
                                         value={block.notes || ''}
-                                        onChange={update}
-                                        className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`} />
+                                        onChange={update} />
 
                                     <p className="mt-5 text-gray-500">This Block is owned by:</p>
                                     <div className="flex flex-col border rounded mx-8 my-2">

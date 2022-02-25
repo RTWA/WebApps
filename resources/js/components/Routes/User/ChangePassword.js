@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { APIClient, Button, Input, useToasts, withAuth } from 'webapps-react';
 
 const ChangePassword = ({ user }) => {
@@ -8,6 +8,14 @@ const ChangePassword = ({ user }) => {
     const [confirmedPassword, setConfirmedPassword] = useState('');
 
     const { addToast } = useToasts();
+
+    const APIController = new AbortController();
+
+    useEffect(() => {
+        return () => {
+            APIController.abort();
+        }
+    }, []);
 
     const update = e => {
         if (e.target.id === "currentPassword") {
@@ -53,7 +61,12 @@ const ChangePassword = ({ user }) => {
         }
 
         if (!hasError) {
-            await APIClient('/api/user/password', {id: user.id, current_password: currentPassword, password: newPassword, password_confirmation: confirmedPassword})
+            await APIClient('/api/user/password', { 
+                id: user.id,
+                current_password: currentPassword,
+                password: newPassword,
+                password_confirmation: confirmedPassword
+            }, { signal: APIController.signal })
                 .then(json => {
                     if (json.data.success) {
                         setCurrentPassword('');
@@ -111,26 +124,36 @@ const ChangePassword = ({ user }) => {
                 <div className="mt-5 md:mt-0 md:col-span-2">
                     <div className="px-4 py-5 bg-white dark:bg-gray-800 sm:p-6 shadow sm:rounded-tl-md sm:rounded-tr-md">
                         <div className="grid grid-cols-6 gap-6">
-                            <div className="col-span-6 sm:col-span-4">
-                                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300" htmlFor="currentPassword">
-                                    Current Password
-                                </label>
-                                <Input type="password" name="currentPassword" id="currentPassword" value={currentPassword} onChange={update} state={states.currentPassword.state} error={states.currentPassword.error} />
-                            </div>
-
-                            <div className="col-span-6 sm:col-span-4">
-                                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300" htmlFor="newPassword">
-                                    New Password
-                                </label>
-                                <Input type="password" name="newPassword" id="newPassword" value={newPassword} onChange={update} state={states.newPassword.state} error={states.newPassword.error} />
-                            </div>
-
-                            <div className="col-span-6 sm:col-span-4">
-                                <label className="block font-medium text-sm text-gray-700 dark:text-gray-300" htmlFor="confirmedPassword">
-                                    Confirm Password
-                                </label>
-                                <Input type="password" name="confirmedPassword" id="confirmedPassword" value={confirmedPassword} onChange={update} state={states.confirmedPassword.state} error={states.confirmedPassword.error} />
-                            </div>
+                            <Input
+                                type="password"
+                                wrapperClassName="col-span-6 sm:col-span-4"
+                                label="Current Password"
+                                name="currentPassword"
+                                id="currentPassword"
+                                value={currentPassword}
+                                onChange={update}
+                                state={states.currentPassword.state}
+                                error={states.currentPassword.error} />
+                            <Input
+                                type="password"
+                                wrapperClassName="col-span-6 sm:col-span-4"
+                                label="New Password"
+                                name="newPassword"
+                                id="newPassword"
+                                value={newPassword}
+                                onChange={update}
+                                state={states.newPassword.state}
+                                error={states.newPassword.error} />
+                            <Input
+                                type="password"
+                                wrapperClassName="col-span-6 sm:col-span-4"
+                                label="Confirm Password"
+                                name="confirmedPassword"
+                                id="confirmedPassword"
+                                value={confirmedPassword}
+                                onChange={update}
+                                state={states.confirmedPassword.state}
+                                error={states.confirmedPassword.error} />
                         </div>
                     </div>
 

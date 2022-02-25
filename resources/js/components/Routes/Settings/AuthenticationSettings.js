@@ -1,6 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
-import { Switch, withWebApps } from 'webapps-react';
+import { Select, Switch, withWebApps } from 'webapps-react';
 
 const AuthenticationSettings = ({ UI, ...props }) => {
     const {
@@ -26,39 +25,32 @@ const AuthenticationSettings = ({ UI, ...props }) => {
 
     return (
         <>
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="auth.internal.registrations">Allow Registration of WebApps Users</label>
-                <div className="relative inline-block w-10 mr-2 align-middle select-none mt-1 xl:mt-0 w-full">
-                    <Switch name="auth.internal.registrations"
-                        checked={(settings['auth.internal.registrations'] === 'true')}
-                        onChange={onChange}
-                        state={states['auth.internal.registrations']} />
-                </div>
-            </div>
+            <Switch
+                id="auth.internal.registrations"
+                name="auth.internal.registrations"
+                label="Allow Registration of WebApps Users"
+                checked={(settings['auth.internal.registrations'] === 'true')}
+                onChange={onChange}
+                className="w-full my-6"
+                state={states['auth.internal.registrations']} />
             {
                 (settings['auth.internal.registrations'] === 'true')
                     ? (
-                        <div className="flex flex-col xl:flex-row py-4">
-                            <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="auth.internal.default_group">Default User Group on Registration</label>
-                            <div className="relative inline-block w-10 mr-2 align-middle select-none mt-1 xl:mt-0 w-full">
-                                <select name="auth.internal.default_group"
-                                    id="auth.internal.default_group"
-                                    value={settings['auth.internal.default_group']}
-                                    onChange={onChange}
-                                    className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}>
-                                    {
-                                        Object(roles).map(function (role, i) {
-                                            return (
-                                                <option value={role.name} key={i}>{role.name}</option>
-                                            )
-                                        })
-                                    }
-                                </select>
-                                <span className="text-xs text-gray-400 dark:text-gray-200">
-                                    Which group should newly created users be put in by default?
-                                </span>
-                            </div>
-                        </div>
+                        <Select
+                            id="auth.internal.default_group"
+                            name="auth.internal.default_group"
+                            onChange={onChange}
+                            label="Default User Group on Registration"
+                            helpText="Which group should newly created users be put in by default?"
+                        >
+                            {
+                                Object(roles).map(function (role, i) {
+                                    return (
+                                        <option value={role.name} key={i}>{role.name}</option>
+                                    )
+                                })
+                            }
+                        </Select>
                     )
                     : null
             }
@@ -66,24 +58,23 @@ const AuthenticationSettings = ({ UI, ...props }) => {
                 (settings['azure.graph.client_id'] !== "" && settings['azure.graph.client_secret'] !== "")
                     ? (
                         <>
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="azure.graph.login_enabled">Enable Azure Authentication</label>
-                                <div className="relative inline-block w-10 mr-2 align-middle select-none mt-1 xl:mt-0 w-full">
-                                    <Switch name="azure.graph.login_enabled"
-                                        checked={(settings['azure.graph.login_enabled'] === 'true')}
-                                        onChange={onChange}
-                                        state={states['azure.graph.login_enabled']} />
-                                </div>
-                            </div>
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="azure.graph.default_login">Use Azure Authentication by Default</label>
-                                <div className="relative inline-block w-10 mr-2 align-middle select-none mt-1 xl:mt-0 w-full">
-                                    <Switch name="azure.graph.default_login"
-                                        checked={(settings['azure.graph.default_login'] === 'true')}
-                                        onChange={onChange}
-                                        state={states['azure.graph.default_login']} />
-                                </div>
-                            </div>
+                            <Switch
+                                id="azure.graph.login_enabled"
+                                name="azure.graph.login_enabled"
+                                label="Enable Azure Authentication"
+                                checked={(settings['azure.graph.login_enabled'] === 'true')}
+                                onChange={onChange}
+                                className="w-full mb-6"
+                                state={states['azure.graph.login_enabled']} />
+
+                            <Switch
+                                id="azure.graph.default_login"
+                                name="azure.graph.default_login"
+                                label="Use Azure Authentication by Default"
+                                checked={(settings['azure.graph.default_login'] === 'true')}
+                                onChange={onChange}
+                                className="w-full mb-6"
+                                state={states['azure.graph.default_login']} />
                         </>
                     )
                     : null

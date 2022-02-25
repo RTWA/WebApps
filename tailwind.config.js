@@ -6,25 +6,27 @@ module.exports = {
     './storage/framework/views/*.php',
     './resources/**/*.blade.php',
     './resources/**/*.js',
-    './node_modules/webapps-react/dist/*.js'
+    './node_modules/webapps-react/dist/*.js',
   ],
   safelist: [
-    { pattern: /.*flex-/ },
-    { pattern: /.*bg-/ },
-    { pattern: /.*text-/ },
-    { pattern: /.*border-/ },
-    { pattern: /.*m(b|t|l|r|x|y)?-/ },
-    { pattern: /.*p(b|t|l|r|x|y)?-/ },
-    { pattern: /.*h-/ },
-    { pattern: /.*w-/ },
+    { pattern: /.*flex-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
+    { pattern: /.*bg-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
+    { pattern: /.*text-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
+    { pattern: /.*border-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
+    { pattern: /.*ring-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
+    { pattern: /.*fill-/ },
+    { pattern: /.*m(b|t|l|r|x|y)?-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
+    { pattern: /.*p(b|t|l|r|x|y)?-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
+    { pattern: /.*h-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
+    { pattern: /.*w-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     { pattern: /.*top-/ },
     { pattern: /.*right-/ },
     { pattern: /.*bottom-/ },
     { pattern: /.*left-/ },
     { pattern: /.*UserAvatar/ },
     { pattern: /.*max-/ },
-    { pattern: /.*opacity-/ },
-    { pattern: /.*grid-cols-/ },
+    { pattern: /.*opacity-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
+    { pattern: /.*grid-cols-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl']  },
     { pattern: /.*translate-/ },
   ],
   darkMode: 'class', // false or 'media' or 'class'
@@ -33,6 +35,7 @@ module.exports = {
       colors: {
         'gray': colors.neutral,
         'light-blue': colors.sky,
+        'orange': colors.amber,
       },
       zIndex: {
         '-10': '-10',
@@ -48,6 +51,7 @@ module.exports = {
     },
   },
   plugins: [
+    require('@tailwindcss/typography'),
     require('flowbite/plugin')
   ],
 }

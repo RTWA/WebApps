@@ -8,8 +8,10 @@ const ThemeProvider = props => {
     const [color, setColor] = useState('indigo');
     const [dark, setDark] = useState('user');
 
+    const APIController = new AbortController();
+
     useEffect(async () => {
-        await APIClient('/api/theme')
+        await APIClient('/api/theme', undefined, { signal: APIController.signal })
             .then(json => {
                 setColor(json.data['core.ui.theme']);
                 setDark(json.data['core.ui.dark_mode']);
@@ -21,10 +23,14 @@ const ThemeProvider = props => {
                     console.error(error);
                 }
             })
-    });
+
+        return () => {
+            APIController.abort();
+        }
+    }, []);
 
     const changeColor = async value => {
-        await APIClient('/api/color', { theme: value })
+        await APIClient('/api/color', { theme: value }, { signal: APIController.signal })
             .then(json => {
                 setColor(value);
             })
@@ -37,16 +43,16 @@ const ThemeProvider = props => {
     }
 
     const changeDark = async mode => {
-        await APIClient('/api/dark', { mode: mode })
-        .then(json => {
-            setDark(mode);
-        })
-        .catch(error => {
-            if (!error.status.isAbort) {
-                // TODO: Handle errors
-                console.error(error);
-            }
-        })
+        await APIClient('/api/dark', { mode: mode }, { signal: APIController.signal })
+            .then(json => {
+                setDark(mode);
+            })
+            .catch(error => {
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
+            })
     }
 
     return (

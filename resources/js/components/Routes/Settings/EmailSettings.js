@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { APIClient, APIController, Button, Input, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
-
-let testSndBtnText = 'Send test Email';
+import { APIClient, Button, Input, Select, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
 
 const EmailSettings = ({ user, UI, ...props }) => {
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
+
+    const APIController = new AbortController();
+    let timers = [null, null];
 
     const {
         settings,
@@ -15,14 +16,20 @@ const EmailSettings = ({ user, UI, ...props }) => {
     } = props;
 
     const [driverStates, setDriverStates] = useState({ smtp: '', msgraph: '' });
+    const [testMailState, setTestMailsate] = useState({ state: '' });
+    const [testTo, setTestTo] = useState(/* istanbul ignore next */(user) ? user.email : '');
 
     const { addToast } = useToasts();
-
-    const [testTo, setTestTo] = useState(/* istanbul ignore next */(user) ? user.email : '');
 
     useEffect(() => {
         return /* istanbul ignore next */ () => {
             APIController.abort();
+            if (timers[0]) {
+                clearTimeout(timers[0]);
+            }
+            if (timers[1]) {
+                clearTimeout(timers[1]);
+            }
             void (isMountedRef.current = false);
         }
     }, []);
@@ -47,11 +54,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 setDriverStates({ ...driverStates });
             }
 
-            setTimeout(function () {
+            timers[0] = setTimeout(function () {
                 // Don't do anything if testing
                 if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     driverStates['smtp'] = '';
                     setDriverStates({ ...driverStates });
+                    timers[0] = null;
                 }
             }, 2500);
         } else if (e.target.id === 'mail.driver.msgraph') {
@@ -61,11 +69,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 setDriverStates({ ...driverStates });
             }
 
-            setTimeout(function () {
+            timers[0] = setTimeout(function () {
                 // Don't do anything if testing
                 if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     driverStates['msgraph'] = '';
                     setDriverStates({ ...driverStates });
+                    timers[0] = null;
                 }
             }, 2500);
         }
@@ -78,9 +87,14 @@ const EmailSettings = ({ user, UI, ...props }) => {
     const sendTest = async e => {
         e.preventDefault();
 
-        testSndBtnText = 'Sending...';
+        // Don't do anything if testing
+        /* istanbul ignore next */
+        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+            testMailState.state = 'saving';
+            setTestMailsate({ ...testMailState });
+        }
 
-        await APIClient('/api/email/test', { to: testTo })
+        await APIClient('/api/email/test', { to: testTo }, { signal: APIController.signal })
             .then(json => {
                 if (isMounted) {
                     addToast(
@@ -88,56 +102,73 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         '',
                         { appearance: 'success' }
                     );
-                    testSndBtnText = 'Send test Email';
+
+                    // Don't do anything if testing
+                    /* istanbul ignore next */
+                    if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                        testMailState.state = 'saved';
+                        setTestMailsate({ ...testMailState });
+
+                        timers[1] = setTimeout(/* istanbul ignore next */ function () {
+                            if (isMounted) {
+                                testMailState.state = '';
+                                setTestMailsate({ ...testMailState });
+                                timers[1] = null;
+                            }
+                        }, 2500);
+                    }
                 }
             })
             .catch(error => {
                 if (isMounted) {
+                    addToast(
+                        "Unable to send test Email",
+                        '',
+                        { appearance: 'error' }
+                    );
+
+                    // Don't do anything if testing
                     /* istanbul ignore next */
-                    if (error.data.exception) {
-                        addToast(
-                            "Unable to send test Email",
-                            error.data.exception,
-                            { appearance: 'error' }
-                        );
-                    } else {
-                        addToast(
-                            "Unable to send test Email",
-                            '',
-                            { appearance: 'error' }
-                        );
+                    if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                        testMailState.state = 'error';
+                        testMailState.error = error.data?.exception
+                        setTestMailsate({ ...testMailState });
+
+                        timers[1] = setTimeout(function () {
+                            if (isMounted) {
+                                testMailState.state = '';
+                                testMailState.error = '';
+                                setTestMailsate({ ...testMailState });
+                                timers[1] = null;
+                            }
+                        }, 5000);
                     }
-                    testSndBtnText = 'Send test Email';
                 }
             })
     }
 
     return (
         <>
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.driver">Email send method</label>
+            <div className="my-6">
+                <label htmlFor="mail.driver" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Email send method</label>
                 <div className="w-full flex flex-col sm:flex-row gap-x-4 gap-y-1 mt-2 xl:mt-0">
-                    <div className="w-full flex flex-row gap-x-2">
-                        <div className="relative inline-block align-middle select-none xl:mt-2">
-                            <Switch name="mail.driver.smtp"
-                                checked={(settings['mail.driver'] === 'smtp')}
-                                onChange={changeDriver}
-                                state={driverStates['smtp']} />
-                        </div>
-                        <label className="w-full xl:w-80 py-1 xl:py-2 font-medium text-sm xl:text-base" htmlFor="mail.driver.smtp">Send with SMTP</label>
-                    </div>
+                    <Switch
+                        id="mail.driver.smtp"
+                        name="mail.driver.smtp"
+                        checked={(settings['mail.driver'] === 'smtp')}
+                        onChange={changeDriver}
+                        state={driverStates['smtp']}
+                        label="Send with SMTP" />
                     {
                         (settings['azure.graph.tenant'] !== null && settings['azure.graph.tenant'] !== '' && settings['azure.graph.tenant'] !== undefined)
                             ? (
-                                <div className="w-full flex flex-row gap-x-2">
-                                    <div className="relative inline-block align-middle select-none xl:mt-2">
-                                        <Switch name="mail.driver.msgraph"
-                                            checked={(settings['mail.driver'] === 'msgraph')}
-                                            onChange={changeDriver}
-                                            state={driverStates['msgraph']} />
-                                    </div>
-                                    <label className="w-full xl:w-80 py-1 xl:py-2 font-medium text-sm xl:text-base" htmlFor="mail.driver.msgraph">Send with Microsoft Azure</label>
-                                </div>
+                                <Switch
+                                    id="mail.driver.msgraph"
+                                    name="mail.driver.msgraph"
+                                    checked={(settings['mail.driver'] === 'msgraph')}
+                                    onChange={changeDriver}
+                                    state={driverStates['msgraph']}
+                                    label="Send with Microsoft Azure" />
                             ) : null
                     }
                 </div>
@@ -146,128 +177,107 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 (settings['mail.driver'] === 'smtp')
                     ? (
                         <>
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.smtp.host">SMTP Server Host</label>
-                                <Input name="mail.smtp.host"
-                                    type="text"
-                                    id="mail.smtp.host"
-                                    value={settings['mail.smtp.host'] || ''}
-                                    onChange={onType}
-                                    onBlur={onChange}
-                                    state={states['mail.smtp.host']} />
-                            </div>
-
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.smtp.port">SMTP Server Port</label>
-                                <Input name="mail.smtp.port"
-                                    type="text"
-                                    id="mail.smtp.port"
-                                    value={settings['mail.smtp.port'] || ''}
-                                    onChange={onType}
-                                    onBlur={onChange}
-                                    state={states['mail.smtp.port']} />
-                            </div>
-
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.smtp.encryption">SMTP Server Encryption</label>
-                                <select name="mail.smtp.encryption"
-                                    id="mail.smtp.encryption"
-                                    value={settings['mail.smtp.encryption']}
-                                    className={`input-field focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}
-                                    onChange={onChange}>
-                                    <option value="">None</option>
-                                    <option value="tls">TLS</option>
-                                    <option value="ssl">SSL</option>
-                                </select>
-                            </div>
-
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.smtp.from_address">SMTP From Email Address</label>
-                                <Input name="mail.smtp.from_address"
-                                    type="text"
-                                    id="mail.smtp.from_address"
-                                    value={settings['mail.smtp.from_address'] || ''}
-                                    onChange={onType}
-                                    onBlur={onChange}
-                                    state={states['mail.smtp.from_address']} />
-                            </div>
-
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.smtp.from_name">SMTP From Email Name</label>
-                                <Input name="mail.smtp.from_name"
-                                    type="text"
-                                    id="mail.smtp.from_name"
-                                    value={settings['mail.smtp.from_name'] || ''}
-                                    onChange={onType}
-                                    onBlur={onChange}
-                                    state={states['mail.smtp.from_name']} />
-                            </div>
-
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.smtp.username">SMTP Username</label>
-                                <Input name="mail.smtp.username"
-                                    type="text"
-                                    id="mail.smtp.username"
-                                    value={settings['mail.smtp.username'] || ''}
-                                    onChange={onType}
-                                    onBlur={onChange}
-                                    state={states['mail.smtp.username']} />
-                            </div>
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.smtp.password">SMTP Password</label>
-                                <Input name="mail.smtp.password"
-                                    type="password"
-                                    id="mail.smtp.password"
-                                    value={settings['mail.smtp.password'] || ''}
-                                    onChange={onType}
-                                    onBlur={onChange}
-                                    states={states['mail.smtp.password']} />
-                            </div>
+                            <Input
+                                id="mail.smtp.host"
+                                name="mail.smtp.host"
+                                label="SMTP Server Host"
+                                type="text"
+                                value={settings['mail.smtp.host'] || ''}
+                                onChange={onType}
+                                onBlur={onChange}
+                                state={states['mail.smtp.host']} />
+                            <Input
+                                id="mail.smtp.port"
+                                name="mail.smtp.port"
+                                label="SMTP Server Port"
+                                type="text"
+                                value={settings['mail.smtp.port'] || ''}
+                                onChange={onType}
+                                onBlur={onChange}
+                                state={states['mail.smtp.port']} />
+                            <Select
+                                id="mail.smtp.encryption"
+                                name="mail.smtp.encryption"
+                                label="SMTP Server Encryption"
+                                value={settings['mail.smtp.encryption']}
+                                onChange={onChange}>
+                                <option value="">None</option>
+                                <option value="tls">TLS</option>
+                                <option value="ssl">SSL</option>
+                            </Select>
+                            <Input
+                                id="mail.smtp.from_address"
+                                name="mail.smtp.from_address"
+                                label="SMTP From Email Address"
+                                type="text"
+                                value={settings['mail.smtp.from_address'] || ''}
+                                onChange={onType}
+                                onBlur={onChange}
+                                state={states['mail.smtp.from_address']} />
+                            <Input
+                                id="mail.smtp.from_name"
+                                name="mail.smtp.from_name"
+                                label="SMTP From Email Name"
+                                type="text"
+                                value={settings['mail.smtp.from_name'] || ''}
+                                onChange={onType}
+                                onBlur={onChange}
+                                state={states['mail.smtp.from_name']} />
+                            <Input
+                                id="mail.smtp.username"
+                                name="mail.smtp.username"
+                                label="SMTP Username"
+                                type="text"
+                                value={settings['mail.smtp.username'] || ''}
+                                onChange={onType}
+                                onBlur={onChange}
+                                state={states['mail.smtp.username']} />
+                            <Input
+                                id="mail.smtp.password"
+                                name="mail.smtp.password"
+                                label="SMTP Password"
+                                type="password"
+                                value={settings['mail.smtp.password'] || ''}
+                                onChange={onType}
+                                onBlur={onChange}
+                                states={states['mail.smtp.password']} />
                         </>
                     ) : null
             }
             {
                 (settings['mail.driver'] === 'msgraph')
                     ? (
-                        <>
-                            <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="mail.msgraph.from_address">From Email Address</label>
-                                <div className="w-full flex flex-col">
-                                    <Input name="mail.msgraph.from_address"
-                                        type="text"
-                                        id="mail.msgraph.from_address"
-                                        value={settings['mail.msgraph.from_address'] || ''}
-                                        onChange={onType}
-                                        onBlur={onChange}
-                                        state={states['mail.msgraph.from_address']} />
-                                    <span className="text-xs text-gray-400 dark:text-gray-200 col-span-3">
-                                        Please enter a valid organisational email address
-                                    </span>
-                                </div>
-                            </div>
-                        </>
+
+                        <Input
+                            id="mail.msgraph.from_address"
+                            name="mail.msgraph.from_address"
+                            label="From Email Address"
+                            type="text"
+                            value={settings['mail.msgraph.from_address'] || ''}
+                            onChange={onType}
+                            onBlur={onChange}
+                            state={states['mail.msgraph.from_address']}
+                            helpText="Please enter a valid organisational email address" />
                     ) : null
             }
-
             <div className="h-px bg-gray-300 dark:bg-gray-700 my-4" />
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="testTo">Send test to</label>
-                <div className="relative w-full">
-                    <Input name="testTo"
-                        type="text"
-                        id="testTo"
-                        value={testTo || ''}
-                        onChange={updateTestTo} />
-
-                    <div className="w-full sm:w-auto sm:absolute inset-y-0 right-0 sm:flex items-center">
-                        <Button style="ghost" color="gray" size="small" square
-                            className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
-                            onClick={sendTest}>
-                            {testSndBtnText}
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            <Input
+                id="testTo"
+                name="testTo"
+                type="text"
+                label="Send test to"
+                value={testTo || ''}
+                onChange={updateTestTo}
+                state={testMailState.state}
+                error={testMailState.error}
+                action={
+                    <Button style="ghost" color="gray" size="small" square
+                        className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
+                        onClick={sendTest}>
+                        Send test Email
+                    </Button>
+                }
+            />
         </>
     )
 }

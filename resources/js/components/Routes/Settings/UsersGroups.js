@@ -31,11 +31,23 @@ const UsersGroups = ({ UI, ...props }) => {
     const [createGroupFlyout, setCreateGroupFlyout] = useState(false);
     const [tab, setTab] = useState(0);
 
+    const APIController = new AbortController();
+    let timers = [null, null];
+
     useEffect(async () => {
         _mounted = true;
         await getUsers();
 
-        return /* istanbul ignore next */ () => { _mounted = false; }
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            if (timers[0]) {
+                clearTimeout(timers[0]);
+            }
+            if (timers[1]) {
+                clearTimeout(timers[1]);
+            }
+            _mounted = false;
+        }
     }, []);
 
     const getUsers = async () => {
@@ -44,7 +56,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const getEnabledUsers = async () => {
-        await APIClient('/api/users')
+        await APIClient('/api/users', undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -68,7 +80,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const getDisabledUsers = async () => {
-        await APIClient('/api/users/disabled')
+        await APIClient('/api/users/disabled', undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -155,7 +167,7 @@ const UsersGroups = ({ UI, ...props }) => {
         }
 
         let group_id = e.target.value;
-        await APIClient('/api/user/group', { group_id: group_id, username: user.username })
+        await APIClient('/api/user/group', { group_id: group_id, username: user.username }, { signal: APIController.signal })
             .then(async json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -172,10 +184,11 @@ const UsersGroups = ({ UI, ...props }) => {
 
                     addToast('Security Group Updated', '', { appearance: 'success' });
                     /* istanbul ignore next */
-                    setTimeout(function () {
+                    timers[0] = setTimeout(function () {
                         if (_mounted && document.getElementById('usrSecGroup') !== null) {
                             document.getElementById('usrSecGroup').classList.remove('text-green-500');
                             document.getElementById('usrSecGroup').classList.remove('border-green-500');
+                            timers[0] = null;
                         }
                     }, 2500);
                 }
@@ -191,10 +204,11 @@ const UsersGroups = ({ UI, ...props }) => {
                     document.getElementById('usrSecGroup').blur();
                     document.getElementById('usrSecGroup').classList.add('text-red-500');
                     document.getElementById('usrSecGroup').classList.add('border-red-500');
-                    setTimeout(function () {
+                    timers[0] = setTimeout(function () {
                         if (_mounted && document.getElementById('usrSecGroup') !== null) {
                             document.getElementById('usrSecGroup').classList.remove('text-red-500');
                             document.getElementById('usrSecGroup').classList.remove('border-red-500');
+                            timers[0] = null;
                         }
                     }, 2500);
                 }
@@ -219,7 +233,7 @@ const UsersGroups = ({ UI, ...props }) => {
             selectedGroup.state = 'saving';
             setSelectedGroup({ ...selectedGroup });
 
-            await APIClient('/api/group', { old_name: old_name, new_name: selectedGroup.name, _method: 'PATCH' }, { method: 'PATCH' })
+            await APIClient('/api/group', { old_name: old_name, new_name: selectedGroup.name, _method: 'PATCH' }, { method: 'PATCH', signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
                     if (_mounted) {
@@ -234,11 +248,12 @@ const UsersGroups = ({ UI, ...props }) => {
 
                         selectedGroup.state = 'saved';
                         setSelectedGroup({ ...selectedGroup });
-                        setTimeout(/* istanbul ignore next */function () {
+                        timers[1] = setTimeout(/* istanbul ignore next */function () {
                             // Don't do anything if testing
                             if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                                 selectedGroup.status = '';
                                 setSelectedGroup({ ...selectedGroup });
+                                timers[1] = null;
                             }
                         }, 2500);
                     }
@@ -266,7 +281,7 @@ const UsersGroups = ({ UI, ...props }) => {
             return;
         }
 
-        await APIClient(`/api/user/${user.id}`, { _method: 'DELETE' }, { method: 'DELETE' })
+        await APIClient(`/api/user/${user.id}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -295,7 +310,7 @@ const UsersGroups = ({ UI, ...props }) => {
     const enable = async e => {
         e.preventDefault();
 
-        await APIClient(`/api/user/${user.id}/enable`)
+        await APIClient(`/api/user/${user.id}/enable`, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -323,7 +338,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const deleteUser = async () => {
-        await APIClient(`/api/user/${user.id}/hard`, { _method: 'DELETE' }, { method: 'DELETE' })
+        await APIClient(`/api/user/${user.id}/hard`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 // TODO: Surely this can be improved?
                 let _disabled = [];
@@ -348,7 +363,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const deleteGroup = async () => {
-        await APIClient('/api/group', { name: selectGroup.name, _method: 'DELETE' }, { method: 'DELETE' })
+        await APIClient('/api/group', { name: selectGroup.name, _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {

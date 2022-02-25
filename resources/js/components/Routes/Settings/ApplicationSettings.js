@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Values from 'values.js';
-import { Input, Switch, useToasts, withWebApps } from 'webapps-react';
+import { ColorGridSelect, Input, Switch, useToasts, withWebApps } from 'webapps-react';
 
 const ApplicationSettings = ({ UI, setUI, ...props }) => {
     const {
@@ -25,6 +25,8 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
     const [brand, setBrand] = useState([]);
     const [base, setBase] = useState('#000000');
     const [typeBase, setTypeBase] = useState('');
+    const [colors, setColors] = useState([]);
+    const [darkOptions, setDarkOptions] = useState([]);
 
     const color = new Values(base);
     const shades = [10, 23, 40, 50];
@@ -64,40 +66,81 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
         }
     }, [base]);
 
-    const colors = [
-        {
-            class: 'indigo',
-            name: 'Indigo',
-        },
-        {
-            class: 'fuchsia',
-            name: 'Fuchsia',
-        },
-        {
-            class: 'light-blue',
-            name: 'Blue',
-        },
-        {
-            class: 'red',
-            name: 'Red',
-        },
-        {
-            class: 'orange',
-            name: 'Orange',
-        },
-        {
-            class: 'lime',
-            name: 'Green',
-        },
-        {
-            class: 'gray',
-            name: 'Gray',
-        },
-        {
-            class: 'brand',
-            name: 'Custom',
-        },
-    ];
+    useEffect(() => {
+        setColors([
+            {
+                value: 'indigo',
+                bgClasses: 'bg-indigo-600 dark:bg-indigo-500',
+                name: 'Indigo',
+                selected: (settings['core.ui.theme'] === 'indigo'),
+            },
+            {
+                value: 'fuchsia',
+                bgClasses: 'bg-fuchsia-600 dark:bg-fuchsia-500',
+                name: 'Fuchsia',
+                selected: (settings['core.ui.theme'] === 'fuchsia'),
+            },
+            {
+                value: 'light-blue',
+                bgClasses: 'bg-light-blue-600 dark:bg-light-blue-500',
+                name: 'Blue',
+                selected: (settings['core.ui.theme'] === 'light-blue'),
+            },
+            {
+                value: 'red',
+                bgClasses: 'bg-red-600 dark:bg-red-500',
+                name: 'Red',
+                selected: (settings['core.ui.theme'] === 'red'),
+            },
+            {
+                value: 'orange',
+                bgClasses: 'bg-orange-600 dark:bg-orange-500',
+                name: 'Orange',
+                selected: (settings['core.ui.theme'] === 'orange'),
+            },
+            {
+                value: 'lime',
+                bgClasses: 'bg-lime-600 dark:bg-lime-500',
+                name: 'Green',
+                selected: (settings['core.ui.theme'] === 'lime'),
+            },
+            {
+                value: 'gray',
+                bgClasses: 'bg-gray-600 dark:bg-gray-500',
+                name: 'Gray',
+                selected: (settings['core.ui.theme'] === 'gray'),
+            },
+            {
+                value: 'brand',
+                bgClasses: 'bg-brand-600 dark:bg-brand-500',
+                name: 'Custom',
+                selected: (settings['core.ui.theme'] === 'brand'),
+            },
+        ]);
+    }, [settings['core.ui.theme']]);
+
+    useEffect(() => {
+        setDarkOptions([
+            {
+                value: 'light',
+                bgClasses: 'bg-gray-200',
+                name: 'Light Mode Only',
+                selected: (settings['core.ui.dark_mode'] === 'light'),
+            },
+            {
+                value: 'dark',
+                bgClasses: 'bg-gray-900',
+                name: 'Dark Mode Only',
+                selected: (settings['core.ui.dark_mode'] === 'dark'),
+            },
+            {
+                value: 'user',
+                bgClasses: 'bg-gradient-to-r from-gray-200 to-gray-900',
+                name: 'User Selectable',
+                selected: (settings['core.ui.dark_mode'] === 'user'),
+            }
+        ]);
+    }, [settings['core.ui.dark_mode']]);
 
     const onTypeBase = e => {
         if (e.currentTarget.value.charAt(0) !== '#') {
@@ -165,42 +208,20 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
 
     return (
         <>
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="core.error.reporting">Enable Error Reporting</label>
-                <div className="relative inline-block w-10 mr-2 align-middle select-none mt-1 xl:mt-0 w-full">
-                    <Switch name="core.error.reporting"
-                        checked={(settings['core.error.reporting'] === 'true')}
-                        onChange={onChange}
-                        state={states['core.error.reporting']} />
-                    <p className="text-xs text-gray-400 dark:text-gray-200">
-                        Enabling this option will report all application errors to WebApps via Sentry. (
-                        <a href="https://docs.getwebapps.uk/configuration/application-settings" target="_blank"
-                            className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 font-semibold">See Documentation</a>)
-                    </p>
-                </div>
-            </div>
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="core.ui.theme">Theme Colour</label>
-                <div className={`grid grid-cols-1 md:col-span-3 sm:grid-cols-${colors.length / 2} xl:grid-cols-${colors.length} gap-y-2 gap-x-4 mt-1 xl:mt-0 w-full`}>
-                    {
-                        Object(colors).map(function (color) {
-                            return (settings['core.ui.theme'] === color.class)
-                                ? (
-                                    <div key={color.class} onClick={() => setColor(color.class)} className={`border-2 border-white dark:border-gray-800 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer ring-4 ring-${color.class}-600 dark:ring-${color.class}-500 ring-opacity-50`}>
-                                        <div className={`h-10 bg-${color.class}-600 dark:bg-${color.class}-500 not-sr-only`}></div>
-                                        <div className="text-center font-semibold">{color.name}</div>
-                                    </div>
-                                )
-                                : (
-                                    <div key={color.class} onClick={() => setColor(color.class)} className="border-2 border-white dark:border-gray-800 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer">
-                                        <div className={`h-10 bg-${color.class}-600 dark:bg-${color.class}-500 not-sr-only`}></div>
-                                        <div className="text-center">{color.name}</div>
-                                    </div>
-                                )
-                        })
-                    }
-                </div>
-            </div>
+            <Switch
+                label="Enable Error Reporting"
+                id="core.error.reporting"
+                name="core.error.reporting"
+                checked={(settings['core.error.reporting'] === 'true')}
+                onChange={onChange}
+                state={states['core.error.reporting']}
+                className="w-full py-4"
+                helpText={<>Enabling this option will report all application errors to WebApps via Sentry. (
+                    <a href="https://docs.getwebapps.uk/configuration/application-settings" target="_blank"
+                        className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 font-semibold">See Documentation</a>)</>}
+            />
+
+            <ColorGridSelect id="core.ui.theme" label="Theme Colour" colors={colors} onSelect={setColor} />
             {
                 (settings['core.ui.theme'] === 'brand')
                     ? (
@@ -232,60 +253,39 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                     )
                     : null
             }
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="core.ui.dark_mode">Dark Mode Option</label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-2 gap-x-4 pt-2 mt-1 xl:mt-0 w-full">
-                    <div onClick={() => setDarkMode('light')} className={`border-2 border-white dark:border-gray-800 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer ${(UI.dark_mode === 'light') ? `ring-4 ring-${UI.theme}-600 dark:ring-${UI.theme}-500 ring-opacity-50` : ''}`}>
-                        <div className="selector h-10 bg-gray-200 not-sr-only"></div>
-                        <div className="text-center">Light Mode Only</div>
-                    </div>
-                    <div onClick={() => setDarkMode('dark')} className={`border-2 border-white dark:border-gray-800 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer ${(UI.dark_mode === 'dark') ? `ring-4 ring-${UI.theme}-600 dark:ring-${UI.theme}-500 ring-opacity-50` : ''}`}>
-                        <div className="selector h-10 bg-gray-900 not-sr-only"></div>
-                        <div className="text-center">Dark Mode Only</div>
-                    </div>
-                    <div onClick={() => setDarkMode('user')} className={`border-2 border-white dark:border-gray-800 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 cursor-pointer ${(UI.dark_mode === 'user') ? `ring-4 ring-${UI.theme}-600 dark:ring-${UI.theme}-500 ring-opacity-50` : ''}`}>
-                        <div className="flex flex-row w-full h-10">
-                            <div className="selector h-10 w-full bg-gray-200 not-sr-only"></div>
-                            <div className="selector h-10 w-full bg-gray-900 not-sr-only"></div>
-                        </div>
-                        <div className="text-center">User Selectable</div>
-                    </div>
-                    <span className="text-xs text-gray-400 dark:text-gray-200 sm:col-span-3">
-                        If you choose to allow the user to select, their system preferences will be respected.
-                    </span>
-                </div>
-            </div>
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="core.cms.display_link">Display "Return to CMS" Link</label>
-                <div className="relative inline-block w-10 mr-2 align-middle select-none mt-1 xl:mt-0 w-full">
-                    <Switch name="core.cms.display_link"
-                        checked={(settings['core.cms.display_link'] === 'true')}
-                        onChange={onChange}
-                        state={states['core.cms.display_link']} />
-                </div>
-            </div>
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="core.cms.url">CMS URL</label>
-                <Input name="core.cms.url"
-                    id="core.cms.url"
-                    type="text"
-                    value={settings['core.cms.url'] || ''}
-                    onChange={onType}
-                    onBlur={onChange}
-                    state={states['core.cms.url']}
-                    className="w-full" />
-            </div>
-            <div className="flex flex-col xl:flex-row py-4">
-                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="core.cms.text">"Return to CMS" Link Text</label>
-                <Input name="core.cms.text"
-                    type="text"
-                    id="core.cms.text"
-                    value={settings['core.cms.text'] || ''}
-                    onChange={onType}
-                    onBlur={onChange}
-                    state={states['core.cms.text']}
-                    className="w-full" />
-            </div>
+            <ColorGridSelect
+                id="core.ui.dark_mode"
+                label="Dark Mode Option"
+                colors={darkOptions}
+                onSelect={setDarkMode}
+                helpText="If you choose to allow the user to select, their system preferences will be respected."
+            />
+            <Switch
+                label='Display "Return to CMS" Link'
+                id="core.cms.display_link"
+                name="core.cms.display_link"
+                checked={(settings['core.cms.display_link'] === 'true')}
+                onChange={onChange}
+                state={states['core.cms.display_link']}
+                className="w-full py-4" />
+            <Input
+                id="core.cms.url"
+                name="core.cms.url"
+                label="CMS URL"
+                type="text"
+                value={settings['core.cms.url'] || ''}
+                onChange={onType}
+                onBlur={onChange}
+                state={states['core.cms.url']} />
+            <Input
+                id="core.cms.text"
+                name="core.cms.text"
+                label='"Return to CMS" Link Text'
+                type="text"
+                value={settings['core.cms.text'] || ''}
+                onChange={onType}
+                onBlur={onChange}
+                state={states['core.cms.text']} />
         </>
     )
 }

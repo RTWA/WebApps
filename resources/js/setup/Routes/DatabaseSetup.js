@@ -17,11 +17,13 @@ const DatabaseSetup = ({color, routedata, setSuccess}) => {
     const [canContinue, setCanContinue] = useState(false);
     const [sampling, setSampling] = useState(false);
     const [sample, setSample] = useState(null);
+    
+    const APIController = new AbortController();
 
     useEffect(async () => {
         setSuccess([true, false, false, false, false]);
         if (fields) {
-            await APIClient('/api/install/database')
+            await APIClient('/api/install/database', undefined, { signal: APIController.signal })
                 .then(json => {
                     setFields(json.data);
                 })
@@ -31,6 +33,10 @@ const DatabaseSetup = ({color, routedata, setSuccess}) => {
                         console.error(error);
                     }
                 })
+        }
+        
+        return () => {
+            APIController.abort();
         }
     }, []);
 
@@ -45,7 +51,7 @@ const DatabaseSetup = ({color, routedata, setSuccess}) => {
     const submitForm = async e => {
         e.preventDefault();
 
-        await APIClient('/api/install/database', fields)
+        await APIClient('/api/install/database', fields, { signal: APIController.signal })
             .then(async json => {
                 setOutput(json.data);
                 await APIClient('/api/install/database/migrate', {})
@@ -76,7 +82,7 @@ const DatabaseSetup = ({color, routedata, setSuccess}) => {
         e.preventDefault();
         setSampling(true);
 
-        await APIClient('/api/install/database/sample', {})
+        await APIClient('/api/install/database/sample', {}, { signal: APIController.signal })
             .then(json => {
                 setSample(json.data);
                 setSampling(false);

@@ -8,16 +8,19 @@ const PopularBlocks = () => {
     const { modals, setModals } = useContext(WebAppsContext);
     const [blocks, setBlocks] = useState(null);
 
+    const APIController = new AbortController();
+
     useEffect(() => {
         loadPopular();
         return () => {
+            APIController.abort();
             delete modals.preview_blocks;
             setModals({ ...modals });
         }
     }, []);
 
     const loadPopular = async () => {
-        await APIClient('/api/blocks?limit=5&offset=0&filter=&sort=views')
+        await APIClient('/api/blocks?limit=5&offset=0&filter=&sort=views', undefined, { signal: APIController.signal })
             .then(json => {
                 const { blocks, styles } = json.data;
                 if (blocks !== undefined) {
@@ -52,7 +55,7 @@ const PopularBlocks = () => {
     }
 
     const deleteBlock = async () => {
-        await APIClient(`/api/blocks/${modals.preview_blocks.block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE' })
+        await APIClient(`/api/blocks/${modals.preview_blocks.block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 Object(blocks).map(function (b, i) {
                     if (b === modals.preview_blocks.block) {
