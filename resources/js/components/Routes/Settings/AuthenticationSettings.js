@@ -1,6 +1,5 @@
 import React from 'react';
-import { Switch, withWebApps } from 'webapps-react';
-import Select from '../../TEMP/Select';
+import { Select, Switch, withWebApps } from 'webapps-react';
 
 const AuthenticationSettings = ({ UI, ...props }) => {
     const {
