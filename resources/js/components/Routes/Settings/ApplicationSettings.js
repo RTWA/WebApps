@@ -225,36 +225,29 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
             {
                 (settings['core.ui.theme'] === 'brand')
                     ? (
-                        <>
-                            {/* <div className="flex flex-col xl:flex-row py-4">
-                                <label className="w-full xl:w-4/12 xl:py-2 font-medium xl:font-normal text-sm xl:text-base" htmlFor="base">Custom Colour</label>
-                                <div className="w-full"> */}
-                            <div className="relative mb-6">
-                                <Input
-                                    id="base"
-                                    name="base"
-                                    label="Custom Colour"
-                                    type="text"
-                                    value={typeBase}
-                                    onChange={onTypeBase}
-                                    onBlur={onChangeBase}
-                                    state={states['core.ui.branding']}
-                                    wrapperClassName="" />
-                                <div className={`grid grid-cols-1 md:col-span-3 sm:grid-cols-${brand.length / 2} xl:grid-cols-${brand.length} w-full`}>
-                                    {
-                                        Object(brand).map(function (color, i) {
-                                            return (
-                                                <div key={color.color} className={`w-full bg-white dark:bg-gray-800 overflow-hidden`}>
-                                                    <div className={`h-10 flex items-center text-center justify-center font-bold text-lg proportional-nums not-sr-only`} style={{ backgroundColor: color.color, color: brand[index[i]].color }}>{color.color}</div>
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                </div>
+                        <div className="relative mb-6">
+                            <Input
+                                id="base"
+                                name="base"
+                                label="Custom Colour"
+                                type="text"
+                                value={typeBase}
+                                onChange={onTypeBase}
+                                onBlur={onChangeBase}
+                                state={states['core.ui.branding']}
+                                wrapperClassName="" />
+                            <div className={`grid grid-cols-1 md:col-span-3 sm:grid-cols-${brand.length / 2} xl:grid-cols-${brand.length} w-full`}>
+                                {
+                                    Object(brand).map(function (color, i) {
+                                        return (
+                                            <div key={color.color} className={`w-full bg-white dark:bg-gray-800 overflow-hidden`}>
+                                                <div className={`h-10 flex items-center text-center justify-center font-bold text-lg proportional-nums not-sr-only`} style={{ backgroundColor: color.color, color: brand[index[i]].color }}>{color.color}</div>
+                                            </div>
+                                        )
+                                    })
+                                }
                             </div>
-                            {/* </div>
-                            </div> */}
-                        </>
+                        </div>
                     )
                     : null
             }
