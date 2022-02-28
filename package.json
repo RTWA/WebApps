@@ -65,7 +65,7 @@
         "tiny-invariant": "^1.2.0",
         "url": "^0.11.0",
         "values.js": "^2.0.0",
-        "webapps-react": "^1.11.2",
+        "webapps-react": "^1.11.5",
         "whatwg-fetch": "^3.6.2"
     }
 }
