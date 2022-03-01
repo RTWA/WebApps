@@ -318,4 +318,47 @@ class BlocksController extends Controller
 
         return response()->json(['block' => $block], 200);
     }
+
+    /**
+     * Get a list of Media that is used by Blocks
+     */
+    public function getBlockMedia()
+    {
+        $medias = [];
+        $blocks = Block::all();
+
+        foreach ($blocks as $block) {
+            $p = Plugin::find($block->plugin);
+            $plugin = Plugin::createFromSlug($p->slug);
+            $settings = json_decode($block['settings'], true);
+            $images = [];
+            $repeater_images = [];
+
+            foreach ($plugin->options as $name => $option) {
+                if (strtolower($option['type']) === 'repeater') {
+                    // Repeater
+                    foreach ($option['options'] as $repeater_name => $repeater_option) {
+                        if (strtolower($repeater_option['type']) === 'image') {
+                            $repeater_images[] = [$name, $repeater_name];
+                        }
+                    }
+                }
+                if (strtolower($option['type']) === 'image') {
+                    // Image
+                    $images[] = $name;
+                }
+            }
+
+            foreach ($repeater_images as $image) {
+                foreach ($settings[$image[0]] as $media) {
+                    $medias[] = [
+                        'media_id' => isset($media[$image[1]]['media_id']) ? $media[$image[1]]['media_id'] : null,
+                        'src' => $media[$image[1]]['src'],
+                    ];
+                }
+            }
+        }
+
+        return $medias;
+    }
 }
