@@ -14,6 +14,11 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $file = $request->file('file');
+
+        if (!$file) {
+            abort(500, 'No image uploaded!');
+        }
+        
         $storageName = Auth::user()->username . "_" . date("Y-m-d_H-i-s") . "_" . $file->getClientOriginalName();
         Storage::disk('public')->put($storageName, File::get($file));
 

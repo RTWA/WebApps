@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { APIClient, Input, useToasts, withWebApps } from 'webapps-react';
+import { APIMediaClient, Input, useToasts, withWebApps } from 'webapps-react';
 
 const Image = ({ UI, ...props }) => {
     const {
@@ -49,7 +49,10 @@ const Image = ({ UI, ...props }) => {
         if (file !== null) {
             addToast('Uploading image...', '', { appearence: 'info', autoDismiss: false }, id => toastId = id);
 
-            await APIClient('/api/media/upload', { file: file }, { signal: APIController.signal })
+            var formData = new FormData();
+            formData.append('file', file);
+
+            await APIMediaClient('/api/media/upload', formData, { signal: APIController.signal })
                 .then(json => {
                     value.text = `${json.data.media['original_filename']} (${json.data.media['filesize']})`;
                     value.label = 'Uploaded:';
@@ -69,18 +72,20 @@ const Image = ({ UI, ...props }) => {
                     );
                 })
                 .catch(error => {
-                    updateToast(
-                        toastId,
-                        {
-                            appearance: 'error',
-                            autoDismiss: true,
-                            autoDismissTimeout: 5000,
-                            title: 'Failed to upload image.'
-                        }
-                    );
+                    if (!error.status?.isAbort) {
+                        updateToast(
+                            toastId,
+                            {
+                                appearance: 'error',
+                                autoDismiss: true,
+                                autoDismissTimeout: 5000,
+                                title: 'Failed to upload image.'
+                            }
+                        );
+                    }
                 })
         } else {
-            updateToast('No Image Selected!', '', { appearence: 'warning', autoDismiss:true, autoDismissTimeout: 1000 });
+            updateToast('No Image Selected!', '', { appearence: 'warning', autoDismiss: true, autoDismissTimeout: 1000 });
         }
     }
 
