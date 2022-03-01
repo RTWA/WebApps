@@ -39,4 +39,10 @@ class MediaController extends Controller
             (new InitialAvatar())->name($name)->generate()->stream('png', 100)
         )->header('Content-Type', 'image/png');
     }
+
+    public static function delete(Media $media)
+    {
+        Storage::disk('public')->delete($media->filename);
+        $media->delete();
+    }
 }

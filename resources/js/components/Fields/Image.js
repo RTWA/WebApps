@@ -30,6 +30,7 @@ const Image = ({ UI, ...props }) => {
         value.label = 'Get from URL:';
         value.class = '';
         value.readonly = false;
+        value.media_id = null;
         setValue({ ...value });
     }
 
@@ -39,6 +40,7 @@ const Image = ({ UI, ...props }) => {
         value.label = 'Get from URL:';
         value.class = '';
         value.readonly = false;
+        value.media_id = null;
         setValue({ ...value });
     }
 
@@ -59,6 +61,7 @@ const Image = ({ UI, ...props }) => {
                     value.class = '';
                     value.readonly = true;
                     value.src = json.data.media.URL;
+                    value.media_id = json.data.media.id;
                     setValue({ ...value });
 
                     updateToast(

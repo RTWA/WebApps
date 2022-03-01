@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Block;
 use App\Models\BlockViews;
+use App\Models\Media;
 use App\Models\User;
 use App\Models\Plugin;
 use App\Services\BlocksService;
@@ -222,6 +223,35 @@ class BlocksController extends Controller
             && !Auth::user()->hasPermissionTo('blocks.create')
         ) {
             abort(403, 'You do not have permission to delete this block.');
+        }
+
+        $p = Plugin::find($block->plugin);
+        $plugin = Plugin::createFromSlug($p->slug);
+        $settings = json_decode($block['settings'], true);
+        $images = [];
+        $repeater_images = [];
+
+        foreach ($plugin->options as $name => $option) {
+            if (strtolower($option['type']) === 'repeater') {
+                // Repeater
+                foreach ($option['options'] as $repeater_name => $repeater_option) {
+                    if (strtolower($repeater_option['type']) === 'image') {
+                        $repeater_images[] = [$name, $repeater_name];
+                    }
+                }
+            }
+            if (strtolower($option['type']) === 'image') {
+                // Image
+                $images[] = $name;
+            }
+        }
+
+        foreach ($repeater_images as $image) {
+            foreach ($settings[$image[0]] as $media) {
+                if (isset($media[$image[1]]['media_id'])) {
+                    (new MediaController())::delete(Media::find($media[$image[1]]['media_id']));
+                }
+            }
         }
 
         $block->delete();
