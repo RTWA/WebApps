@@ -170,6 +170,7 @@ class UserController extends Controller
     public function changePassword(ChangePasswordRequest $request)
     {
         Auth::user()->password = Hash::make($request->input('password'));
+        Auth::user()->save();
         return response()->json(['success' => true], 200);
     }
 
