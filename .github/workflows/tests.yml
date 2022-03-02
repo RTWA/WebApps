@@ -49,6 +49,8 @@ jobs:
           npm run production
       - name: Test Coding Standards
         run: vendor/bin/phpcs
+      - name: Clear Laravel Cache
+        run: php artisan cache:clear
       - name: Run Unit Tests
         run: php artisan test --coverage-clover=coverage.xml --env=github
       - name: Upload Unit coverage to Codecov
