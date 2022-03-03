@@ -69,7 +69,7 @@ class MSGraphController extends Controller
         if (isset($content['error'])) {
             abort(500, $content['error_description']);
         }
-        
+
         $token = MSGraphToken::create([
             'access_token' => $content['access_token'],
             'expires' => (time() + $content['expires_in']),
@@ -144,33 +144,65 @@ class MSGraphController extends Controller
 
         foreach ($groupMappings['mappings'] as $group => $azGroup) {
             $group = Role::findById($group, 'web');
-            $groupMembers = $this->getGraphAPI("groups/" . $azGroup . "/members", $token)['value'];
+            $this->syncGroupMembers($token, $azGroup['azure_group_id'], $group);
+        }
+    }
 
-            foreach ($groupMembers as $member) {
-                $user = User::where('azure_id', $member['id'])->orWhere('email', $member['mail'])->first();
-                if (!$user) {
-                    // Create User
-                    $user = User::create([
-                        'username' => $member['userPrincipalName'],
-                        'password' => Hash::make(rand() . $member['mail'] . $member['id'] . time() . rand()),
-                        'email' => $member['mail'],
-                        'name' => $member['displayName'],
-                        'active' => true,
-                        'azure_id' => $member['id'],
-                    ]);
-                } else {
-                    $user->username = $member['userPrincipalName'];
-                    $user->email = $member['mail'];
-                    $user->azure_id = $member['id'];
-                    $user->save();
-                }
+    private function syncGroupMembers($token, $id, $group)
+    {
+        $data = $this->getGraphAPI("groups/" . $id . "/members", $token);
+        $this->processGroupMembers($token, $data['value'], $group);
 
-                // Set the group for the user, but don't override an Administrator!
-                if (!$user->hasRole($group) && !$user->hasRole('Administrators')) {
-                    $user->syncRoles([$group]);
-                    $user->touch();
-                }
+        if (isset($data['@odata.nextLink'])) {
+            $this->syncMoreGroupMembers($token, $data['@odata.nextLink'], $group);
+        }
+    }
+
+    private function syncMoreGroupMembers($token, $nextLink, $group)
+    {
+        $data = $this->getGraphAPI(str_replace('https://graph.microsoft.com/v1.0/', '', $nextLink), $token);
+        $this->processGroupMembers($token, $data['value'], $group);
+
+        if (isset($data['@odata.nextLink'])) {
+            $this->syncMoreGroupMembers($token, $data['@odata.nextLink'], $group);
+        }
+    }
+
+    private function processGroupMembers($token, $groupMembers, $group)
+    {
+        foreach ($groupMembers as $member) {
+            if ($member['@odata.type'] === "#microsoft.graph.group") {
+                $this->syncGroupMembers($token, $member['id'], $group);
+            } else {
+                $this->createOrUpdateMember($member, $group);
             }
+        }
+    }
+
+    private function createOrUpdateMember($member, $group)
+    {
+        $user = User::where('azure_id', $member['id'])->orWhere('email', $member['mail'])->first();
+        if (!$user) {
+            // Create User
+            $user = User::create([
+                'username' => $member['userPrincipalName'],
+                'password' => Hash::make(rand() . $member['mail'] . $member['id'] . time() . rand()),
+                'email' => $member['mail'],
+                'name' => $member['displayName'],
+                'active' => true,
+                'azure_id' => $member['id'],
+            ]);
+        } else {
+            $user->username = $member['userPrincipalName'];
+            $user->email = $member['mail'];
+            $user->azure_id = $member['id'];
+            $user->save();
+        }
+
+        // Set the group for the user, but don't override an Administrator!
+        if (!$user->hasRole($group) && !$user->hasRole('Administrators')) {
+            $user->syncRoles([$group]);
+            $user->touch();
         }
     }
 
