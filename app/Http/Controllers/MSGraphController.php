@@ -144,7 +144,7 @@ class MSGraphController extends Controller
 
         foreach ($groupMappings['mappings'] as $group => $azGroup) {
             $group = Role::findById($group, 'web');
-            $groupMembers = $this->getGraphAPI("groups/" . $azGroup . "/members", $token)['value'];
+            $groupMembers = $this->getGraphAPI("groups/" . $azGroup['azure_group_id'] . "/members", $token)['value'];
 
             foreach ($groupMembers as $member) {
                 $user = User::where('azure_id', $member['id'])->orWhere('email', $member['mail'])->first();
