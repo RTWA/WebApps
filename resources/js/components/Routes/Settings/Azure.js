@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { APIClient, Button, Input, Switch, withWebApps } from 'webapps-react';
+import { APIClient, AzureGroupSearch, Button, Input, Switch, withWebApps } from 'webapps-react';
 import moment from 'moment';
-
-import GroupSearch from './GroupSearch/GroupSearch';
 
 let _mounted = false;
 /* istanbul ignore next */
@@ -321,7 +319,7 @@ const Azure = ({ UI, ...props }) => {
                                                     return (
                                                         <div className="mb-6" key={i}>
                                                             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={`${group.id}`}>{group.name}</label>
-                                                            <GroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
+                                                            <AzureGroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
                                                         </div>
                                                     )
                                                 })
