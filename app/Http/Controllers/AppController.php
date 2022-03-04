@@ -33,7 +33,12 @@ class AppController extends Controller
     private function readWebAppsJson()
     {
         return Cache::rememberForever('product.info', function () {
-            return json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
+            $product = json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
+            $history = json_decode(file_get_contents(storage_path('webapps/installed.json')), true);
+            unset($history['product']);
+            unset($history['version']);
+
+            return array_merge($product, $history);
         });
     }
 }
