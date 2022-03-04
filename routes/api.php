@@ -45,6 +45,7 @@ Route::group(
         // App Settings
         Route::get('/product', [AppController::class, 'getProductNameAndVersion']);
         Route::get('/update-check', [AppController::class, 'checkUpdates']);
+        Route::get('/clear-cache', [AppController::class, 'clearCache']);
 
         // Security Settings
         Route::get('/groups', [SecurityController::class, 'groups']);

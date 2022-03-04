@@ -30,10 +30,23 @@ class AppController extends Controller
         ], 200);
     }
 
+    public function clearCache()
+    {
+        Cache::flush();
+        return response()->json([], 200);
+    }
+
     private function readWebAppsJson()
     {
         return Cache::rememberForever('product.info', function () {
-            return json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
+            $product = json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
+            $history = (file_exists(storage_path('webapps/installed.json')))
+                ? json_decode(file_get_contents(storage_path('webapps/installed.json')), true)
+                : [];
+            unset($history['product']);
+            unset($history['version']);
+
+            return array_merge($product, $history);
         });
     }
 }

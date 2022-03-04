@@ -90,7 +90,7 @@ class UpdateController extends Controller
         if ($installed['version'] <> $current['app_version']) {
             $installed['history'][] = [
                 'version' => $installed['version'],
-                'installed' => isset($installed['installed']) ?: 'Unknown',
+                'installed' => isset($installed['installed']) ? $installed['installed'] : 'Unknown',
             ];
             $installed['version'] = $current['app_version'];
             $installed['installed'] = date('Y-m-d h:i:sa');
