@@ -30,6 +30,12 @@ class AppController extends Controller
         ], 200);
     }
 
+    public function clearCache()
+    {
+        Cache::flush();
+        return response()->json([], 200);
+    }
+
     private function readWebAppsJson()
     {
         return Cache::rememberForever('product.info', function () {
