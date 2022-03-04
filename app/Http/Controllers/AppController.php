@@ -40,7 +40,9 @@ class AppController extends Controller
     {
         return Cache::rememberForever('product.info', function () {
             $product = json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
-            $history = json_decode(file_get_contents(storage_path('webapps/installed.json')), true);
+            $history = (file_exists(storage_path('webapps/installed.json')))
+                ? json_decode(file_get_contents(storage_path('webapps/installed.json')), true)
+                : [];
             unset($history['product']);
             unset($history['version']);
 
