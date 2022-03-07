@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Select } from 'webapps-react';
-
-import GridSelect from '../../TEMP/GridSelect';
+import { GridSelect, Select } from 'webapps-react';
 
 const BlockSettings = props => {
     const {
