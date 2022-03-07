@@ -12,6 +12,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BlocksController extends Controller
@@ -203,7 +204,12 @@ class BlocksController extends Controller
 
         return view('embed', [
             'block' => $block,
-            'styles' => $styles
+            'styles' => $styles,
+            'button' => [
+                'icon' => ApplicationSettings::get('blocks.button.icon', 'cube'),
+                'location' => ApplicationSettings::get('blocks.button.location', 'bottom-0 right-0'),
+                'action' => ApplicationSettings::get('blocks.button.action', 'edit'),
+            ]
         ]);
     }
 

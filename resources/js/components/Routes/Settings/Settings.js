@@ -12,6 +12,7 @@ import UsersGroups from './UsersGroups';
 import AppsPlugins from './AppsPlugins';
 import Azure from './Azure';
 import moment from 'moment';
+import BlockSettings from './BlockSettings';
 
 let _mounted = false;
 
@@ -305,7 +306,7 @@ const Settings = ({ UI, loadNavigation }) => {
                                     {
                                         productInfo.history?.map(function (info, i) {
                                             return (
-                                                <tr className="border border-gray-100 dark:border-gray-700">
+                                                <tr className="border border-gray-100 dark:border-gray-700" key={i}>
                                                     <td>{info.version}</td>
                                                     <td className="group">
                                                         {
@@ -336,6 +337,19 @@ const Settings = ({ UI, loadNavigation }) => {
                             </div>
                             <div className={`flex-auto px-4 lg:px-10 overflow-hidden ${(open === 'ApplicationSettings') ? '' : 'h-0'}`}>
                                 <ApplicationSettings
+                                    settings={settings}
+                                    typeValue={typeValue}
+                                    setValue={setValue}
+                                    states={states} />
+                            </div>
+                        </div>
+                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
+                            <div className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}
+                                onClick={() => toggleOpen('BlockSettings')}>
+                                <h6 className="text-xl font-bold">Blocks</h6>
+                            </div>
+                            <div className={`flex-auto px-4 lg:px-10 overflow-hidden transition-all ${(open === 'BlockSettings') ? 'max-h-[1000rem]' : 'max-h-0'}`}>
+                                <BlockSettings
                                     settings={settings}
                                     typeValue={typeValue}
                                     setValue={setValue}
