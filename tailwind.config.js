@@ -14,6 +14,7 @@ module.exports = {
     { pattern: /.*text-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
     { pattern: /.*border-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
     { pattern: /.*ring-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
+    { pattern: /.*rounded-(tl|tr|br|bl)?-/ },
     { pattern: /.*fill-/ },
     { pattern: /.*m(b|t|l|r|x|y)?-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     { pattern: /.*p(b|t|l|r|x|y)?-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
