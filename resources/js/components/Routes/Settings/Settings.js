@@ -271,7 +271,7 @@ const Settings = ({ UI, loadNavigation }) => {
                 <Switch location={location} key={location.pathname}>
                     <Route exact path="/settings">
                         <div className="flex flex-col md:flex-row mb-12 md:gap-24 items-center justify-center">
-                            <div className="md:w-2/12 text-gray-400 text-right">
+                            <div className="md:w-6/12 text-gray-400 text-right">
                                 <div className="flex flex-row items-center justify-end">
                                     <svg xmlns="http://www.w3.org/2000/svg" className={`h-12 w-12 text-${UI.theme}-600 dark:text-${UI.theme}-500 mr-2`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
@@ -280,7 +280,7 @@ const Settings = ({ UI, loadNavigation }) => {
                                 </div>
                                 <p className="mb-4 text-sm">Version {productInfo.app_version}</p>
                             </div>
-                            <div className="md:w-2/12 text-gray-400 text-left text-xs">
+                            <div className="md:w-6/12 text-gray-400 text-left text-xs">
                                 {updateCheck}
                                 <div className="mt-2 cursor-pointer" onClick={toggleUpdateHistory}>{(showUpdateHistory) ? 'Hide' : 'Show'} Update History</div>
                                 <div className="cursor-pointer" onClick={clearCache}>Clear System Cache</div>
