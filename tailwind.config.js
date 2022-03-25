@@ -9,6 +9,7 @@ module.exports = {
     './node_modules/webapps-react/dist/*.js',
   ],
   safelist: [
+    { pattern: /hidden/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     { pattern: /.*flex-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     { pattern: /.*bg-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
     { pattern: /.*text-/, variants: ['hover', 'focus', 'dark:hover', 'dark:focus'] },
