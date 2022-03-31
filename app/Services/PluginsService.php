@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Plugin;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 use ZipArchive;
 
 class PluginsService
@@ -73,6 +74,7 @@ class PluginsService
                     // @codeCoverageIgnoreStart
                     if ($plugins[$i]['hasUpdate']) {
                         $plugins[$i]['release'] = $this->repoData[$plugin['slug']]['release'];
+                        $this->addToUpdateList($plugin['slug']);
                     }
                     // @codeCoverageIgnoreEnd
                 }
@@ -206,6 +208,26 @@ class PluginsService
         }
         closedir($dir);
         rmdir($src);
+    }
+
+    /**
+     * Adds Plugin data to the Updates List
+     */
+    private function addToUpdateList($slug)
+    {
+        $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
+
+        if (!isset($updates['plugins'])) {
+            $updates['plugins'] = [];
+        }
+        
+        if (!in_array($slug, $updates['plugins'])) {
+            $updates['plugins'][$slug] = [
+                'version' => $this->repoData[$slug]['latest']['version'],
+                'changelog' => $this->repoData[$slug]['latest']['changelog']
+            ];
+            ApplicationSettings::set('core.available.updates', json_encode($updates));
+        }
     }
 
     /**

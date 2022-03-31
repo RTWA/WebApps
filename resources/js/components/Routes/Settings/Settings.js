@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link, Route, Switch } from 'react-router-dom';
+import { Link, Route, Switch, useHistory } from 'react-router-dom';
 
-import { APIClient, Loader, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Badge, Loader, useToasts, withWebApps } from 'webapps-react';
 import { Apps, Plugins } from './Online';
 import ApplicationSettings from './ApplicationSettings';
 import EmailSettings from './EmailSettings';
@@ -19,6 +19,7 @@ let _mounted = false;
 const Settings = ({ UI, loadNavigation }) => {
     const [open, setOpen] = useState('');
     const [productInfo, setProductInfo] = useState([]);
+    const [updateInfo, setUpdateInfo] = useState({});
     const [settings, setSettings] = useState({});
     const [groups, setGroups] = useState([]);
     const [permissions, setPermissions] = useState([]);
@@ -27,6 +28,7 @@ const Settings = ({ UI, loadNavigation }) => {
     const [showUpdateHistory, setShowUpdateHistory] = useState(false);
 
     const { addToast } = useToasts();
+    const history = useHistory();
 
     const APIController = new AbortController();
     let timer = null;
@@ -34,6 +36,7 @@ const Settings = ({ UI, loadNavigation }) => {
     useEffect(async () => {
         _mounted = true;
         await loadProductInfo();
+        await loadUpdateInfo();
         await loadGroups();
         await loadPermissions();
         await loadSettings();
@@ -61,6 +64,49 @@ const Settings = ({ UI, loadNavigation }) => {
                     console.log(error)
                 }
             });
+    }
+
+    const loadUpdateInfo = async () => {
+        await APIClient('/api/update-info', undefined, { signal: APIController.signal })
+            .then(json => {
+                if (_mounted) {
+                    setUpdateInfo(json.data);
+                    if (json.data.apps) {
+                        addToast(
+                            `App ${(Object.keys(json.data.apps).length === 1) ? 'Update' : 'Updates'} Available!`,
+                            undefined,
+                            {
+                                appearance: 'info',
+                                autoDismissTimeout: 5000,
+                                action: () => history.push('/settings/appsplugins'),
+                                actionLabel: "Go to Apps & Plugins",
+                                secondaryAction: 'dismiss',
+                                secondaryActionLabel: 'Close'
+                            }
+                        );
+                    }
+                    if (json.data.plugins) {
+                        addToast(
+                            `Plugin ${(Object.keys(json.data.plugins).length === 1) ? 'Update' : 'Updates'} Available!`,
+                            undefined,
+                            {
+                                appearance: 'info',
+                                autoDismissTimeout: 5000,
+                                action: () => history.push('/settings/appsplugins'),
+                                actionLabel: "Go to Apps & Plugins",
+                                secondaryAction: 'dismiss',
+                                secondaryActionLabel: 'Close'
+                            }
+                        );
+                    }
+                }
+            })
+            .catch(error => {
+                if (!error.status?.isAbort) {
+                    // TODO: Handle Errors
+                    console.log(error);
+                }
+            })
     }
 
     const loadGroups = async () => {
@@ -113,13 +159,18 @@ const Settings = ({ UI, loadNavigation }) => {
         await APIClient('/api/update-check', undefined, { signal: APIController.signal })
             .then(json => {
                 if (_mounted && json.data.available) {
-                    const content = (
-                        <>
-                            <p>Version {json.data.version} of WebApps is available.</p>
-                            <a href={json.data.url} target="_blank">Click here to view details</a>
-                        </>
-                    )
-                    addToast('Update Available!', content, { appearance: 'info', autoDismissTimeout: 10000 });
+                    addToast(
+                        'Update Available!',
+                        `Version ${json.data.version} of WebApps is available.`,
+                        {
+                            appearance: 'info',
+                            autoDismissTimeout: 10000,
+                            action: () => window.open(json.data.url, '_blank').focus(),
+                            actionLabel: "View Details",
+                            secondaryAction: 'dismiss',
+                            secondaryActionLabel: 'Close'
+                        }
+                    );
                     setUpdateCheck(<><p>An update is available ({json.data.version}).</p>
                         <a href={json.data.url} target="_blank" className="hover:text-gray-900 dark:hover:text-white">Click here to view details</a></>);
                 } else if (_mounted) {
@@ -389,8 +440,19 @@ const Settings = ({ UI, loadNavigation }) => {
                             </Link>
                         </div>
                         <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">
-                            <Link to="/settings/appsplugins" className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}>
-                                <h6 className="text-xl font-bold">Apps & Plugins</h6>
+                            <Link to="/settings/appsplugins" className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer flex flex-row items-center gap-6`}>
+                                <h6 className="text-xl font-bold flex flex-row items-center gap-x-1.5">
+                                    <span>Apps</span>
+                                    {
+                                        (updateInfo.apps)
+                                            ? <Badge color={`${UI.theme}-400`} pill className="h-5 w-5 text-white dark:text-gray-900">{Object.keys(updateInfo.apps).length}</Badge> : null
+                                    }
+                                    <span>& Plugins</span>
+                                    {
+                                        (updateInfo.plugins)
+                                            ? <Badge color={`${UI.theme}-400`} pill className="h-5 w-5 text-white dark:text-gray-900">{Object.keys(updateInfo.plugins).length}</Badge> : null
+                                    }
+                                </h6>
                             </Link>
                         </div>
                         <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">

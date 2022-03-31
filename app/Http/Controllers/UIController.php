@@ -138,6 +138,27 @@ class UIController extends Controller
         }
         // phpcs:enable
 
+        $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
+        if (count($updates) > 0) {
+            $count = 0;
+            if (isset($updates['WebApps'])) {
+                $count++;
+            }
+            if (isset($updates['apps'])) {
+                $count = $count + count($updates['apps']);
+            }
+            if (isset($updates['plugins'])) {
+                $count = $count + count($updates['plugins']);
+            }
+
+            $nav[count($nav)-1]['badge'] =  [
+                'color' => ApplicationSettings::get('core.ui.theme').'-400',
+                'text' => $count,
+                'pill' => true,
+                'className' => 'ml-auto mr-1 text-white dark:text-gray-800',
+            ];
+        }
+
         return response()->json([
             'success' => true,
             'navigation' => $nav,

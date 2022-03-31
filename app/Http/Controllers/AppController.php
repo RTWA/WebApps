@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use GrahamCampbell\GitHub\Facades\GitHub;
 use Illuminate\Support\Facades\Cache;
+use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 
 class AppController extends Controller
 {
@@ -12,12 +13,32 @@ class AppController extends Controller
         return response()->json($this->readWebAppsJson(), 200);
     }
 
+    public function getUpdateInfo()
+    {
+        $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
+        return response()->json($updates, 200);
+    }
+
     public function checkUpdates()
     {
         Cache::forget('webapps_latest_release');
         $latest = Cache::remember('webapps_latest_release', now()->addDays(7), function () {
             return GitHub::repo()->releases()->latest('RTWA', 'WebApps');
         });
+
+        $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
+        
+        if (version_compare(
+            str_replace("v", "", $latest['tag_name']),
+            $this->readWebAppsJson()['app_version'],
+            '>'
+        ) && !isset($updates['WebApps'])) {
+            $updates['WebApps'] = [
+                'version' => $latest['tag_name'],
+            ];
+            ApplicationSettings::set('core.available.updates', json_encode($updates));
+        }
+        
 
         return response()->json([
             'available' => version_compare(

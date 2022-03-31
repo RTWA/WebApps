@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 use ZipArchive;
 
 class AppsService
@@ -73,6 +74,7 @@ class AppsService
                     // @codeCoverageIgnoreStart
                     if ($apps[$i]['hasUpdate']) {
                         $apps[$i]['release'] = $this->repoData[$app['slug']]['release'];
+                        $this->addToUpdateList($app['slug']);
                     }
                     // @codeCoverageIgnoreEnd
                 }
@@ -207,6 +209,26 @@ class AppsService
         }
         closedir($dir);
         rmdir($src);
+    }
+
+    /**
+     * Adds App data to the Updates List
+     */
+    private function addToUpdateList($slug)
+    {
+        $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
+
+        if (!isset($updates['apps'])) {
+            $updates['apps'] = [];
+        }
+        
+        if (!in_array($slug, $updates['apps'])) {
+            $updates['apps'][$slug] = [
+                'version' => $this->repoData[$slug]['latest']['version'],
+                'changelog' => $this->repoData[$slug]['latest']['changelog']
+            ];
+            ApplicationSettings::set('core.available.updates', json_encode($updates));
+        }
     }
 
     /**
