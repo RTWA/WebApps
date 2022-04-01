@@ -16,6 +16,7 @@
         "graham-campbell/github": "10.3",
         "guzzlehttp/guzzle": "7.2",
         "http-interop/http-factory-guzzle": "1.0",
+        "intervention/image": "^2.7",
         "laravel/framework": "^8.0",
         "laravel/sanctum": "^2.6",
         "laravel/socialite": "^5.2",

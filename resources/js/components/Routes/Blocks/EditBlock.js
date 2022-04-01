@@ -7,6 +7,7 @@ import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
 import { OrphanedBlock } from './BlockViews';
 import { APIClient, Button, Icon, Loader, useToasts, withWebApps } from 'webapps-react';
+import html2canvas from 'html2canvas';
 
 export const PropertiesContext = createContext({});
 
@@ -93,6 +94,19 @@ const EditBlock = ({ UI, ...props }) => {
     const saveBlockData = async e => {
         e.preventDefault();
 
+        //  TEST
+        document.getElementById('block-preview').classList.add('h-44');
+        document.getElementById('block-preview').classList.add('w-44');
+        await html2canvas(document.querySelector('#block-preview'))
+            .then(function(canvas) {
+                let base64URL = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');
+                document.getElementById('preview-img').src = base64URL;
+            });
+            
+        document.getElementById('block-preview').classList.remove('h-44');
+        document.getElementById('block-preview').classList.remove('w-44');
+        //  END TEST
+
         /* istanbul ignore else */
         if (mounted)
             saving = true;
@@ -104,7 +118,9 @@ const EditBlock = ({ UI, ...props }) => {
             (id) => toastId = id
         );
 
-        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
+        let previewImg = document.getElementById('preview-img').src;
+console.log(`previewImg`, previewImg);
+        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), preview: previewImg }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
@@ -373,6 +389,7 @@ const EditBlock = ({ UI, ...props }) => {
                     </div>
                 </div>
             </div>
+            <img src="" alt="preview-img" id="preview-img" className="h-44 w-44" />
 
 
             <PropertiesContext.Provider value={{ properties, toggleProperties }}>
