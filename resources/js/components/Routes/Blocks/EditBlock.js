@@ -94,22 +94,22 @@ const EditBlock = ({ UI, ...props }) => {
     const saveBlockData = async e => {
         e.preventDefault();
 
-        //  TEST
+        /* istanbul ignore else */
+        if (mounted) {
+            saving = true;
+        }
+
+        let previewImg = '';
+        
         document.getElementById('block-preview').classList.add('h-44');
         document.getElementById('block-preview').classList.add('w-44');
         await html2canvas(document.querySelector('#block-preview'))
             .then(function(canvas) {
-                let base64URL = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');
-                document.getElementById('preview-img').src = base64URL;
+                previewImg = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');
             });
             
         document.getElementById('block-preview').classList.remove('h-44');
         document.getElementById('block-preview').classList.remove('w-44');
-        //  END TEST
-
-        /* istanbul ignore else */
-        if (mounted)
-            saving = true;
 
         addToast(
             "Saving changes, please wait...",
@@ -118,8 +118,6 @@ const EditBlock = ({ UI, ...props }) => {
             (id) => toastId = id
         );
 
-        let previewImg = document.getElementById('preview-img').src;
-console.log(`previewImg`, previewImg);
         await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), preview: previewImg }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
@@ -375,8 +373,8 @@ console.log(`previewImg`, previewImg);
                             {
                                 (saving)
                                     ? (
-                                        <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex w-full sm:w-auto">
-                                            <Loader style="circle" className="h-4 w-4 mr-2 mt-1" /> Saving...
+                                        <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex items-center w-full sm:w-auto">
+                                            <Loader style="circle" height="5" width="5" className="mr-2" /> Saving...
                                         </Button>
                                     )
                                     : (
@@ -389,7 +387,6 @@ console.log(`previewImg`, previewImg);
                     </div>
                 </div>
             </div>
-            <img src="" alt="preview-img" id="preview-img" className="h-44 w-44" />
 
 
             <PropertiesContext.Provider value={{ properties, toggleProperties }}>
