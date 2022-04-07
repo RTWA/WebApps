@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import UserAvatar from 'react-user-avatar';
 import { Button, UserSuggest, withAuth, useToasts, withWebApps, APIClient, Input } from 'webapps-react';
-import { PropertiesContext } from '../EditBlock';
+import { ModalContext } from '../EditBlock';
 
 let _mounted = false;
 
@@ -14,8 +14,8 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
     } = props;
 
     const {
-        properties, toggleProperties,
-    } = useContext(PropertiesContext);
+        modal, toggleProperties,
+    } = useContext(ModalContext);
 
     const [chown, setChown] = useState(false);
     const [users, setUsers] = useState([]);
@@ -115,7 +115,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
         'absolute',
         'inset-0',
         'overflow-hidden',
-        (properties) ? 'z-50' : '-z-10'
+        (modal === 'properties') ? 'z-50' : '-z-10'
     )
 
     const bdClass = classNames(
@@ -126,7 +126,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
         'transition-opacity',
         'duration-500',
         'ease-in-out',
-        (properties) ? 'opacity-100' : 'opacity-0'
+        (modal === 'properties') ? 'opacity-100' : 'opacity-0'
     )
 
     const panelClass = classNames(
@@ -138,7 +138,7 @@ const PropertiesFlyout = ({ user, checkPermission, UI, ...props }) => {
         'ease-in-out',
         'duration-500',
         'delay-500',
-        (properties) ? 'translate-x-0' : 'translate-x-full'
+        (modal === 'properties') ? 'translate-x-0' : 'translate-x-full'
     )
 
     return (
