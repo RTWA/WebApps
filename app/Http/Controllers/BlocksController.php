@@ -110,7 +110,7 @@ class BlocksController extends Controller
             $block = $blocksService->buildNewBlock($p, Auth::user());
         } else {
             // Block exists
-            $block = Block::findByPublicId($publicId)->first();
+            $block = Block::findByPublicId($publicId)->with('shares')->first();
 
             if ($block === null) {
                 abort(406, "View ($publicId) not found. Please check and try again.");
@@ -327,6 +327,40 @@ class BlocksController extends Controller
         $block->save();
 
         return response()->json(['block' => $block], 200);
+    }
+
+    /**
+     * Create a new Block Share
+     */
+    public function setShare(Request $request, $publicId)
+    {
+        $block = Block::findByPublicId($publicId)->with('shares')->firstOrFail();
+
+        if (Auth::id() !== $block->owner) {
+            abort(403, 'You do not have permission to share this Block.');
+        }
+
+        $block->shares()->attach($request->input('user_id'));
+        $block->refresh();
+
+        return response()->json(['shares' => $block->shares], 201);
+    }
+
+    /**
+     * Remove a Block Share
+     */
+    public function removeShare(Request $request, $publicId)
+    {
+        $block = Block::findByPublicId($publicId)->with('shares')->firstOrFail();
+
+        if (Auth::id() !== $block->owner) {
+            abort(403, 'You do not have permission to remove shares for this Block');
+        }
+
+        $block->shares()->detach($request->input('user_id'));
+        $block->refresh();
+
+        return response()->json(['shares' => $block->shares], 201);
     }
 
     /**
