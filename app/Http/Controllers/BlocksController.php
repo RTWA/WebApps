@@ -152,9 +152,6 @@ class BlocksController extends Controller
         $blockData = json_decode($request->input('block'), true);
         $blockData['settings'] = json_encode($blockData['settings']);
 
-        $thumb = $request->input('preview');
-        $preview = Image::make($thumb)->resize(176, 176)->save(storage_path('app/public/blockPreviews').'/'.$blockData['publicId'].'.jpg');
-
         // Verify the logged in User is the Block owner, or an Admin
         if ((Auth::user()->id <> $blockData['owner'] || Auth::user()->hasRole('Administrators'))
             && !Auth::user()->hasPermissionTo('blocks.create')
