@@ -100,18 +100,6 @@ const EditBlock = ({ UI, ...props }) => {
             saving = true;
         }
 
-        let previewImg = '';
-
-        document.getElementById('block-preview').classList.add('h-44');
-        document.getElementById('block-preview').classList.add('w-44');
-        await html2canvas(document.querySelector('#block-preview'))
-            .then(function (canvas) {
-                previewImg = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');
-            });
-
-        document.getElementById('block-preview').classList.remove('h-44');
-        document.getElementById('block-preview').classList.remove('w-44');
-
         addToast(
             "Saving changes, please wait...",
             '',
@@ -119,7 +107,7 @@ const EditBlock = ({ UI, ...props }) => {
             (id) => toastId = id
         );
 
-        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), preview: previewImg }, { method: 'PUT', signal: APIController.signal })
+        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block) }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
