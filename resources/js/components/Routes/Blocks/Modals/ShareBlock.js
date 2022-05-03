@@ -43,7 +43,7 @@ const ShareBlock = ({ block, setBlock }) => {
         let inArray = false;
         let i;
 
-        for (i = 0; i < block.shares.length; i++) {
+        for (i = 0; i < block.shares?.length; i++) {
             if (block.shares[i].id === user.id) {
                 inArray = true;
             }
@@ -143,11 +143,8 @@ const ShareBlock = ({ block, setBlock }) => {
                         <div className="w-full h-full px-4 xl:px-8 pt-3 pb-5">
                             <p className="text-sm mb-4">The following people also have access to edit this Block.</p>
                             {
-                                (block.shares.length === 0)
+                                (block.shares?.length >= 1)
                                     ? (
-                                        <>No Shares Setup... Test Build etc.</>
-                                    )
-                                    : (
                                         block.shares.map(function (user, i) {
                                             return (
                                                 <div className="flex justify-between items-center" key={i}>
@@ -165,6 +162,9 @@ const ShareBlock = ({ block, setBlock }) => {
                                                 </div>
                                             )
                                         })
+                                    )
+                                    : (
+                                        <>No Shares Setup... Test Build etc.</>
                                     )
                             }
                             <hr className="my-5 border-t border-gray-200" />
