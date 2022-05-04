@@ -57,6 +57,10 @@ Route::middleware(['requires.install', 'requires.update'])->group(function () {
     Route::get('/login/oauth2/azure', [OAuth2Controller::class, 'redirectToProvider']);
     Route::get('/login/oauth2/azure/callback', [OAuth2Controller::class, 'handleProviderCallback']);
 
+    // Pop Auth Routes
+    Route::view('/login/windowed', 'auth.windowed_login');
+    Route::view('/login/windowed/callback', 'auth.windowed_callback');
+
     // MS Graph callback routes
     Route::get('/graph/callback/register', [MSGraphController::class, 'handleRegister']);
 
