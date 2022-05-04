@@ -394,6 +394,31 @@ const Settings = ({ UI, loadNavigation }) => {
                                     states={states} />
                             </div>
                         </div>
+                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">
+                            <Link to="/settings/appsplugins" className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer flex flex-row items-center gap-6`}>
+                                <h6 className="text-xl font-bold flex flex-row items-center gap-x-1.5">
+                                    <span>Apps</span>
+                                    {
+                                        (updateInfo.apps)
+                                            ? <Badge color={`${UI.theme}-400`} pill className="h-5 w-5 text-white dark:text-gray-900">{Object.keys(updateInfo.apps).length}</Badge> : null
+                                    }
+                                    <span>& Plugins</span>
+                                    {
+                                        (updateInfo.plugins)
+                                            ? <Badge color={`${UI.theme}-400`} pill className="h-5 w-5 text-white dark:text-gray-900">{Object.keys(updateInfo.plugins).length}</Badge> : null
+                                    }
+                                </h6>
+                            </Link>
+                        </div>
+                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
+                            <div className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}
+                                onClick={() => toggleOpen('AuthenticationSettings')}>
+                                <h6 className="text-xl font-bold">Authentication</h6>
+                            </div>
+                            <div className={`flex-auto px-4 lg:px-10 overflow-hidden ${(open === 'AuthenticationSettings') ? '' : 'h-0'}`}>
+                                <AuthenticationSettings settings={settings} setValue={setValue} roles={groups} states={states} />
+                            </div>
+                        </div>
                         <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
                             <div className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}
                                 onClick={() => toggleOpen('BlockSettings')}>
@@ -416,14 +441,10 @@ const Settings = ({ UI, loadNavigation }) => {
                                 <EmailSettings settings={settings} typeValue={typeValue} setValue={setValue} states={states} />
                             </div>
                         </div>
-                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
-                            <div className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}
-                                onClick={() => toggleOpen('AuthenticationSettings')}>
-                                <h6 className="text-xl font-bold">Authentication</h6>
-                            </div>
-                            <div className={`flex-auto px-4 lg:px-10 overflow-hidden ${(open === 'AuthenticationSettings') ? '' : 'h-0'}`}>
-                                <AuthenticationSettings settings={settings} setValue={setValue} roles={groups} states={states} />
-                            </div>
+                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">
+                            <Link to="/settings/azure" className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}>
+                                <h6 className="text-xl font-bold">Microsoft Azure Integration</h6>
+                            </Link>
                         </div>
                         <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
                             <div className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}
@@ -439,28 +460,7 @@ const Settings = ({ UI, loadNavigation }) => {
                                 <h6 className="text-xl font-bold">Users & Groups</h6>
                             </Link>
                         </div>
-                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">
-                            <Link to="/settings/appsplugins" className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer flex flex-row items-center gap-6`}>
-                                <h6 className="text-xl font-bold flex flex-row items-center gap-x-1.5">
-                                    <span>Apps</span>
-                                    {
-                                        (updateInfo.apps)
-                                            ? <Badge color={`${UI.theme}-400`} pill className="h-5 w-5 text-white dark:text-gray-900">{Object.keys(updateInfo.apps).length}</Badge> : null
-                                    }
-                                    <span>& Plugins</span>
-                                    {
-                                        (updateInfo.plugins)
-                                            ? <Badge color={`${UI.theme}-400`} pill className="h-5 w-5 text-white dark:text-gray-900">{Object.keys(updateInfo.plugins).length}</Badge> : null
-                                    }
-                                </h6>
-                            </Link>
-                        </div>
-                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">
-                            <Link to="/settings/azure" className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-400 mb-0 px-6 py-6 cursor-pointer`}>
-                                <h6 className="text-xl font-bold">Microsoft Azure Integration</h6>
-                            </Link>
-                        </div>
-                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">
+                        <div className="mt-3 relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg border-0 overflow-hidden">
                             <Link to="/settings/advanced" className="bg-white dark:bg-gray-700 hover:bg-red-300 dark:hover:bg-red-900 text-red-300 hover:text-red-500 dark:hover:text-red-300  mb-0 px-6 py-6 cursor-pointer">
                                 <h6 className="text-xl font-bold">Config Editor (Advanced)</h6>
                             </Link>
