@@ -90,7 +90,8 @@
                     window.location.href = urlParams.get('url');
                 } else {
                     // Set the newTab URL
-                    document.getElementById('newTab').attributes.href = window.location.href
+                    const urlParams = new URLSearchParams(window.location.search);
+                    document.getElementById('newTab').attributes.href = urlParams.get('url');
                     // Reveal message
                     document.getElementById('loader').classList.add('hidden');
                     document.getElementById('notauthed').classList.remove('hidden');
