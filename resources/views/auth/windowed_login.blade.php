@@ -91,7 +91,7 @@
                 } else {
                     // Set the newTab URL
                     const urlParams = new URLSearchParams(window.location.search);
-                    document.getElementById('newTab').attributes.href = urlParams.get('url');
+                    document.getElementById('newTab').href = urlParams.get('url');
                     // Reveal message
                     document.getElementById('loader').classList.add('hidden');
                     document.getElementById('notauthed').classList.remove('hidden');
