@@ -23,7 +23,6 @@ jobs:
   php-tests:
     runs-on: ubuntu-latest
     name: PHP ${{ matrix.php }} - Unit Test
-    needs: setup
 
     steps:
       - uses: ./github/workflows/build_environment.yml
@@ -43,7 +42,6 @@ jobs:
   js-tests:
     runs-on: ubuntu-latest
     name: UI/UX Tests
-    needs: setup
 
     steps:
       - uses: ./github/workflows/build_environment.yml
