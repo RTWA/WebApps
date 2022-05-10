@@ -9,51 +9,13 @@ on:
     branches: [develop]
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    name: Environment Setup
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-      matrix:
-        php: [7.4, 8.0, 8.1]
-
-    steps:
-      - name: Start MySQL service
-        run: |
-          sudo systemctl start mysql.service
-          sudo mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "SHOW DATABASES"
-      - name: Create database
-        run: sudo mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "CREATE DATABASE webapps"
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.github', '.env');"
-      - name: Install Dependencies
-        run: |
-          sudo composer self-update
-          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      - name: Generate a new key
-        run: php artisan key:generate --env=github
-      - name: Set File & Directory Permissions
-        run: |
-          chmod -R 775 storage bootstrap/cache
-          chmod 666 .env
-      - name: Compile assets
-        run: |
-          npm install
-          npm run production
 
   cs-tests:
     runs-on: ubuntu-latest
     name: Test Coding Standards
-    needs: setup
 
     steps:
+      - uses: ./github/workflows/build_environment.yml
       - name: Test Coding Standards
         run: vendor/bin/phpcs
 
@@ -64,6 +26,7 @@ jobs:
     needs: setup
 
     steps:
+      - uses: ./github/workflows/build_environment.yml
       - name: Clear Laravel Cache
         run: php artisan cache:clear
       - name: Run Unit Tests
@@ -83,6 +46,7 @@ jobs:
     needs: setup
 
     steps:
+      - uses: ./github/workflows/build_environment.yml
       - name: Run UI Tests
         run: npm run test-coverage
       - name: Upload UI coverage to Codecov
