@@ -6,12 +6,7 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    name: Build Ubuntu - ${{ matrix.php }}
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-      matrix:
-        php: [7.4, 8.0, 8.1]
+    name: Build Ubuntu - ${{ input.php }}
 
     steps:
       - name: Start MySQL service
@@ -20,8 +15,6 @@ jobs:
           sudo mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "SHOW DATABASES"
       - name: Create database
         run: sudo mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "CREATE DATABASE webapps"
-      - name: Checkout Code
-        uses: actions/checkout@v2
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
