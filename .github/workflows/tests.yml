@@ -15,10 +15,7 @@ jobs:
     name: Test Coding Standards
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Setup Environment
-        uses: ./github/workflows/build_environment.yml
+      - uses: ./github/workflows/build_environment.yml
         with:
           php: 8.0
       - name: Test Coding Standards
@@ -35,10 +32,7 @@ jobs:
         php: [7.4, 8.0, 8.1]
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Setup Environment
-        uses: ./github/workflows/build_environment.yml
+      - uses: ./github/workflows/build_environment.yml
         with:
           php: ${{ matrix.php }}
       - name: Clear Laravel Cache
@@ -59,10 +53,7 @@ jobs:
     name: UI/UX Tests
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Setup Environment
-        uses: ./github/workflows/build_environment.yml
+      - uses: ./github/workflows/build_environment.yml
         with:
           php: 8.0
       - name: Run UI Tests
