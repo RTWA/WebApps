@@ -13,7 +13,7 @@ jobs:
   cs-tests:
     runs-on: ubuntu-latest
     name: Test Coding Standards
-    uses: ./github/workflows/build_environment.yml
+    uses: ./.github/workflows/build_environment.yml
     with:
       php: 8.0
 
@@ -25,7 +25,7 @@ jobs:
   php-tests:
     runs-on: ubuntu-latest
     name: PHP ${{ matrix.php }} - Unit Test
-    uses: ./github/workflows/build_environment.yml
+    uses: ./.github/workflows/build_environment.yml
     with:
       php: ${{ matrix.php }}
     strategy:
@@ -51,7 +51,7 @@ jobs:
   js-tests:
     runs-on: ubuntu-latest
     name: UI/UX Tests
-    uses: ./github/workflows/build_environment.yml
+    uses: ./.github/workflows/build_environment.yml
     with:
       php: 8.0
 
