@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     name: UI/UX Tests
     uses: ./github/workflows/build_environment.yml
-      with:
+    with:
       php: 8.0
 
     steps:
