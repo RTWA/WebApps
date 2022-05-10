@@ -9,14 +9,9 @@ on:
     branches: [develop]
 
 jobs:
-  laravel-tests:
+  setup:
     runs-on: ubuntu-latest
-    name: PHP ${{ matrix.php }}
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-      matrix:
-        php: [7.4, 8.0, 8.1]
+    name: Environment Setup
 
     steps:
       - name: Start MySQL service
@@ -47,8 +42,28 @@ jobs:
         run: |
           npm install
           npm run production
+
+  cs-tests:
+    runs-on: ubuntu-latest
+    name: Test Coding Standards
+    needs: setup
+
+    steps:
       - name: Test Coding Standards
         run: vendor/bin/phpcs
+
+
+  php-tests:
+    runs-on: ubuntu-latest
+    name: PHP ${{ matrix.php }} - Unit Test
+    needs: setup
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        php: [7.4, 8.0, 8.1]
+
+    steps:
       - name: Clear Laravel Cache
         run: php artisan cache:clear
       - name: Run Unit Tests
@@ -61,6 +76,13 @@ jobs:
           flags: unittests,${{ matrix.php }}
           name: codecov-umrella
           fail_ci_if_error: true
+      
+  js-tests:
+    runs-on: ubuntu-latest
+    name: UI/UX Tests
+    needs: setup
+
+    steps:
       - name: Run UI Tests
         run: npm run test-coverage
       - name: Upload UI coverage to Codecov
