@@ -12,6 +12,11 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     name: Environment Setup
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        php: [7.4, 8.0, 8.1]
 
     steps:
       - name: Start MySQL service
@@ -57,11 +62,6 @@ jobs:
     runs-on: ubuntu-latest
     name: PHP ${{ matrix.php }} - Unit Test
     needs: setup
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-      matrix:
-        php: [7.4, 8.0, 8.1]
 
     steps:
       - name: Clear Laravel Cache
