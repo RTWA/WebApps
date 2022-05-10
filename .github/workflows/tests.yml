@@ -13,11 +13,11 @@ jobs:
   cs-tests:
     runs-on: ubuntu-latest
     name: Test Coding Standards
+    uses: ./github/workflows/build_environment.yml
+    with:
+      php: 8.0
 
     steps:
-      - uses: ./github/workflows/build_environment.yml
-        with:
-          php: 8.0
       - name: Test Coding Standards
         run: vendor/bin/phpcs
 
@@ -25,6 +25,9 @@ jobs:
   php-tests:
     runs-on: ubuntu-latest
     name: PHP ${{ matrix.php }} - Unit Test
+    uses: ./github/workflows/build_environment.yml
+    with:
+      php: ${{ matrix.php }}
     strategy:
       max-parallel: 1
       fail-fast: true
@@ -32,9 +35,6 @@ jobs:
         php: [7.4, 8.0, 8.1]
 
     steps:
-      - uses: ./github/workflows/build_environment.yml
-        with:
-          php: ${{ matrix.php }}
       - name: Clear Laravel Cache
         run: php artisan cache:clear
       - name: Run Unit Tests
@@ -51,11 +51,11 @@ jobs:
   js-tests:
     runs-on: ubuntu-latest
     name: UI/UX Tests
+    uses: ./github/workflows/build_environment.yml
+      with:
+      php: 8.0
 
     steps:
-      - uses: ./github/workflows/build_environment.yml
-        with:
-          php: 8.0
       - name: Run UI Tests
         run: npm run test-coverage
       - name: Upload UI coverage to Codecov
