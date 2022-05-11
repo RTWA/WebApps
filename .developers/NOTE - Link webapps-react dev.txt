@@ -1,0 +1,15 @@
+CONNECT:
+
+npm link "C:\dev\WebApps Packages\React-Components" "C:\dev\WebApps Packages\React-Components\node_modules\react" "C:\dev\WebApps Packages\React-Components\node_modules\react-dom" "C:\dev\WebApps Packages\React-Components\node_modules\react-router-dom"
+
+VERIFY:
+
+npm ls --depth=0 --link=true
+
+BUILD
+
+npm run dev
+
+DISCONNECT:
+
+npm unlink webapps-react react react-dom react-router-dom
