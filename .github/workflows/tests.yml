@@ -21,7 +21,7 @@ jobs:
         with:
           php-version: 8.0
       - name: Test Coding Standards
-        run: ${{ github.workspace }}/vendor/bin/phpcs
+        run: vendor/bin/phpcs
 
 
   php-tests:
