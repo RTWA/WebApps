@@ -62,6 +62,10 @@ jobs:
         run: |
           chmod -R 775 storage bootstrap/cache
           chmod 666 .env
+      - name: Compile assets
+        run: |
+          npm install
+          npm run production
       - name: Clear Laravel Cache
         run: php artisan cache:clear
       - name: Run Unit Tests
