@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Test Coding Standards
-        run: vendor/bin/phpcs
+        run: ${{ github.workspace }}/vendor/bin/phpcs
 
 
   php-tests:
