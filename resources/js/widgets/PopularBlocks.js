@@ -80,7 +80,7 @@ const PopularBlocks = () => {
 
     if (blocks === null) {
         return (
-            <div className="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full max-w-1/2-gap-3 shadow-lg rounded">
+            <div className="relative flex flex-col min-w-0 break-words dark:text-white bg-white dark:bg-gray-800 w-full max-w-1/2-gap-3 shadow-lg rounded">
                 <div className="rounded-t mb-0 px-4 py-3 border-0">
                     <div className="flex flex-wrap items-center">
                         <div className="relative w-full px-4 max-w-full flex-grow flex-1">
@@ -88,8 +88,8 @@ const PopularBlocks = () => {
                         </div>
                     </div>
                 </div>
-                <div className="block w-full h-full overflow-hidden">
-                    <table className="items-center w-full bg-transparent border-collapse">
+                <div className="block w-full h-full min-h-[17.5rem] overflow-hidden">
+                    <table className="items-center w-full h-full bg-transparent border-collapse">
                         <thead>
                             <tr>
                                 <th className="px-6 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-50 align-middle border border-gray-100 dark:border-transparent py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
@@ -109,7 +109,7 @@ const PopularBlocks = () => {
                         <tbody>
                             <tr>
                                 <td colSpan="5">
-                                    <Loader className="text-gray-600 dark:text-gray-200 top-0" />
+                                    <Loader className="text-gray-600 dark:text-gray-200" />
                                 </td>
                             </tr>
                         </tbody>
@@ -124,7 +124,7 @@ const PopularBlocks = () => {
     }
 
     return (
-        <div className="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full max-w-1/2-gap-3 shadow-lg rounded">
+        <div className="relative flex flex-col min-w-0 break-words dark:text-white bg-white dark:bg-gray-800 w-full max-w-1/2-gap-3 shadow-lg rounded">
             <div className="rounded-t mb-0 px-4 py-3 border-0">
                 <div className="flex flex-wrap items-center">
                     <div className="relative w-full px-4 max-w-full flex-grow flex-1">
@@ -153,7 +153,7 @@ const PopularBlocks = () => {
                     <tbody>
                         {
                             blocks.map((block, i) => (
-                                <tr key={i} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900" onClick={() => previewBlock(block)}>
+                                <tr key={i} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => previewBlock(block)}>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{(block.plugin) ? block.plugin.name : 'Unavailable'}</td>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{block.title || block.publicId}</td>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"

@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { confirmAlert } from 'react-confirm-alert';
 
-import { APIClient, Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, ConfirmDeleteModal, Loader, PageWrapper, useToasts, withWebApps } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
 let load = 30;
 
-const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
+const ViewBlocks = ({ modals, setModals, ...props }) => {
     const username = props.match.params.username;
     const ownBlocks = (username === undefined);
 
@@ -186,7 +186,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             }
         });
 
-        await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock), _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
+        await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock) }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (isMounted) {
@@ -231,7 +231,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     }
 
     const deleteBlock = async _block => {
-        await APIClient(`/api/blocks/${_block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
+        await APIClient(`/api/blocks/${_block.publicId}`, undefined, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (isMounted) {
@@ -310,20 +310,22 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
     if (!hasBlocks)
         return (
-            <NoBlocks>
-                {
-                    (ownBlocks) ?
-                        (<h4>You have not created any blocks yet.<br />
-                            <Button style="link" to="/blocks/new">Why not create one now?</Button>
-                        </h4>)
-                        : (<h4>This user has not created any blocks yet.</h4>)
-                }
+            <PageWrapper>
+                <NoBlocks>
+                    {
+                        (ownBlocks) ?
+                            (<h4>You have not created any blocks yet.<br />
+                                <Button style="link" to="/blocks/new">Why not create one now?</Button>
+                            </h4>)
+                            : (<h4>This user has not created any blocks yet.</h4>)
+                    }
 
-            </NoBlocks>
+                </NoBlocks>
+            </PageWrapper>
         )
 
     return (
-        <>
+        <PageWrapper>
             <Filter plugins={plugins} blockFilter={blockFilter} />
             <Grid
                 blocks={blocks}
@@ -334,7 +336,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 previewBlock={previewBlock}
                 loadMore={loadMore}
                 hasMore={hasMore} />
-        </>
+        </PageWrapper>
     )
 }
 

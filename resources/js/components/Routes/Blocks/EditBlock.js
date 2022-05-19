@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
@@ -6,9 +6,7 @@ import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
 import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
 import { OrphanedBlock } from './BlockViews';
-import { APIClient, Button, Icon, Loader, useToasts, withWebApps } from 'webapps-react';
-
-export const PropertiesContext = createContext({});
+import { APIClient, AppPage, Button, Icon, Loader, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
 
 const Fields = {
     image: Image,
@@ -23,13 +21,14 @@ let index = 0;
 let mounted = false;
 let saving = false;
 
-const EditBlock = ({ UI, ...props }) => {
+const EditBlock = props => {
     const [block, setBlock] = useState(null);
     const [repeater, setRepeater] = useState(0);
-    const [properties, setProperties] = useState(false);
     /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
 
+    const { theme, useFlyouts } = useContext(WebAppsUXContext);
+    const { flyout, openFlyout } = useFlyouts;
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
 
@@ -104,7 +103,7 @@ const EditBlock = ({ UI, ...props }) => {
             (id) => toastId = id
         );
 
-        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
+        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block) }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (mounted) {
@@ -158,13 +157,6 @@ const EditBlock = ({ UI, ...props }) => {
         /* istanbul ignore else */
         if (mounted)
             setBlock({ ...block });
-    }
-
-    const toggleProperties = e => {
-        e.preventDefault();
-        /* istanbul ignore else */
-        if (mounted)
-            setProperties(!properties);
     }
 
     const toggleRepeater = tab => {
@@ -285,8 +277,6 @@ const EditBlock = ({ UI, ...props }) => {
         return html;
     }
 
-    // render
-
     if (block === null) {
         return <Loader />
     }
@@ -306,80 +296,79 @@ const EditBlock = ({ UI, ...props }) => {
     };
 
     return (
-        <div className="flex flex-wrap">
-            <div className="w-full mb-5">
-                <label htmlFor="block_title" className="sr-only">Block Title</label>
-                <input
-                    type="text"
-                    id="block_title"
-                    name="title"
-                    className="mt-1 block w-full rounded-md text-xl bg-gray-100 dark:bg-gray-800 border-transparent focus:border-gray-500 focus:bg-white dark:focus:bg-gray-300 focus:ring-0"
-                    onChange={updateBlockProperties}
-                    value={block.title}
-                    placeholder="Unnamed Block" />
-            </div>
-            <div className="flex flex-col flex-col-reverse gap-y-4 xl:flex-row w-full">
-                <div className="w-full xl:w-5/12 px-4">
-                    <div className={block.plugin.slug} id="block-preview">
-                        {preview(block, transform)}
-                    </div>
+        <AppPage>
+            <PageWrapper>
+                <div className="w-full mb-5">
+                    <label htmlFor="block_title" className="sr-only">Block Title</label>
+                    <input
+                        type="text"
+                        id="block_title"
+                        name="title"
+                        className="mt-1 block w-full rounded-md text-xl bg-gray-100 dark:bg-gray-800 border-transparent focus:border-gray-500 focus:bg-white dark:focus:bg-gray-300 focus:ring-0"
+                        onChange={updateBlockProperties}
+                        value={block.title}
+                        placeholder="Unnamed Block" />
                 </div>
-                <div className="w-full xl:w-7/12">
-                    <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${UI.theme}-600 dark:border-${UI.theme}-500 border-t-2`}>
-                        <div className="flex flex-col flex-col-reverse sm:flex-row border-b border-gray-200 dark:border-gray-700 text-lg">
-                            <div className="flex flex-row px-4 py-2">
-                                <span className="font-medium mr-2">Plugin:</span>
-                                <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
-                            </div>
-                            <div className="w-full border-t border-gray-200 sm:border-t-0 sm:w-auto sm:ml-auto">
-                                <Button onClick={toggleProperties} style="ghost" square className="w-full sm:w-auto">
-                                    Block Properties
-                                </Button>
-                            </div>
+                <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 xl:flex-row w-full">
+                    <div className={`${(flyout.opened) ? 'w-0 hidden' : 'w-full xl:w-5/12'}`}>
+                        <div className={block.plugin.slug} id="block-preview">
+                            {preview(block, transform)}
                         </div>
-                        {
-                            Object.keys(options).map(function (field, i) {
-                                if (options[field].type === "custom") {
-                                    value = block.settings;
-                                    // TODO: Custom field types
-                                    return null
-                                }
-                                let F = Fields[options[field].type];
-                                return F ? (
-                                    <Route key={i}
-                                        render={props => (
-                                            <F name={field} index={i} field={options[field]}
-                                                data={settings} update={update} value={settings[field]}
-                                                repeater={_repeater} {...props} />
-                                        )} />)
-                                    : (null);
-                            })
-                        }
-                        <div className="border-t border-gray-200 dark:border-gray-700 w-full">
+                    </div>
+                    <div className={`${(flyout.opened) ? 'w-full' : 'w-full xl:w-7/12'}`}>
+                        <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${theme}-600 dark:border-${theme}-500 border-t-2`}>
+                            <div className="flex flex-col flex-col-reverse sm:flex-row border-b border-gray-200 dark:border-gray-700 text-lg">
+                                <div className="flex flex-row px-4 py-2">
+                                    <span className="font-medium mr-2">Plugin:</span>
+                                    <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
+                                </div>
+                                <div className="w-full border-t border-gray-200 sm:border-t-0 sm:w-auto sm:ml-auto">
+                                    <Button onClick={openFlyout} style="ghost" square className="w-full sm:w-auto">
+                                        Block Properties
+                                    </Button>
+                                </div>
+                            </div>
                             {
-                                (saving)
-                                    ? (
-                                        <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex w-full sm:w-auto">
-                                            <Loader style="circle" className="h-4 w-4 mr-2 mt-1" /> Saving...
-                                        </Button>
-                                    )
-                                    : (
-                                        <Button onClick={saveBlockData} style="ghost" square className="w-full sm:w-auto">
-                                            Save Changes & View
-                                        </Button>
-                                    )
+                                Object.keys(options).map(function (field, i) {
+                                    if (options[field].type === "custom") {
+                                        value = block.settings;
+                                        // TODO: Custom field types
+                                        return null
+                                    }
+                                    let F = Fields[options[field].type];
+                                    return F ? (
+                                        <Route key={i}
+                                            render={props => (
+                                                <F name={field} index={i} field={options[field]}
+                                                    data={settings} update={update} value={settings[field]}
+                                                    repeater={_repeater} {...props} />
+                                            )} />)
+                                        : (null);
+                                })
                             }
+                            <div className="border-t border-gray-200 dark:border-gray-700 w-full">
+                                {
+                                    (saving)
+                                        ? (
+                                            <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex flex-row gap-3 items-center w-full sm:w-auto">
+                                                <Loader style="circle" height={5} width={5} color="orange" /> Saving...
+                                            </Button>
+                                        )
+                                        : (
+                                            <Button onClick={saveBlockData} style="ghost" square className="w-full sm:w-auto">
+                                                Save Changes & View
+                                            </Button>
+                                        )
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </PageWrapper>
 
-
-            <PropertiesContext.Provider value={{ properties, toggleProperties }}>
-                <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
-            </PropertiesContext.Provider>
-        </div>
+            <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
+        </AppPage>
     )
 }
 
-export default withWebApps(EditBlock);
+export default EditBlock;

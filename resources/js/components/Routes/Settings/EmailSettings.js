@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { APIClient, Button, Input, Select, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, Select, Switch, PageWrapper, useToasts, withAuth, withWebApps, Loader } from 'webapps-react';
 
 const EmailSettings = ({ user, UI, ...props }) => {
     const isMountedRef = useRef(true);
@@ -147,8 +147,12 @@ const EmailSettings = ({ user, UI, ...props }) => {
             })
     }
 
+    if (settings['mail.driver'] === undefined) {
+        return <Loader />
+    }
+
     return (
-        <>
+        <PageWrapper title="Email Settings">
             <div className="my-6">
                 <label htmlFor="mail.driver" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Email send method</label>
                 <div className="w-full flex flex-col sm:flex-row gap-x-4 gap-y-1 mt-2 xl:mt-0">
@@ -278,7 +282,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                     </Button>
                 }
             />
-        </>
+        </PageWrapper>
     )
 }
 

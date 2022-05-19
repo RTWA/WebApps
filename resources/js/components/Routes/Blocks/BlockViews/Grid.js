@@ -42,10 +42,7 @@ const Grid = props => {
         <InfiniteScroll
             loadMore={loadMore}
             hasMore={hasMore}>
-            <Masonry
-                breakpointCols={breakpointCols}
-                className="masonry mt-3"
-                columnClassName="masonry-col">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                 {
                     blocks.map((block, i) => {
                         return (
@@ -108,14 +105,14 @@ const Grid = props => {
                                 </div>
 
                                 <div onClick={() => { previewBlock(block) }}>
-                                    <div className="output preview">{ReactHtmlParser(block.output)}</div>
+                                    <div className="output preview overflow-hidden">{ReactHtmlParser(block.output)}</div>
                                     <div className="overlay z-10">{block.notes}</div>
                                 </div>
                             </div>
                         )
                     })
                 }
-            </Masonry>
+            </div>
             {
                 (hasMore)
                     ? <button type="button" onClick={loadMore} className="sr-only">Load More</button>

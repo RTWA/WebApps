@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Switch, withWebApps } from 'webapps-react';
+import { Select, Switch, PageWrapper, withWebApps, Auth, Loader } from 'webapps-react';
 
 const AuthenticationSettings = ({ UI, ...props }) => {
     const {
@@ -23,15 +23,19 @@ const AuthenticationSettings = ({ UI, ...props }) => {
         setValue(key, value);
     }
 
+    if (settings['auth.internal.registrations'] === undefined) { 
+        return <Loader />
+    }
+
     return (
-        <>
+        <PageWrapper title="Authentication Settings">
             <Switch
                 id="auth.internal.registrations"
                 name="auth.internal.registrations"
                 label="Allow Registration of WebApps Users"
                 checked={(settings['auth.internal.registrations'] === 'true')}
                 onChange={onChange}
-                className="w-full my-6"
+                className="my-6"
                 state={states['auth.internal.registrations']} />
             {
                 (settings['auth.internal.registrations'] === 'true')
@@ -64,7 +68,7 @@ const AuthenticationSettings = ({ UI, ...props }) => {
                                 label="Enable Azure Authentication"
                                 checked={(settings['azure.graph.login_enabled'] === 'true')}
                                 onChange={onChange}
-                                className="w-full mb-6"
+                                className="mb-6"
                                 state={states['azure.graph.login_enabled']} />
 
                             <Switch
@@ -73,13 +77,13 @@ const AuthenticationSettings = ({ UI, ...props }) => {
                                 label="Use Azure Authentication by Default"
                                 checked={(settings['azure.graph.default_login'] === 'true')}
                                 onChange={onChange}
-                                className="w-full mb-6"
+                                className="mb-6"
                                 state={states['azure.graph.default_login']} />
                         </>
                     )
                     : null
             }
-        </>
+        </PageWrapper>
     )
 };
 
