@@ -88,7 +88,7 @@ const Grid = ({ blocks, loadMore, hasMore, ...props }) => {
                                 </div>
 
                                 <div onClick={() => { previewBlock(block) }}>
-                                    <div className="output preview">{ReactHtmlParser(block.output)}</div>
+                                    <div className="output preview overflow-hidden">{ReactHtmlParser(block.output)}</div>
                                     <div className="overlay z-10">{block.notes}</div>
                                 </div>
                             </div>

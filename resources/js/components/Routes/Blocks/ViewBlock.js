@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import ReactHtmlParser from "react-html-parser";
 import UseBlock from './UseBlock';
-import { APIClient, Button, Icon, Loader, withWebApps } from 'webapps-react';
+import { APIClient, Button, Icon, Loader, PageWrapper, WebAppsUXContext } from 'webapps-react';
 
 let _mounted = false;
 
-const ViewBlock = ({ UI, ...props }) => {
+const ViewBlock = props => {
     const [block, setBlock] = useState(null);
+
+    const { theme } = useContext(WebAppsUXContext);
 
     const APIController = new AbortController();
 
@@ -17,7 +19,7 @@ const ViewBlock = ({ UI, ...props }) => {
 
         return () => {
             APIController.abort();
-           _mounted = false
+            _mounted = false
         };
     }, []);
 
@@ -60,30 +62,32 @@ const ViewBlock = ({ UI, ...props }) => {
     }
 
     return (
-        <div className="flex flex-col flex-col-reverse xl:flex-row gapy-y-4 pt-10 w-full">
-            <div className="w-full xl:w-5/12 px-4">
-                <div id="block-preview">
-                    {ReactHtmlParser(block.output)}
-                </div>
-            </div>
-            <div className="w-full xl:w-7/12">
-                <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${UI.theme}-600 dark:border-${UI.theme}-500 border-t-2`}>
-                    <div className="flex flex-row border-b border-gray-200 dark:border-gray-700 px-4 py-2 text-lg">
-                        <span className="font-medium mr-2">Plugin:</span>
-                        <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
-                    </div>
-                    <div className="px-4 pb-2 pt-7">
-                        <UseBlock block={block} />
-                    </div>
-                    <div className="border-t border-gray-200 dark:border-gray-700 w-full">
-                        <Button to={`/blocks/edit/${block.publicId}`} style="ghost" square className="inline-block text-center w-full sm:w-auto">
-                            Edit this Block
-                        </Button>
+        <PageWrapper>
+            <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 xl:flex-row w-full">
+                <div className="w-full xl:w-5/12">
+                    <div id="block-preview">
+                        {ReactHtmlParser(block.output)}
                     </div>
                 </div>
+                <div className="w-full xl:w-7/12">
+                    <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${theme}-600 dark:border-${theme}-500 border-t-2`}>
+                        <div className="flex flex-row border-b border-gray-200 dark:border-gray-700 px-4 py-2 text-lg">
+                            <span className="font-medium mr-2">Plugin:</span>
+                            <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
+                        </div>
+                        <div className="px-4 pb-2 pt-7">
+                            <UseBlock block={block} />
+                        </div>
+                        <div className="border-t border-gray-200 dark:border-gray-700 w-full">
+                            <Button to={`/blocks/edit/${block.publicId}`} style="ghost" square className="inline-block text-center w-full sm:w-auto">
+                                Edit this Block
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </PageWrapper>
     )
 }
 
-export default withWebApps(ViewBlock);
+export default ViewBlock;

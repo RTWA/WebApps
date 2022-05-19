@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { APIMediaClient, Input, useToasts, withWebApps } from 'webapps-react';
+import React, { useContext, useEffect, useState } from 'react';
+import { APIMediaClient, Input, useToasts, WebAppsUXContext } from 'webapps-react';
 
-const Image = ({ UI, ...props }) => {
+const Image = props => {
     const {
         name
     } = props;
+
+    const { theme } = useContext(WebAppsUXContext);
 
     const [value, setValue] = useState(props.value);
 
@@ -95,13 +97,13 @@ const Image = ({ UI, ...props }) => {
     return (
         <div className="px-4 py-2" data-for={name}>
             <div className="flex flex-col sm:flex-row text-center sm:text-left">
-                <div className={`relative overflow-hidden px-4 py-2 bg-${UI.theme}-600 dark:bg-${UI.theme}-400 text-white dark:text-black hover:bg-${UI.theme}-400 dark:hover:bg-${UI.theme}-600`}>
+                <div className={`relative overflow-hidden px-4 py-2 bg-${theme}-600 dark:bg-${theme}-400 text-white dark:text-black hover:bg-${theme}-400 dark:hover:bg-${theme}-600`}>
                     <label htmlFor={`_${name}`}>Upload an Image</label>
                     <input type="file" name={`_${name}`} id={`_${name}`} onChange={uploadChange}
                         className="absolute inset-0 w-full cursor-pointer opacity-0 m-0 p-0" />
                 </div>
                 <span className="mx-4 my-2">-OR-</span>
-                <a className={`px-4 py-2 border hover:bg-${UI.theme}-600 text-${UI.theme}-600 border-${UI.theme}-600 dark:hover:bg-${UI.theme}-600 dark:text-${UI.theme}-500 dark:border-${UI.theme}-500 hover:text-white dark:hover:text-white focus:ring-0 imgUrlBtn`} href="#" onClick={urlBtnClick}>Enter URL</a>
+                <a className={`px-4 py-2 border hover:bg-${theme}-600 text-${theme}-600 border-${theme}-600 dark:hover:bg-${theme}-600 dark:text-${theme}-500 dark:border-${theme}-500 hover:text-white dark:hover:text-white focus:ring-0 imgUrlBtn`} href="#" onClick={urlBtnClick}>Enter URL</a>
             </div>
 
             <div className={`relative mt-2 ${(value !== undefined) ? value.class : 'hidden'}`} id={`ig_${name}`}>
@@ -115,4 +117,4 @@ const Image = ({ UI, ...props }) => {
     );
 }
 
-export default withWebApps(Image);
+export default Image;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\App;
 use Illuminate\Support\Facades\Auth;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
+use RobTrehy\LaravelUserPreferences\UserPreferences;
 
 class UIController extends Controller
 {
@@ -80,7 +81,7 @@ class UIController extends Controller
         ];
 
         $userChildren = [];
-        if (ApplicationSettings::get('core.ui.dark_mode') === 'user') {
+        if (ApplicationSettings::get('core.ui.dark_mode') === 'user' || ApplicationSettings::get('core.sidebar.color_mode', 'user') === 'user') {
             $userChildren[] = [
                 '_tag' => 'NavChild',
                 'name' => 'Preferences',
@@ -155,10 +156,10 @@ class UIController extends Controller
             }
 
             $nav[count($nav)-1]['badge'] =  [
-                'color' => ApplicationSettings::get('core.ui.theme').'-400',
+                'color' => ApplicationSettings::get('core.ui.theme'),
                 'text' => $count,
                 'pill' => true,
-                'className' => 'ml-auto mr-1 text-white dark:text-gray-800',
+                'className' => 'ml-auto',
             ];
         }
 
@@ -166,6 +167,9 @@ class UIController extends Controller
             'success' => true,
             'navigation' => $nav,
             'routes' => $routes,
+            'sidebar' => [
+                'color_mode' => $this->getSidebarColorMode()
+            ],
             'envPermissions' => $this->checkEnvPermissions()
         ], 200);
     }
@@ -296,5 +300,17 @@ class UIController extends Controller
             }
         }
         return false;
+    }
+
+    /**
+     * Get the color mode for the Sidebar
+     */
+    private function getSidebarColorMode()
+    {
+        if (ApplicationSettings::get('core.sidebar.color_mode', 'user') === 'user') {
+            return UserPreferences::has('sidebar.color_mode') ? UserPreferences::get('sidebar.color_mode') : 'light';
+        }
+
+        return ApplicationSettings::get('core.sidebar.color_mode', 'user');
     }
 }

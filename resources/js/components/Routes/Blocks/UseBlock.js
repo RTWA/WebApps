@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
+import classNames from 'classnames';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Input, useToasts, withWebApps } from 'webapps-react';
+import { Input, useToasts, WebAppsUXContext } from 'webapps-react';
 
 const UseBlock = props => {
-    const { block, UI } = props;
+    const { block } = props;
+    const { theme } = useContext(WebAppsUXContext);
 
     const { addToast } = useToasts();
 
@@ -45,4 +47,4 @@ const UseBlock = props => {
     )
 }
 
-export default withWebApps(UseBlock);
+export default UseBlock;

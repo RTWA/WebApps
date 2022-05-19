@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { Route } from 'react-router-dom';
-import { withWebApps } from 'webapps-react';
+import { WebAppsUXContext } from 'webapps-react';
 
 import {
     DndContext,
@@ -134,7 +134,7 @@ const setupData = props => {
     return idxs;
 }
 
-const Repeater = ({ UI, ...props }) => {
+const Repeater = props => {
     let idxs = setupData(props);
 
     const {
@@ -143,6 +143,8 @@ const Repeater = ({ UI, ...props }) => {
         field,
         repeater
     } = props;
+    
+    const { theme } = useContext(WebAppsUXContext);
 
     const [drag, setDrag] = useState(null);
     const [dragKey, setDragKey] = useState(null);
@@ -217,7 +219,7 @@ const Repeater = ({ UI, ...props }) => {
                     }
                 </DragOverlay>
             </DndContext>
-            <button className={`block mx-auto outline-none hover:text-${UI.theme}-600 dark:hover:text-${UI.theme}-500 mb-1`} data-name={name} onClick={repeater.add}>
+            <button className={`block mx-auto outline-none hover:text-${theme}-600 dark:hover:text-${theme}-500 mb-1`} data-name={name} onClick={repeater.add}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline-block -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -227,4 +229,4 @@ const Repeater = ({ UI, ...props }) => {
     )
 }
 
-export default withWebApps(Repeater);
+export default Repeater;

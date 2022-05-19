@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GridSelect, Select } from 'webapps-react';
+import { GridSelect, Select, PageWrapper, Loader } from 'webapps-react';
 
 const BlockSettings = props => {
     const {
@@ -101,8 +101,12 @@ const BlockSettings = props => {
         )
     }
 
+    if (settings['blocks.button.location'] === undefined) {
+        return <Loader />
+    }
+
     return (
-        <>
+        <PageWrapper title="Block Settings">
             <Select
                 id="blocks.button.location"
                 name="blocks.button.location"
@@ -136,7 +140,7 @@ const BlockSettings = props => {
                 <option value="edit">Open edit Block page in new tab</option>
                 <option value="popup">Display informative pop-up</option>
             </Select>
-        </>
+        </PageWrapper>
     )
 }
 

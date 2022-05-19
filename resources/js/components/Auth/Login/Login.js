@@ -5,9 +5,7 @@ import { Loader } from 'webapps-react';
 let _mounted = false;
 
 const Login = props => {
-    const UI = {
-        theme: document.getElementsByTagName('body')[0].getAttribute('data-theme')
-    };
+    const theme = document.getElementsByTagName('body')[0].getAttribute('data-theme');
 
     const [validator] = React.useState(new SimpleReactValidator({
         element: message => <div className="text-sm text-red-500">{message}</div>
@@ -100,7 +98,7 @@ const Login = props => {
                     <input id="username"
                         type="text"
                         name="username"
-                        className={`text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-${UI.theme}-400`}
+                        className={`text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-${theme}-400`}
                         placeholder="Username"
                         value={state.username || ''}
                         onChange={onChange}
@@ -122,7 +120,7 @@ const Login = props => {
                     <input id="password"
                         type="password"
                         name="password"
-                        className={`text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-${UI.theme}-400`}
+                        className={`text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-${theme}-400`}
                         placeholder="Password"
                         value={state.password || ''}
                         onChange={onChange}
@@ -138,7 +136,7 @@ const Login = props => {
                             /* istanbul ignore next */
                             <button id="login-button"
                                 type="submit"
-                                className={`flex items-center justify-center focus:outline-none text-white text-sm sm:text-base bg-${UI.theme}-600 dark:bg-${UI.theme}-500 hover:bg-${UI.theme}-700 dark:hover:bg-${UI.theme}-600 rounded py-2 w-full transition duration-150 ease-in`}
+                                className={`flex items-center justify-center focus:outline-none text-white text-sm sm:text-base bg-${theme}-600 dark:bg-${theme}-500 hover:bg-${theme}-700 dark:hover:bg-${theme}-600 rounded py-2 w-full transition duration-150 ease-in`}
                                 onClick={handleLogin}>
                                 <span className="mr-2 uppercase">Loading...</span>
                                 <Loader style="circle" className="h-5 w-5" />
@@ -147,7 +145,7 @@ const Login = props => {
                         : (
                             <button id="login-button"
                                 type="submit"
-                                className={`flex items-center justify-center focus:outline-none text-white text-sm sm:text-base bg-${UI.theme}-600 dark:bg-${UI.theme}-500 hover:bg-${UI.theme}-700 dark:hover:bg-${UI.theme}-600 rounded py-2 w-full transition duration-150 ease-in`}
+                                className={`flex items-center justify-center focus:outline-none text-white text-sm sm:text-base bg-${theme}-600 dark:bg-${theme}-500 hover:bg-${theme}-700 dark:hover:bg-${theme}-600 rounded py-2 w-full transition duration-150 ease-in`}
                                 onClick={handleLogin}>
                                 <span className="mr-2 uppercase">Login</span>
                                 <span>

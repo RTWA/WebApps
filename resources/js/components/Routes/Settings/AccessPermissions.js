@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { APIClient, Switch, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Switch, PageWrapper, useToasts, WebAppsUXContext, Loader } from 'webapps-react';
 
 let _mounted = false;
 
-const AccessPermissions = ({ loadNavigation, ...props }) => {
+const AccessPermissions = props => {
     const {
         groups,
         permissions,
@@ -12,6 +12,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
     } = props;
 
     const { addToast } = useToasts();
+    const { theme, useNavigation } = useContext(WebAppsUXContext);
+    const { loadNavigation } = useNavigation;
 
     const [tab, setTab] = useState(0);
     const [states, setStates] = useState({});
@@ -146,7 +148,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
         'focus:outline-none',
         (tab === id) ? 'border-b-2' : '',
         (tab === id) ? 'font-medium' : '',
-        (tab === id) ? 'border-gray-500' : ''
+        (tab === id) ? `border-${theme}-500` : ''
     )
 
     const paneClass = id => classNames(
@@ -154,9 +156,13 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
         (tab === id) ? 'block' : 'hidden'
     )
 
+    if (permissions.length === 0) {
+        return <Loader />
+    }
+
     return (
-        <>
-            <nav className="flex flex-col sm:flex-row border-b border-gray-200 dark:border-gray-600">
+        <PageWrapper title="Permission Settings">
+            <nav className="flex flex-col sm:flex-row border-b border-gray-300 dark:border-gray-600">
                 {
                     Object.keys(permissions).map(function (g, i) {
                         let permission = permissions[g];
@@ -213,8 +219,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     )
                 })
             }
-        </>
+        </PageWrapper>
     )
 };
 
-export default withWebApps(AccessPermissions);
+export default AccessPermissions;

@@ -1,42 +1,56 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import { AppError, Banner, Loader, Sidebar, withWebApps } from 'webapps-react';
+import {
+    AppError,
+    Headerbar,
+    Loader,
+    Sidebar,
+    withWebAppsUX
+} from 'webapps-react';
 import * as RouteComponents from '../../Routes';
 import Modals from './Modals';
 
-const Default = ({ navigation, UI }) => {
-    if (UI.theme === undefined) {
+const Default = ({ useNavigation, theme }) => {
+    const { navigation, toggleNavigation } = useNavigation;
+
+    if (theme === undefined || navigation.menu === undefined || navigation.routes === undefined) {
         return <Loader />
     }
 
     return (
         <div className="flex md:flex-row flex-col h-full">
             <Sidebar />
-            <AppError theme={UI.theme}>
-                <div className="px-2 md:px-4 lg:px-8 py-4 text-gray-700 bg-gray-200 dark:bg-gray-900 dark:text-white h-screen w-screen overflow-auto" id="app-content">
-                    {
-                        (UI.envWriteable) ? <Banner color="red-300" darkColor="red-900" className="rounded-b-lg -my-4"><strong>The WebApps <code>.env</code> file is writeable, you should change the permissions!</strong></Banner> : null
-                    }
-                    {
-                        (navigation.routes === undefined)
-                            ? <Loader />
-                            : <Switch>
-                                {
-                                    navigation.routes.map((route, idx) => {
-                                        let C = RouteComponents[route.component];
-                                        return route.component ? (
-                                            <Route key={idx} path={route.path} exact={route.exact} name={route.name}
-                                                render={props => (
-                                                    (C !== undefined) ? <C routedata={route} {...props} />
-                                                        : <div>Error: Component '{route.component}' not found!</div>
-                                                )} />
-                                        ) : (null);
-                                    })
-                                }
-                                <Redirect from="/" to="/dashboard" exact />
-                            </Switch>
-                    }
+            <AppError theme={theme}>
+                <div className="flex flex-col flex-auto w-full min-w-0 h-full relative overflow-hidden" id="app-content">
+                    <Headerbar>
+                        <button
+                            className="cursor-pointer text-gray-600 dark:text-gray-400 text-xl leading-none bg-transparent outline-none"
+                            type="button"
+                            onClick={toggleNavigation}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </Headerbar>
+                    <div className="flex flex-col flex-auto overflow-hidden">
+                        <Switch>
+                            {
+                                navigation.routes.map((route, idx) => {
+                                    let C = RouteComponents[route.component];
+                                    return route.component ? (
+                                        <Route key={idx} path={route.path} exact={route.exact} name={route.name}
+                                            render={props => (
+                                                (C !== undefined) ? <C routedata={route} {...props} />
+                                                    : <div>Error: Component '{route.component}' not found!</div>
+                                            )} />
+                                    ) : (null);
+                                })
+                            }
+                            <Redirect from="/" to="/dashboard" exact />
+                        </Switch>
+                    </div>
                 </div>
             </AppError>
             <Modals />
@@ -44,4 +58,4 @@ const Default = ({ navigation, UI }) => {
     )
 }
 
-export default withWebApps(Default);
+export default withWebAppsUX(Default);
