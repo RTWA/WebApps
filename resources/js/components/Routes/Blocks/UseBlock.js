@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useToasts, withWebApps } from 'webapps-react';
+import { useToasts, WebAppsUXContext } from 'webapps-react';
 
 const UseBlock = props => {
-    const { block, UI } = props;
+    const { block } = props;
+    const { theme } = useContext(WebAppsUXContext);
 
     const [tab, setTab] = useState(0);
 
@@ -53,7 +54,7 @@ const UseBlock = props => {
                 </ol>
                 <label htmlFor="simple-text" className="sr-only">Simple Text to Copy</label>
                 <CopyToClipboard text={textarea} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
-                    <textarea className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`} 
+                    <textarea className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${theme}-600 dark:focus:border-${theme}-500`} 
                                 value={textarea} readOnly rows="4" id="simple-text" />
                 </CopyToClipboard>
             </div>
@@ -69,7 +70,7 @@ const UseBlock = props => {
                 </ol>
                 <label htmlFor="advanced-text" className="sr-only">Advanced Text to Copy</label>
                 <CopyToClipboard text={link} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
-                    <input type="text" className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}
+                    <input type="text" className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${theme}-600 dark:focus:border-${theme}-500`}
                                 value={link} readOnly id="advanced-text" />
                 </CopyToClipboard>
             </div>
@@ -77,4 +78,4 @@ const UseBlock = props => {
     )
 }
 
-export default withWebApps(UseBlock);
+export default UseBlock;

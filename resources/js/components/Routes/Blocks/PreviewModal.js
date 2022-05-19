@@ -1,15 +1,17 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import classNames from 'classnames';
 import ReactHtmlParser from 'react-html-parser';
 
-import { Button, ConfirmDeleteButton, withWebApps } from 'webapps-react';
+import { Button, ConfirmDeleteButton, WebAppsUXContext, withWebApps } from 'webapps-react';
 import UseBlock from './UseBlock';
 
-const PreviewModal = ({ modals, setModals, UI }) => {
+const PreviewModal = ({ modals, setModals }) => {
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
 
     const [tab, setTab] = useState(0);
+
+    const { theme } = useContext(WebAppsUXContext);
 
     const previewModal = (modals.preview_blocks === undefined) ? false : modals.preview_blocks.show;
     const curBlock = (modals.preview_blocks === undefined) ? null : modals.preview_blocks.block;
@@ -24,7 +26,7 @@ const PreviewModal = ({ modals, setModals, UI }) => {
         'absolute',
         'inset-0',
         'overflow-hidden',
-        (previewModal) ? 'z-50' : '-z-10'
+        (previewModal) ? 'z-[1100]' : '-z-10'
     )
 
     const bdClass = classNames(
@@ -60,8 +62,8 @@ const PreviewModal = ({ modals, setModals, UI }) => {
         'focus:outline-none',
         (tab === id) ? 'border-b-2' : '',
         (tab === id) ? 'font-medium' : '',
-        (tab === id) ? `border-${UI.theme}-600` : '',
-        (tab === id) ? `dark:border-${UI.theme}-500` : ''
+        (tab === id) ? `border-${theme}-600` : '',
+        (tab === id) ? `dark:border-${theme}-500` : ''
     )
 
     const paneClass = id => classNames(
@@ -88,7 +90,7 @@ const PreviewModal = ({ modals, setModals, UI }) => {
             <section className="h-screen w-full fixed left-0 top-0 flex justify-center items-center" aria-labelledby="slide-over-heading">
                 <div className={panelClass}>
                     <div className="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl">
-                        <div className={`px-4 py-4 bg-${UI.theme}-600 dark:bg-${UI.theme}-500 text-white relative`}>
+                        <div className={`px-4 py-4 bg-${theme}-600 dark:bg-${theme}-500 text-white relative`}>
                             <div className="absolute top-0 right-0 -ml-8 pt-4 pr-2 flex sm:-ml-10 sm:pr-4">
                                 <button className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                                     onClick={closeModal}>
@@ -135,7 +137,7 @@ const PreviewModal = ({ modals, setModals, UI }) => {
                                 <ConfirmDeleteButton text="Delete Block" onClick={deleteAction} square size="large" className="mx-auto" />
                             </div>
                         </div>
-                        <div className={`border-t border-${UI.theme}-600 dark:border-${UI.theme}-500`}>
+                        <div className={`border-t border-${theme}-600 dark:border-${theme}-500`}>
                             <Button to={`/blocks/edit/${curBlock.publicId}`} onClick={closeModal} className={`inline-block`} square style="ghost">Edit Block</Button>
                         </div>
                     </div>
