@@ -25,7 +25,7 @@ class UserController extends Controller
     {
         return response()->json([
             'success' => true,
-            'users' => User::where('active', true)->with('roles')->orderBy('username', 'ASC')->get()
+            'users' => User::where('active', true)->with('roles')->orderBy('name', 'ASC')->get()
         ], 200);
     }
 
@@ -38,7 +38,7 @@ class UserController extends Controller
     {
         return response()->json([
             'success' => true,
-            'users' => User::with('roles')->orderBy('username', 'ASC')->get()
+            'users' => User::with('roles')->orderBy('name', 'ASC')->get()
         ], 200);
     }
 
@@ -54,7 +54,7 @@ class UserController extends Controller
             'users' => User::where('active', false)
                 ->with('roles')
                 ->where('active', '=', false)
-                ->orderBy('username', 'ASC')
+                ->orderBy('name', 'ASC')
                 ->get()
         ], 200);
     }
