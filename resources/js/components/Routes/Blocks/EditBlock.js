@@ -5,8 +5,12 @@ import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
 
 import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
+import ShareBlock from './Modals/ShareBlock';
 import { OrphanedBlock } from './BlockViews';
+
 import { APIClient, AppPage, Button, Icon, Loader, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
+
+export const ModalContext = createContext({});
 
 const Fields = {
     image: Image,
@@ -24,6 +28,8 @@ let saving = false;
 const EditBlock = props => {
     const [block, setBlock] = useState(null);
     const [repeater, setRepeater] = useState(0);
+    const [modal, setModal] = useState(null);
+  
     /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
 
@@ -93,8 +99,9 @@ const EditBlock = props => {
         e.preventDefault();
 
         /* istanbul ignore else */
-        if (mounted)
+        if (mounted) {
             saving = true;
+        }
 
         addToast(
             "Saving changes, please wait...",
@@ -157,6 +164,26 @@ const EditBlock = props => {
         /* istanbul ignore else */
         if (mounted)
             setBlock({ ...block });
+    }
+
+    const toggleProperties = e => {
+        e.preventDefault();
+        /* istanbul ignore else */
+        if (mounted && modal !== 'properties') {
+            setModal('properties');
+        } else if (mounted) {
+            setModal(null);
+        }
+    }
+
+    const toggleShare = e => {
+        e.preventDefault();
+        /* istanbul ignore else */
+        if (mounted && modal !== 'share') {
+            setModal('share');
+        } else if (mounted) {
+            setModal(null);
+        }
     }
 
     const toggleRepeater = tab => {
@@ -298,16 +325,38 @@ const EditBlock = props => {
     return (
         <AppPage>
             <PageWrapper>
-                <div className="w-full mb-5">
-                    <label htmlFor="block_title" className="sr-only">Block Title</label>
-                    <input
-                        type="text"
+                <div className="w-full">
+                    <Input
                         id="block_title"
                         name="title"
-                        className="mt-1 block w-full rounded-md text-xl bg-gray-100 dark:bg-gray-800 border-transparent focus:border-gray-500 focus:bg-white dark:focus:bg-gray-300 focus:ring-0"
+                        type="text"
+                        label="Block Title"
+                        labelClassName="sr-only"
+                        inputClassName="bg-gray-100 dark:bg-gray-800"
+                        wrapperClassName="mb-4"
                         onChange={updateBlockProperties}
                         value={block.title}
                         placeholder="Unnamed Block" />
+                </div>
+                <div className="w-full flex flex-row justify-end mb-4 gap-2">
+                    <Button style="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleShare}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        Share Block
+                    </Button>
+                    <Button style="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleProperties}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Block Properties
+                    </Button>
+                    <Button style="link" className="flex flex-row items-center gap-2 font-normal">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        Use Block
+                    </Button>
                 </div>
                 <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 xl:flex-row w-full">
                     <div className={`${(flyout.opened) ? 'w-0 hidden' : 'w-full xl:w-5/12'}`}>
@@ -349,16 +398,16 @@ const EditBlock = props => {
                             <div className="border-t border-gray-200 dark:border-gray-700 w-full">
                                 {
                                     (saving)
-                                        ? (
-                                            <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex flex-row gap-3 items-center w-full sm:w-auto">
-                                                <Loader style="circle" height={5} width={5} color="orange" /> Saving...
-                                            </Button>
-                                        )
-                                        : (
-                                            <Button onClick={saveBlockData} style="ghost" square className="w-full sm:w-auto">
-                                                Save Changes & View
-                                            </Button>
-                                        )
+                                    ? (
+                                        <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex items-center gap-x-2 w-full sm:w-auto">
+                                            <Loader style="circle" height="5" width="5" /> Saving...
+                                        </Button>
+                                    )
+                                    : (
+                                        <Button onClick={saveBlockData} style="ghost" square className="w-full sm:w-auto">
+                                            Save Changes & View
+                                        </Button>
+                                    )
                                 }
                             </div>
                         </div>
@@ -367,6 +416,10 @@ const EditBlock = props => {
             </PageWrapper>
 
             <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
+            
+            <ModalContext.Provider value={{ modal, toggleShare }}>
+                <ShareBlock block={block} setBlock={setBlock} />
+            </ModalContext.Provider>
         </AppPage>
     )
 }

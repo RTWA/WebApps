@@ -14,6 +14,7 @@ use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UIController;
+use League\CommonMark\Parser\Block\BlockContinue;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +88,8 @@ Route::group(
         Route::put('/blocks/{publicId}', [BlocksController::class, 'update']);
         Route::delete('/blocks/{publicId}', [BlocksController::class, 'delete']);
         Route::post('/blocks/{publicId}/chown', [BlocksController::class, 'chown']);
+        Route::post('/blocks/{publicId}/share', [BlocksController::class, 'setShare']);
+        Route::delete('/blocks/{publicId}/share', [BlocksController::class, 'removeShare']);
 
         // Plugins
         Route::get('/plugins', [PluginsController::class, 'all']);

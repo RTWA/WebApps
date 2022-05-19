@@ -13,6 +13,8 @@ import {
     withAuth,
 } from 'webapps-react';
 
+import { ModalContext } from '../EditBlock';
+
 let _mounted = false;
 
 const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
@@ -21,6 +23,10 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
         setBlock,
         update
     } = props;
+
+    const {
+        modal, toggleProperties,
+    } = useContext(ModalContext);
 
     const { useFlyouts } = useContext(WebAppsUXContext);
     const { closeFlyout } = useFlyouts;

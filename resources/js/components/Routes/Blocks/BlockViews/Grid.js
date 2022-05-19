@@ -1,36 +1,18 @@
 import React from 'react';
-import Masonry from 'react-masonry-css';
 import ReactHtmlParser from 'react-html-parser';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
 import { DropDownButton, InfiniteScroll } from 'webapps-react';
+import BlockCard from './BlockCard';
 
-const Grid = props => {
-    const {
-        blocks,
-        rename,
-        renameBlock,
-        contextDelete,
-        saveName,
-        previewBlock,
-        loadMore,
-        hasMore,
-    } = props;
+const Grid = ({ blocks, loadMore, hasMore, ...props }) => {
 
     const dots = (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
         </svg>
     )
-
-    const breakpointCols = {
-        default: 4,
-        1536: 3,
-        1280: 2,
-        640: 1,
-    }
-
 
     if (blocks.length === 0) {
         return (
@@ -42,9 +24,10 @@ const Grid = props => {
         <InfiniteScroll
             loadMore={loadMore}
             hasMore={hasMore}>
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="flex flex-wrap gap-4">
                 {
                     blocks.map((block, i) => {
+                        return <BlockCard block={block} key={i} {...props} />
                         return (
                             <div key={i} id={block.publicId} className="block relative shadow-lg rounded-2xl p-4 bg-white dark:bg-gray-700 sm:mx-4 mb-4">
                                 <div className="flex items-center justify-between mb-6">

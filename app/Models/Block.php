@@ -50,6 +50,14 @@ class Block extends Model
     }
 
     /**
+     * Get the Shares for this Block
+     */
+    public function shares()
+    {
+        return $this->belongsToMany('App\Models\User', 'block_shares');
+    }
+
+    /**
      * Get the BlockViews
      */
     public function viewsData()

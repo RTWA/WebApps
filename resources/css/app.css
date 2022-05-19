@@ -189,6 +189,10 @@
         max-width: 49.3% !important;
     }
 
+    .min-w-5 {
+        min-width: 1.25rem !important;
+    }
+
     .w-1\/2-gap-3 {
         width: 48.8% !important;
     }

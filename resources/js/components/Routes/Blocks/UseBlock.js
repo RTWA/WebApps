@@ -1,80 +1,49 @@
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useToasts, WebAppsUXContext } from 'webapps-react';
+import { Input, useToasts, WebAppsUXContext } from 'webapps-react';
 
 const UseBlock = props => {
     const { block } = props;
     const { theme } = useContext(WebAppsUXContext);
 
-    const [tab, setTab] = useState(0);
-
     const { addToast } = useToasts();
 
-    const tabClass = id => classNames(
-        'text-gray-600',
-        'dark:text-gray-300',
-        'py-2',
-        'text-sm',
-        'flex-grow',
-        'hover:text-gray-800',
-        'dark:hover:text-gray-500',
-        'focus:outline-none',
-        (tab === id) ? 'border-b-2' : '',
-        (tab === id) ? 'font-medium' : '',
-        (tab === id) ? 'border-gray-600' : ''
-    )
-
-    const paneClass = id => classNames(
-        'pt-10',
-        (tab === id) ? 'block' : 'hidden'
-    )
-    
-    /* istanbul ignore next */ 
+    /* istanbul ignore next */
     const URL = `${location.protocol}//${location.hostname}${(location.port ? `:${location.port}` : '')}`;
     const link = `${URL}/embed/${block.publicId}`;
     const textarea = `<!-- TO MAKE CHANGES TO THIS BLOCK, PLEASE RETURN TO ${URL}/blocks/edit/${block.publicId} -->\r\n` +
         `<iframe src="${link}" style="width=100%;height:100%;border:0;overflow:hidden;" scrolling="no"></iframe>`;
 
     return (
-        <div>
-            <nav className="flex flex-col sm:flex-row border-b border-gray-200 dark:border-gray-800 -my-5 -mx-4 sm:-mx-6">
-                <button className={tabClass(0)} onClick={() => setTab(0)}>
-                    Simple
-                </button>
-                <button className={tabClass(1)} onClick={() => setTab(1)}>
-                    Advanced
-                </button>
-            </nav>
-            <div className={paneClass(0)}>
-                <ol className="list-decimal px-6">
-                    <li>Click into the box below to automatically copy the text.</li>
-                    <li>Go the page you wish to display it on and enter edit mode.</li>
-                    <li>Insert an HTML/Embed option and paste (<kbd>Ctrl</kbd>+<kbd>V</kbd>) the text below.</li>
-                </ol>
-                <label htmlFor="simple-text" className="sr-only">Simple Text to Copy</label>
-                <CopyToClipboard text={textarea} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
-                    <textarea className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${theme}-600 dark:focus:border-${theme}-500`} 
-                                value={textarea} readOnly rows="4" id="simple-text" />
-                </CopyToClipboard>
+        <>
+            <label htmlFor="simple-text" className="text-gray-600 dark:text-gray-400 text-sm font-normal">Embed the Block in your web page</label>
+            <CopyToClipboard text={textarea} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
+                <textarea className={`bg-gray-50 border-2 border-gray-300 text-gray-900 outline-none text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-colors focus:ring-${UI.theme}-600 dark:focus:ring-${UI.theme}-500 focus:border-${UI.theme}-600 dark:focus:border-${UI.theme}-500`}
+                    value={textarea} readOnly rows="4" id="simple-text" />
+            </CopyToClipboard>
+            <div className="relative my-6 h-px bg-gray-600 dark:bg-gray-400">
+                <div className="absolute left-0 top-0 flex justify-center w-full -mt-2">
+                    <span className="bg-white dark:bg-gray-900 px-4 text-xs text-gray-600 dark:text-gray-400 uppercase">Or</span>
+                </div>
             </div>
-            <div className={paneClass(1)}>
-                <ol className="list-decimal px-6">
-                    <li>Click in the box below to automatically copy the text.</li>
-                    <li>Go the page you wish to display it on and enter edit mode.</li>
-                    <li>Select the Web Page/iFrame option.</li>
-                    <li>Paste (<kbd>Ctrl</kbd>+<kbd>V</kbd>) the Web Page Address into the correct field.</li>
-                    <li>In the Height field enter the a value you think represents the height of your Block (in pixels).</li>
-                    <li>Set the scrollbars to <strong>Off</strong>.</li>
-                    <li>Press done to embed the block onto the page.</li>
-                </ol>
-                <label htmlFor="advanced-text" className="sr-only">Advanced Text to Copy</label>
-                <CopyToClipboard text={link} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
-                    <input type="text" className={`mt-2 w-full bg-gray-200 dark:bg-gray-700 focus:ring-0 focus:border-${theme}-600 dark:focus:border-${theme}-500`}
-                                value={link} readOnly id="advanced-text" />
-                </CopyToClipboard>
-            </div>
-        </div>
+            <label htmlFor="advanced-text" className="text-gray-600 dark:text-gray-400 text-sm font-normal">Provide a link to the Block</label>
+            <CopyToClipboard text={link} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
+                <Input
+                    id="advanced-text"
+                    name="advanced-text"
+                    action={
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                    }
+                    actionLocation="left"
+                    wrapperClassName=""
+                    readOnly
+                    value={link}
+                />
+            </CopyToClipboard>
+        </>
     )
 }
 
