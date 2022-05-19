@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Values from 'values.js';
-import { ColorGridSelect, Input, Switch, useToasts, withWebApps } from 'webapps-react';
+import { ColorGridSelect, Input, Loader, NavigationError, PageWrapper, Switch, useToasts, WebAppsUXContext } from 'webapps-react';
 
-const ApplicationSettings = ({ UI, setUI, ...props }) => {
+const ApplicationSettings = props => {
     const {
         settings,
         setValue,
         typeValue,
         states,
     } = props;
+
+    const { useNavigation, setDarkMode, setTheme } = useContext(WebAppsUXContext);
+    const { navigation, setNavigation } = useNavigation;
 
     /* Brand Shades
         -900 = shade(50);
@@ -27,6 +30,7 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
     const [typeBase, setTypeBase] = useState('');
     const [colors, setColors] = useState([]);
     const [darkOptions, setDarkOptions] = useState([]);
+    const [sidebarColorOptions, setSidebarColorOptions] = useState([]);
 
     const color = new Values(base);
     const shades = [10, 23, 40, 50];
@@ -142,6 +146,29 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
         ]);
     }, [settings['core.ui.dark_mode']]);
 
+    useEffect(() => {
+        setSidebarColorOptions([
+            {
+                value: 'light',
+                bgClasses: 'bg-gray-200',
+                name: 'Light Sidebar',
+                selected: (settings['core.sidebar.color_mode'] === 'light'),
+            },
+            {
+                value: 'dark',
+                bgClasses: 'bg-gray-900',
+                name: 'Dark Sidebar',
+                selected: (settings['core.sidebar.color_mode'] === 'dark'),
+            },
+            {
+                value: 'user',
+                bgClasses: 'bg-gradient-to-r from-gray-200 to-gray-900',
+                name: 'User Selectable',
+                selected: (settings['core.sidebar.color_mode'] === 'user' || !settings['core.sidebar.color_mode']),
+            }
+        ]);
+    }, [settings['core.sidebar.color_mode']]);
+
     const onTypeBase = e => {
         if (e.currentTarget.value.charAt(0) !== '#') {
             setTypeBase('#' + e.currentTarget.value.toUpperCase());
@@ -163,16 +190,14 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
         addToast('Branding Updated!', 'You should refresh the page to see the new colours.', { appearance: 'success', autoDismissTimeout: 8000 });
     }
 
-    const setColor = color => {
+    const changeColor = color => {
         setValue('core.ui.theme', color)
-        UI.theme = color;
-        setUI({ ...UI });
+        setTheme(color);
     }
 
-    const setDarkMode = value => {
+    const changeDarkMode = value => {
         setValue('core.ui.dark_mode', value)
-        UI.dark_mode = value;
-        setUI({ ...UI });
+        setDarkMode(value)
 
         if (value === 'dark') {
             document.documentElement.classList.add('dark');
@@ -188,6 +213,12 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                 document.documentElement.classList.add('dark');
             }
         }
+    }
+
+    const changeSidebarColorMode = value => {
+        setValue('core.sidebar.color_mode', value)
+        navigation.color_mode = value;
+        setNavigation({ ...navigation });
     }
 
     const onChange = e => {
@@ -206,8 +237,12 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
         typeValue(e.target.id, e.target.value);
     }
 
+    if (settings['core.ui.theme'] === undefined) {
+        return <Loader />
+    }
+
     return (
-        <>
+        <PageWrapper title="Application Settings">
             <Switch
                 label="Enable Error Reporting"
                 id="core.error.reporting"
@@ -215,13 +250,13 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                 checked={(settings['core.error.reporting'] === 'true')}
                 onChange={onChange}
                 state={states['core.error.reporting']}
-                className="w-full py-4"
+                className="mb-6"
                 helpText={<>Enabling this option will report all application errors to WebApps via Sentry. (
                     <a href="https://docs.getwebapps.uk/configuration/application-settings" target="_blank"
                         className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 font-semibold">See Documentation</a>)</>}
             />
 
-            <ColorGridSelect id="core.ui.theme" label="Theme Colour" colors={colors} onSelect={setColor} />
+            <ColorGridSelect id="core.ui.theme" label="Theme Colour" colors={colors} onSelect={changeColor} />
             {
                 (settings['core.ui.theme'] === 'brand')
                     ? (
@@ -255,9 +290,16 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                 id="core.ui.dark_mode"
                 label="Dark Mode Option"
                 colors={darkOptions}
-                onSelect={setDarkMode}
+                onSelect={changeDarkMode}
                 helpText="If you choose to allow the user to select, their system preferences will be respected."
             />
+            <ColorGridSelect
+                            id="core.sidebar.color_mode"
+                            label="Sidebar Color Mode Option"
+                            colors={sidebarColorOptions}
+                            onSelect={changeSidebarColorMode}
+                            helpText="Light Sidebar will not be in use when Dark Mode is enabled."
+                        />
             <Switch
                 label='Display "Return to CMS" Link'
                 id="core.cms.display_link"
@@ -265,7 +307,7 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                 checked={(settings['core.cms.display_link'] === 'true')}
                 onChange={onChange}
                 state={states['core.cms.display_link']}
-                className="w-full py-4" />
+                className="w-full py-6" />
             <Input
                 id="core.cms.url"
                 name="core.cms.url"
@@ -284,8 +326,8 @@ const ApplicationSettings = ({ UI, setUI, ...props }) => {
                 onChange={onType}
                 onBlur={onChange}
                 state={states['core.cms.text']} />
-        </>
+        </PageWrapper>
     )
 }
 
-export default withWebApps(ApplicationSettings);
+export default ApplicationSettings;
