@@ -6,7 +6,9 @@ on:
       - develop
       - 'release/**'
   pull_request:
-    branches: [develop]
+    branches: 
+      - develop
+      - 'future/**'
 
 jobs:
   cs-tests:
