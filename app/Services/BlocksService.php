@@ -11,7 +11,7 @@ class BlocksService
     /**
      * Get a filtered list of blocks for MyBlocks page
      */
-    public function filteredBlocks($filter, $user_id, $offset, $limit, $sort)
+    public function filteredBlocks($filter, $user_id, $offset, $limit)
     {
         if ($filter !== null && !is_numeric($filter)) {
             return Block::where('owner', $user_id)

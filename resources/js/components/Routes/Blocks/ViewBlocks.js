@@ -19,7 +19,12 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
     const [curBlock, setCurBlock] = useState([]);
     const [plugins, setPlugins] = useState([]);
     const [filter, setFilter] = useState(null);
+    const [isFiltering, setIsFiltering] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [sort, setSort] = useState({
+        by: 'Created',
+        order: 'ASC',
+    })
 
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
@@ -85,21 +90,31 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
         }
     }, []);
 
-    useEffect(() => {
+    useEffect(async () => {
         /* istanbul ignore else */
         if (blocks !== undefined && isMounted) {
             if ((blocks.length + load) >= (total + load - 1)) {
                 setHasMore(false);
             }
         }
+        if (isFiltering && isMounted && blocks.length === 0) {
+            await loadMore();
+            setIsFiltering(false);
+        }
     }, [blocks]);
 
-    useEffect(() => {
-        /* istanbul ignore else */
-        if (filter !== null && blocks.length === 0 && isMounted) {
-            loadMore();
+    useEffect(async () => {
+        setIsFiltering(true);
+        setTmpBlocks(blocks);
+        setBlocks([]);
+        setTotal(30);
+        setHasMore(true);
+
+        if (blocks.length === 0 && isMounted) {
+            await loadMore();
+            setIsFiltering(false);
         }
-    }, [filter, blocks]);
+    }, [sort]);
 
     useEffect(() => {
         /* istanbul ignore else */
@@ -111,8 +126,8 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
 
     const loadMore = async () => {
         let offset = (filter === null) ? blocks.length : 0;
-        let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=${offset}&filter=${filter}`
-            : `/api/blocks/user/${username}?limit=${load}&offset=${offset}&filter=${filter}`;
+        let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`
+            : `/api/blocks/user/${username}?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`;
 
         if (lastUri !== uri) {
             lastUri = uri;
@@ -283,6 +298,7 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
 
     const blockFilter = e => {
         if (e.target.value !== filter) {
+            setIsFiltering(true);
             if (e.target.value !== '' && filter === null) {
                 setTmpBlocks(blocks);
                 setBlocks([]);
@@ -300,6 +316,7 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
                 setHasMore(true);
                 setTmpBlocks([]);
                 setFilter(null);
+                setIsFiltering(false);
             }
         }
     }
@@ -315,7 +332,7 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
                     {
                         (ownBlocks) ?
                             (<h4>You have not created any blocks yet.<br />
-                                <Button style="link" to="/blocks/new">Why not create one now?</Button>
+                                <Button type="link" to="/blocks/new">Why not create one now?</Button>
                             </h4>)
                             : (<h4>This user has not created any blocks yet.</h4>)
                     }
@@ -326,16 +343,21 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
 
     return (
         <PageWrapper>
-            <Filter plugins={plugins} blockFilter={blockFilter} />
-            <Grid
-                blocks={blocks}
-                rename={rename}
-                renameBlock={renameBlock}
-                contextDelete={contextDelete}
-                saveName={saveName}
-                previewBlock={previewBlock}
-                loadMore={loadMore}
-                hasMore={hasMore} />
+            <Filter plugins={plugins} sort={sort} setSort={setSort} blockFilter={blockFilter} />
+            {
+                (!isFiltering)
+                    ? (
+                        <Grid
+                            blocks={blocks}
+                            rename={rename}
+                            renameBlock={renameBlock}
+                            contextDelete={contextDelete}
+                            saveName={saveName}
+                            previewBlock={previewBlock}
+                            loadMore={loadMore}
+                            hasMore={hasMore} />
+                    ) : <Loader style="circle" height="12" width="12" />
+            }
         </PageWrapper>
     )
 }

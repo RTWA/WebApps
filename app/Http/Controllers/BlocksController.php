@@ -43,6 +43,12 @@ class BlocksController extends Controller
         $styles = [];
         $blocks = [];
 
+        if (!$sort) {
+            $sort = ['order' => 'ASC', 'by' => 'Created'];
+        } else {
+            $sort = json_decode($sort, true);
+        }
+
         if (($username <> null) &&
             (!$_user->hasPermissionTo('blocks.view.others') && $user->username !== $_user->username)
         ) {
@@ -53,13 +59,28 @@ class BlocksController extends Controller
         }
 
         $blocksService = new BlocksService();
-        $blocks = $blocksService->filteredBlocks($filter, $user->id, $offset, $limit, $sort);
+        $blocks = $blocksService->filteredBlocks($filter, $user->id, $offset, $limit);
 
-        if ($sort === 'views') {
+        if ($sort['by'] === 'Popularity') {
             $sorted = array_values(Arr::sort($blocks, function ($value) {
                 return $value['views'];
             }));
-            $blocks = array_reverse($sorted);
+            if ($sort['order'] === 'ASC') {
+                $blocks = array_reverse($sorted);
+            } else if ($sort['order'] === 'DESC') {
+                $blocks = $sorted;
+            }
+        }
+
+        if ($sort['by'] === 'Created') {
+            $sorted = array_values(Arr::sort($blocks, function ($value) {
+                return $value['created_at'];
+            }));
+            if ($sort['order'] === 'ASC') {
+                $blocks = array_reverse($sorted);
+            } else if ($sort['order'] === 'DESC') {
+                $blocks = $sorted;
+            }
         }
 
         if ($blocks <> [] || $blocks <> null) {
@@ -72,6 +93,7 @@ class BlocksController extends Controller
         }
 
         if (count($blocks) === 0 && $filter === null) {
+            dd($filter, $sort, $blocks);
             return response()->json([
                 'message' => "No blocks found."
             ], 200);
