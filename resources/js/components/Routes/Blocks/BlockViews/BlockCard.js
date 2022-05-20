@@ -40,7 +40,7 @@ const BlockCard = ({ block, curBlock, rename, renameBlock, saveName, contextDele
             <div className="w-54 h-54 overflow-hidden">
                 <div className="output preview">{ReactHtmlParser(block.output)}</div>
             </div>
-            <div className="flex flex-row items-center gap-3 justify-between z-50 rounded-b text-gray-700 bg-gray-800/40 hover:bg-gray-800/80 dark:bg-gray-600/40 dark:hover:bg-gray-600/80 absolute bottom-0 left-0 right-0 p-2 transition-all duration-500">
+            <div className="flex flex-row items-center gap-3 justify-between z-50 rounded-b text-gray-700 bg-gray-800/40 hover:bg-gray-800/80 dark:bg-gray-600/90 dark:hover:bg-gray-600/100 absolute bottom-0 left-0 right-0 p-2 transition-all duration-500">
                 <a href="#" onClick={(e) => { e.preventDefault(); previewBlock(block); }}
                     className="flex items-center gap-1.5 w-5 min-w-5 overflow-hidden hover:w-24 hover:text-blue-600 transition-all ease-in-out duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" className="text-blue-600 h-5 w-5 min-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
