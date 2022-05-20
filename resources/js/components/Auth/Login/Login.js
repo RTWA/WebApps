@@ -139,7 +139,7 @@ const Login = props => {
                                 className={`flex items-center justify-center focus:outline-none text-white text-sm sm:text-base bg-${theme}-600 dark:bg-${theme}-500 hover:bg-${theme}-700 dark:hover:bg-${theme}-600 rounded py-2 w-full transition duration-150 ease-in`}
                                 onClick={handleLogin}>
                                 <span className="mr-2 uppercase">Loading...</span>
-                                <Loader style="circle" className="h-5 w-5" />
+                                <Loader type="circle" className="h-5 w-5" />
                             </button>
                         )
                         : (

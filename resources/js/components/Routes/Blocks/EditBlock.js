@@ -421,7 +421,7 @@ const EditBlock = props => {
                                                     (saving)
                                                         ? (
                                                             <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} type="ghost" square className="flex items-center gap-x-2 w-full sm:w-auto">
-                                                                <Loader style="circle" height="5" width="5" /> Saving...
+                                                                <Loader type="circle" height="5" width="5" /> Saving...
                                                             </Button>
                                                         )
                                                         : (
