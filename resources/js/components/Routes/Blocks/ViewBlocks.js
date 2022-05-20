@@ -321,7 +321,7 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
         }
     }
 
-    if (blocks.length === 0 && filter === null && hasBlocks) {
+    if (blocks.length === 0 && filter === null && !isFiltering && hasBlocks) {
         return <Loader />
     }
 
@@ -356,7 +356,7 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
                             previewBlock={previewBlock}
                             loadMore={loadMore}
                             hasMore={hasMore} />
-                    ) : <Loader style="circle" height="12" width="12" />
+                    ) : <Loader type="circle" height="12" width="12" />
             }
         </PageWrapper>
     )
