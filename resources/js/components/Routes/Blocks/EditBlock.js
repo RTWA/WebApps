@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
 
 import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
-import ShareBlock from './Modals/ShareBlock';
+import ShareBlock from './Flyouts/ShareBlock';
+import UseBlock from './UseBlock';
 import { OrphanedBlock } from './BlockViews';
 
-import { APIClient, AppPage, Button, Icon, Loader, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
+import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
 
-export const ModalContext = createContext({});
+export const FlyoutContext = createContext({});
 
 const Fields = {
     image: Image,
@@ -28,13 +29,14 @@ let saving = false;
 const EditBlock = props => {
     const [block, setBlock] = useState(null);
     const [repeater, setRepeater] = useState(0);
-    const [modal, setModal] = useState(null);
-  
+    const [context, setContext] = useState(null);
+    const [isUseBlock, setIsUseBlock] = useState(false);
+
     /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
 
     const { theme, useFlyouts } = useContext(WebAppsUXContext);
-    const { flyout, openFlyout } = useFlyouts;
+    const { flyout, openFlyout, closeFlyout } = useFlyouts;
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
 
@@ -124,8 +126,6 @@ const EditBlock = props => {
                             title: json.data.message
                         }
                     );
-                    /* istanbul ignore next */
-                    props.history?.push(`/blocks/view/${block.publicId}`);
                 }
             })
             .catch(() => {
@@ -166,23 +166,33 @@ const EditBlock = props => {
             setBlock({ ...block });
     }
 
+    const toggleUseBlock = e => {
+        e.preventDefault();
+        closeFlyout();
+        setIsUseBlock(!isUseBlock);
+    }
+
     const toggleProperties = e => {
         e.preventDefault();
+        closeFlyout();
         /* istanbul ignore else */
-        if (mounted && modal !== 'properties') {
-            setModal('properties');
-        } else if (mounted) {
-            setModal(null);
+        if (context !== 'properties') {
+            setContext('properties');
+            openFlyout();
+        } else {
+            setContext(null);
         }
     }
 
     const toggleShare = e => {
         e.preventDefault();
+        closeFlyout();
         /* istanbul ignore else */
-        if (mounted && modal !== 'share') {
-            setModal('share');
-        } else if (mounted) {
-            setModal(null);
+        if (context !== 'share') {
+            setContext('share');
+            openFlyout();
+        } else {
+            setContext(null);
         }
     }
 
@@ -339,19 +349,19 @@ const EditBlock = props => {
                         placeholder="Unnamed Block" />
                 </div>
                 <div className="w-full flex flex-row justify-end mb-4 gap-2">
-                    <Button style="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleShare}>
+                    <Button type="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleShare}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
                         Share Block
                     </Button>
-                    <Button style="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleProperties}>
+                    <Button type="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleProperties}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Block Properties
                     </Button>
-                    <Button style="link" className="flex flex-row items-center gap-2 font-normal">
+                    <Button type="link" className="flex flex-row items-center gap-2 font-normal" onClick={toggleUseBlock}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                         </svg>
@@ -371,55 +381,62 @@ const EditBlock = props => {
                                     <span className="font-medium mr-2">Plugin:</span>
                                     <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
                                 </div>
-                                <div className="w-full border-t border-gray-200 sm:border-t-0 sm:w-auto sm:ml-auto">
-                                    <Button onClick={openFlyout} style="ghost" square className="w-full sm:w-auto">
-                                        Block Properties
-                                    </Button>
-                                </div>
                             </div>
                             {
-                                Object.keys(options).map(function (field, i) {
-                                    if (options[field].type === "custom") {
-                                        value = block.settings;
-                                        // TODO: Custom field types
-                                        return null
-                                    }
-                                    let F = Fields[options[field].type];
-                                    return F ? (
-                                        <Route key={i}
-                                            render={props => (
-                                                <F name={field} index={i} field={options[field]}
-                                                    data={settings} update={update} value={settings[field]}
-                                                    repeater={_repeater} {...props} />
-                                            )} />)
-                                        : (null);
-                                })
-                            }
-                            <div className="border-t border-gray-200 dark:border-gray-700 w-full">
-                                {
-                                    (saving)
+                                (!isUseBlock)
                                     ? (
-                                        <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex items-center gap-x-2 w-full sm:w-auto">
-                                            <Loader style="circle" height="5" width="5" /> Saving...
-                                        </Button>
+                                        <>
+                                            {
+                                                Object.keys(options).map(function (field, i) {
+                                                    if (options[field].type === "custom") {
+                                                        value = block.settings;
+                                                        // TODO: Custom field types
+                                                        return null
+                                                    }
+                                                    let F = Fields[options[field].type];
+                                                    return F ? (
+                                                        <Route key={i}
+                                                            render={props => (
+                                                                <F name={field} index={i} field={options[field]}
+                                                                    data={settings} update={update} value={settings[field]}
+                                                                    repeater={_repeater} {...props} />
+                                                            )} />)
+                                                        : (null);
+                                                })
+                                            }
+                                            <div className="border-t border-gray-200 dark:border-gray-700 w-full">
+                                                {
+                                                    (saving)
+                                                        ? (
+                                                            <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} type="ghost" square className="flex items-center gap-x-2 w-full sm:w-auto">
+                                                                <Loader style="circle" height="5" width="5" /> Saving...
+                                                            </Button>
+                                                        )
+                                                        : (
+                                                            <Button onClick={saveBlockData} type="ghost" square className="w-full sm:w-auto">
+                                                                Save Changes
+                                                            </Button>
+                                                        )
+                                                }
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="p-4">
+                                            <UseBlock block={block} />
+                                        </div>
                                     )
-                                    : (
-                                        <Button onClick={saveBlockData} style="ghost" square className="w-full sm:w-auto">
-                                            Save Changes & View
-                                        </Button>
-                                    )
-                                }
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
             </PageWrapper>
 
-            <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
-            
-            <ModalContext.Provider value={{ modal, toggleShare }}>
-                <ShareBlock block={block} setBlock={setBlock} />
-            </ModalContext.Provider>
+            <Flyout>
+                <FlyoutContext.Provider value={{ context, toggleProperties, toggleShare }}>
+                    <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
+                    <ShareBlock block={block} setBlock={setBlock} />
+                </FlyoutContext.Provider>
+            </Flyout>
         </AppPage>
     )
 }

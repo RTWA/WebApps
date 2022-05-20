@@ -3,17 +3,15 @@ import UserAvatar from 'react-user-avatar';
 import {
     APIClient,
     Button,
-    Flyout,
     FlyoutContent,
     FlyoutHeader,
     Input,
     UserSuggest,
     useToasts,
-    WebAppsUXContext,
     withAuth,
 } from 'webapps-react';
 
-import { ModalContext } from '../EditBlock';
+import { FlyoutContext } from '../EditBlock';
 
 let _mounted = false;
 
@@ -25,11 +23,8 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
     } = props;
 
     const {
-        modal, toggleProperties,
-    } = useContext(ModalContext);
-
-    const { useFlyouts } = useContext(WebAppsUXContext);
-    const { closeFlyout } = useFlyouts;
+        context, toggleProperties
+    } = useContext(FlyoutContext);
 
     const [chown, setChown] = useState(false);
     const [users, setUsers] = useState([]);
@@ -125,9 +120,13 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
             })
     }
 
+    if (context !== 'properties') {
+        return null;
+    }
+
     return (
-        <Flyout>
-            <FlyoutHeader closeAction={closeFlyout}>
+        <>
+            <FlyoutHeader closeAction={toggleProperties}>
                 Block Properties
             </FlyoutHeader>
             <FlyoutContent>
@@ -160,7 +159,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
                             (canChown && !chown)
                                 ? (
                                     <div className="absolute -bottom-0 right-0">
-                                        <Button onClick={() => setChown(true)} style="ghost" size="small" color="orange" square className="rounded-br">
+                                        <Button onClick={() => setChown(true)} type="ghost" size="small" color="orange" square className="rounded-br">
                                             Change Owner
                                         </Button>
                                     </div>
@@ -174,7 +173,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
                                 <div className="px-2 py-1 border-t relative">
                                     <label htmlFor="ownerSuggest" className="sr-only">Enter new owner's username</label>
                                     <UserSuggest id="ownerSuggest" wrapperClassName="" users={users} placeholder="Enter new owner's username" limit={5} select={chownSelect} />
-                                    <Button onClick={changeOwner} style="ghost" size="small" color="orange" className="absolute top-3 right-4">
+                                    <Button onClick={changeOwner} type="ghost" size="small" color="orange" className="py-1.5 absolute top-3 right-4">
                                         Change Owner
                                     </Button>
                                 </div>
@@ -186,7 +185,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
                     This Block has been viewed <span className="text-black dark:text-white font-medium">{block.views || 0}</span> times.
                 </p>
             </FlyoutContent>
-        </Flyout>
+        </>
     )
 }
 
