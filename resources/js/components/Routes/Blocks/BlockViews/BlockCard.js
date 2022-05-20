@@ -7,10 +7,10 @@ const BlockCard = ({ block, rename, renameBlock, saveName, contextDelete, previe
         <div id={block.publicId} className="w-56 relative rounded bg-white dark:bg-gray-800 p-2 pb-0 shadow focus:outline-none" {...props}>
             <div className="flex items-center border-b border-gray-200 dark:border-gray-900 pb-2">
                 <div className="flex w-full items-start justify-between">
-                    <div className="w-full">
+                    <div className="w-full truncate">
                         <div className={(block.rename === true) ? 'hidden' : ''}>
                             <p onClick={() => { alert('previewBlock(block)') }}
-                                className="text-xl font-medium leading-5 text-gray-800 dark:text-gray-300 focus:outline-none">
+                                className="truncate text-xl font-medium leading-5 text-gray-800 dark:text-gray-300 focus:outline-none">
                                 {block.title || block.publicId}
                             </p>
                         </div>
@@ -30,7 +30,7 @@ const BlockCard = ({ block, rename, renameBlock, saveName, contextDelete, previe
                                 </svg>
                             )
                             : (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 stroke-gray-800 hover:stroke-orange-500 hover:fill-orange-500 cursor-pointer transition-color duration-500" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 stroke-gray-800 dark:stroke-gray-400 hover:stroke-orange-500 dark:hover:stroke-orange-500 hover:fill-orange-500 cursor-pointer transition-color duration-500" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                                 </svg>
                             )
