@@ -2,7 +2,7 @@ import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
 
-const BlockCard = ({ block, rename, renameBlock, saveName, contextDelete, previewBlock, ...props }) => {
+const BlockCard = ({ block, curBlock, rename, renameBlock, saveName, contextDelete, previewBlock, ...props }) => {
     return (
         <div id={block.publicId} className="w-56 relative rounded bg-white dark:bg-gray-800 p-2 pb-0 shadow focus:outline-none" {...props}>
             <div className="flex items-center border-b border-gray-200 dark:border-gray-900 pb-2">
@@ -16,7 +16,7 @@ const BlockCard = ({ block, rename, renameBlock, saveName, contextDelete, previe
                         </div>
                         <div className={(block.rename === true) ? '' : 'hidden'}>
                             <label className="sr-only" htmlFor={`rename-${block.publicId}`}>Rename Block: {block.publicId}</label>
-                            <input type="text" value={block.title || ''} placeholder="Unnamed Block"
+                            <input type="text" value={curBlock.title || ''} placeholder="Unnamed Block"
                                 className="block w-full -my-2 bg-gray-100 dark:bg-gray-600 border-0 focus:ring-0"
                                 id={`rename-${block.publicId}`}
                                 onChange={renameBlock} onBlur={() => { saveName(block) }} />

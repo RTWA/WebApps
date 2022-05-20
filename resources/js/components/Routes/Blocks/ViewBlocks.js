@@ -165,6 +165,8 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
             if (_block.publicId === b.publicId) {
                 _block.rename = true;
                 blocks[i] = _block;
+            } else {
+                b.rename = false;
             }
         });
         /* istanbul ignore else */
@@ -349,6 +351,7 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
                     ? (
                         <Grid
                             blocks={blocks}
+                            curBlock={curBlock}
                             rename={rename}
                             renameBlock={renameBlock}
                             contextDelete={contextDelete}
