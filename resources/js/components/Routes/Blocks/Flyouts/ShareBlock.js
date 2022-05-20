@@ -105,7 +105,7 @@ const ShareBlock = ({ block, setBlock }) => {
                     placeholder="Add person by name"
                     limit={5}
                     select={addShare}
-                    wrapperClassName="bg-gray-100 -mt-6 -mx-6 mb-6 px-6 py-4"
+                    wrapperClassName="bg-gray-100 dark:bg-gray-800 -mt-6 -mx-6 mb-6 px-6 py-4"
                 />
                 <p className="text-sm mb-4">The following people also have access to edit this Block.</p>
                 {
@@ -136,7 +136,7 @@ const ShareBlock = ({ block, setBlock }) => {
             </FlyoutContent>
             <FlyoutFooter>
                 <div className="flex flex-col w-full">
-                    <label htmlFor="share_link" className="text-gray-600 text-xs font-normal">Anyone listed above can edit the Block with this link</label>
+                    <label htmlFor="share_link" className="text-gray-600 dark:text-gray-200 text-xs font-normal">Anyone listed above can edit the Block with this link</label>
                     <div className="mt-2">
                         <CopyToClipboard text={window.location.href} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
                             <Input
