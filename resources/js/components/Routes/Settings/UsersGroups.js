@@ -438,7 +438,7 @@ const UsersGroups = ({ UI, ...props }) => {
                         (tab === 0) ?
                             (
                                 <div className="flex-1 text-right">
-                                    <Button onClick={toggleShowDisabled} style="link">{
+                                    <Button onClick={toggleShowDisabled} type="link">{
                                         (showDisabled) ? 'Show Enabled Users' : `Show Disabled Users ${(disabled === null) ? '' : `(${disabled.length})`}`
                                     }</Button>
                                     <Button onClick={openCreateUserFlyout} square>

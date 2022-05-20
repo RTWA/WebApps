@@ -79,7 +79,7 @@ const ViewBlock = props => {
                             <UseBlock block={block} />
                         </div>
                         <div className="border-t border-gray-200 dark:border-gray-700 w-full">
-                            <Button to={`/blocks/edit/${block.publicId}`} style="ghost" square className="inline-block text-center w-full sm:w-auto">
+                            <Button to={`/blocks/edit/${block.publicId}`} type="ghost" square className="inline-block text-center w-full sm:w-auto">
                                 Edit this Block
                             </Button>
                         </div>

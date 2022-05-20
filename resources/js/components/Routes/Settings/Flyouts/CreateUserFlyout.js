@@ -172,7 +172,7 @@ const CreateUserFlyout = props => {
             </FlyoutContent>
             <FlyoutFooter>
                 <Button onClick={createUser} square>Create User</Button>
-                <Button onClick={closeAllFlyouts} className="ml-auto" color="gray" style="outline" square>Cancel</Button>
+                <Button onClick={closeAllFlyouts} className="ml-auto" color="gray" type="outline" square>Cancel</Button>
             </FlyoutFooter>
         </>
     )

@@ -11,7 +11,7 @@ const AppPlugins = ({ apps, plugins }) => {
                         (
                             <div className="md:col-span-5 text-center font-medium">
                                 <p className="mb-4">No Apps Downloaded!</p>
-                                <Button to="/settings/online/apps" square color="gray" style="outline">
+                                <Button to="/settings/online/apps" square color="gray" type="outline">
                                     Get Some Apps
                                 </Button>
                             </div>
@@ -42,7 +42,7 @@ const AppPlugins = ({ apps, plugins }) => {
                         (
                             <div className="md:col-span-5 text-center font-medium">
                                 <p className="mb-4">No Plugins Downloaded!</p>
-                                <Button to="/settings/online/plugins" square color="gray" style="outline">
+                                <Button to="/settings/online/plugins" square color="gray" type="outline">
                                     Get Some Plugins
                                 </Button>
                             </div>

@@ -188,7 +188,7 @@ const Azure = ({ UI, ...props }) => {
             <PageWrapper title="Microsoft Azure Integration">
                 <p className="mb-6 text-gray-600 dark:text-gray-400 text-sm">
                     Please follow the guidance found in the
-                    <Button href="https://docs.getwebapps.uk/configuration/microsoft-azure-integration/setup" target="_blank" size="small" style="link">WebApps Documentation</Button>
+                    <Button href="https://docs.getwebapps.uk/configuration/microsoft-azure-integration/setup" target="_blank" size="small" type="link">WebApps Documentation</Button>
                     to create your App Registration in Azure, then provide the required information below.
                 </p>
                 <Input
@@ -294,7 +294,7 @@ const Azure = ({ UI, ...props }) => {
                                 value={moment(settings['azure.graph.last_sync']).calendar()}
                                 readOnly disabled
                                 action={
-                                    <Button style="ghost" color="gray" size="small" square
+                                    <Button type="ghost" color="gray" size="small" square
                                         className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
                                         onClick={syncAzureNow}>
                                         {syncBtnText}

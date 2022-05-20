@@ -275,7 +275,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 state={testMailState.state}
                 error={testMailState.error}
                 action={
-                    <Button style="ghost" color="gray" size="small" square
+                    <Button type="ghost" color="gray" size="small" square
                         className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
                         onClick={sendTest}>
                         Send test Email

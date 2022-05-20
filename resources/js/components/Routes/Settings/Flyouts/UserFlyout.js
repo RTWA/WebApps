@@ -163,7 +163,7 @@ const UserFlyout = props => {
                     </p>
                     {
                         (user.number_of_blocks > 0) ?
-                            <Button to={`/blocks/user/${user.username}`} style="ghost" size="small" square>
+                            <Button to={`/blocks/user/${user.username}`} type="ghost" size="small" square>
                                 View this user's {blocksText}
                             </Button> : null
                     }
@@ -200,7 +200,7 @@ const UserFlyout = props => {
                                 </div>
                             </>
                         ) :
-                        <Button onClick={showPasswordReset} size="small" style="ghost" square color="orange">
+                        <Button onClick={showPasswordReset} size="small" type="ghost" square color="orange">
                             Change this user's password
                         </Button>
                 }
@@ -217,12 +217,12 @@ const UserFlyout = props => {
                 {
                     (user.active)
                         ?
-                        <Button onClick={disable} square color="red" style="outline">
+                        <Button onClick={disable} square color="red" type="outline">
                             Disable User Account
                         </Button>
                         :
                         <>
-                            <Button onClick={enable} square color="green" style="outline">
+                            <Button onClick={enable} square color="green" type="outline">
                                 Enable User Account
                             </Button>
                             <ConfirmDeleteButton

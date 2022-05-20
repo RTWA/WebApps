@@ -132,7 +132,7 @@ const RecentBlocks = () => {
                 </div>
                 <div className="flex flex-col text-center lg:text-left w-full lg:w-auto lg:border-l border-gray-500 pl-3">
                     <p className="text-xl">You have not created any blocks yet.</p>
-                    <Button href="/blocks/new" style="link" className="-mx-4">Why not create one now?</Button>
+                    <Button href="/blocks/new" type="link" className="-mx-4">Why not create one now?</Button>
                 </div>
             </div>
         )

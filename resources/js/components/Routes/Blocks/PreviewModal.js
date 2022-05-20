@@ -138,7 +138,7 @@ const PreviewModal = ({ modals, setModals }) => {
                             </div>
                         </div>
                         <div className={`border-t border-${theme}-600 dark:border-${theme}-500`}>
-                            <Button to={`/blocks/edit/${curBlock.publicId}`} onClick={closeModal} className={`inline-block`} square style="ghost">Edit Block</Button>
+                            <Button to={`/blocks/edit/${curBlock.publicId}`} onClick={closeModal} className={`inline-block`} square type="ghost">Edit Block</Button>
                         </div>
                     </div>
                 </div>

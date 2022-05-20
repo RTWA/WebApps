@@ -73,7 +73,7 @@ const CreateGroupFlyout = props => {
             </FlyoutContent>
             <FlyoutFooter>
                 <Button onClick={createGroup} square>Create Group</Button>
-                <Button onClick={closeAllFlyouts} className="ml-auto" color="gray" style="outline" square>Cancel</Button>
+                <Button onClick={closeAllFlyouts} className="ml-auto" color="gray" type="outline" square>Cancel</Button>
             </FlyoutFooter>
         </>
     )
