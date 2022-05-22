@@ -173,7 +173,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
                                 <div className="px-2 py-1 border-t relative">
                                     <label htmlFor="ownerSuggest" className="sr-only">Enter new owner's username</label>
                                     <UserSuggest id="ownerSuggest" wrapperClassName="" users={users} placeholder="Enter new owner's username" limit={5} select={chownSelect} />
-                                    <Button onClick={changeOwner} type="ghost" size="small" color="orange" className="py-1.5 absolute top-3 right-4">
+                                    <Button onClick={changeOwner} type="ghost" size="small" color="orange" padding={false} className="px-2 py-1.5 absolute top-3 right-4">
                                         Change Owner
                                     </Button>
                                 </div>
