@@ -130,7 +130,7 @@ const ShareBlock = ({ block, setBlock }) => {
                             })
                         )
                         : (
-                            <>No Shares Setup... Test Build etc.</>
+                            <p className="text-sm">You have not yet shared this Block with anyone.</p>
                         )
                 }
             </FlyoutContent>
