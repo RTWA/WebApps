@@ -117,7 +117,7 @@ const ShareBlock = ({ block, setBlock }) => {
                                         <div className="flex items-center gap-x-4">
                                             <UserAvatar size="48" name={user.name} src={`/user/${user.id}/photo`} />
                                             <div>
-                                                <h3 className="mb-2 sm:mb-1 text-gray-800 text-base font-normal leading-4">{user.name}</h3>
+                                                <h3 className="mb-2 sm:mb-1 text-gray-800 dark:text-gray-300 text-base font-normal leading-4">{user.name}</h3>
                                             </div>
                                         </div>
                                         <div className="relative font-normal text-xs sm:text-sm flex items-center text-gray-600 hover:text-red-500 cursor-pointer" data-user={user.id} onClick={removeShare}>
