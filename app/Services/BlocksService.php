@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Block;
 use App\Models\Plugin;
+use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BlocksService
@@ -40,6 +41,52 @@ class BlocksService
     }
 
     /**
+     * Get a filtered list of blocks for SharedBlocks page
+     */
+    public function filteredSharedBlocks($filter, $user_id, $offset, $limit)
+    {
+        if ($filter !== null && !is_numeric($filter)) {
+            return Block::whereHas('shares', function (Builder $query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })
+                ->where(function ($query) use ($filter) {
+                    $query->where('title', 'like', '%' . $filter . '%')
+                        ->orWhere('notes', 'like', '%' . $filter . '%')
+                        ->orWhere('settings', 'like', '%:"%' . $filter . '%"%');
+                })
+                ->offset($offset)
+                ->take($limit)
+                ->get()
+                ->toArray();
+        } else {
+            return Block::when(
+                is_numeric($filter),
+                function ($query) use ($filter) {
+                    return $query->where('plugin', $filter);
+                }
+            )
+                ->whereHas('shares', function (Builder $query) use ($user_id) {
+                    $query->where('user_id', $user_id);
+                })
+                ->offset($offset)
+                ->take($limit)
+                ->get()
+                ->toArray();
+        }
+    }
+
+    /**
+     * Check if a Block is shared with a user
+     */
+    public function blockIsSharedWith($block, $user_id)
+    {
+        if ($block->shares()->where('user_id', $user_id)->first()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Build a Block from database data
      */
     public function buildBlock($block)
@@ -47,7 +94,7 @@ class BlocksService
         $built = [];
         $p = Plugin::find($block['plugin']);
         $slug = ($p) ? $p['slug'] : '';
-        
+
         try {
             $built = Plugin::createFromSlug($slug)->prepare($block);
             $built['plugin'] = $p;

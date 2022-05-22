@@ -12,7 +12,6 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Intervention\Image\ImageManagerStatic as Image;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -93,7 +92,93 @@ class BlocksController extends Controller
         }
 
         if (count($blocks) === 0 && $filter === null) {
-            dd($filter, $sort, $blocks);
+            return response()->json([
+                'message' => "No blocks found."
+            ], 200);
+        } else {
+            return response()->json([
+                'blocks' => $blocks,
+                'styles' => $styles,
+                'total' => $blocksService->getTotal($filter, $user)
+            ], 200);
+        }
+    }
+
+    /**
+     * Retrieve a list of Blocks with a User
+     * This can be filtered by component id
+     * This can be filtered by searching title/notes
+     *
+     * Required Permission: blocks.view or blocks.view.others
+     *
+     * @param String $username
+     */
+    public function shared($username = null)
+    {
+        if ($username <> null) {
+            $_user = Auth::user();
+            $user = User::where('username', '=', $username)->first();
+        } else {
+            $user = Auth::user();
+        }
+
+        $limit = request('limit', 10);
+        $offset = request('offset', 0);
+        $filter = (request('filter') === "null") ? null : request('filter', null);
+        $sort = request('sort', null);
+        $styles = [];
+        $blocks = [];
+
+        if (!$sort) {
+            $sort = ['order' => 'ASC', 'by' => 'Created'];
+        } else {
+            $sort = json_decode($sort, true);
+        }
+
+        if (($username <> null) &&
+            (!$_user->hasPermissionTo('blocks.view.others') && $user->username !== $_user->username)
+        ) {
+            abort(403, 'You do not have permission to access this page.');
+        }
+        if ($username === null && !$user->hasPermissionTo('blocks.view')) {
+            abort(403, 'You do not have permission to access this page.');
+        }
+
+        $blocksService = new BlocksService();
+        $blocks = $blocksService->filteredSharedBlocks($filter, $user->id, $offset, $limit);
+
+        if ($sort['by'] === 'Popularity') {
+            $sorted = array_values(Arr::sort($blocks, function ($value) {
+                return $value['views'];
+            }));
+            if ($sort['order'] === 'ASC') {
+                $blocks = array_reverse($sorted);
+            } else if ($sort['order'] === 'DESC') {
+                $blocks = $sorted;
+            }
+        }
+
+        if ($sort['by'] === 'Created') {
+            $sorted = array_values(Arr::sort($blocks, function ($value) {
+                return $value['created_at'];
+            }));
+            if ($sort['order'] === 'ASC') {
+                $blocks = array_reverse($sorted);
+            } else if ($sort['order'] === 'DESC') {
+                $blocks = $sorted;
+            }
+        }
+
+        if ($blocks <> [] || $blocks <> null) {
+            foreach ($blocks as $i => $block) {
+                $blocks[$i] = $blocksService->buildBlock($block);
+                if (isset($blocks[$i]['plugin'])) {
+                    $styles = $blocksService->buildBlockStyles($styles, $blocks[$i], $blocks[$i]['plugin']);
+                }
+            }
+        }
+
+        if (count($blocks) === 0 && $filter === null) {
             return response()->json([
                 'message' => "No blocks found."
             ], 200);
@@ -137,7 +222,11 @@ class BlocksController extends Controller
             if ($block === null) {
                 abort(406, "View ($publicId) not found. Please check and try again.");
             }
-            if ($block->owner != Auth::user()->id && !Auth::user()->hasRole('Administrators')) {
+            if (
+                $block->owner != Auth::user()->id
+                && !Auth::user()->hasRole('Administrators')
+                && !$blocksService->blockIsSharedWith($block, Auth::user()->id)
+            ) {
                 abort(403, 'You do not have permission to edit this block.');
             }
 
@@ -175,8 +264,11 @@ class BlocksController extends Controller
         $blockData['settings'] = json_encode($blockData['settings']);
 
         // Verify the logged in User is the Block owner, or an Admin
-        if ((Auth::user()->id <> $blockData['owner'] || Auth::user()->hasRole('Administrators'))
-            && !Auth::user()->hasPermissionTo('blocks.create')
+        if (
+            (Auth::user()->id <> $blockData['owner'] 
+            && !Auth::user()->hasRole('Administrators')
+            && !(new BlocksService())->blockIsSharedWith(Block::find($blockData['id']), Auth::user()->id))
+            || !Auth::user()->hasPermissionTo('blocks.create')
         ) {
             abort(403, 'You do not have permission to edit this block.');
         }

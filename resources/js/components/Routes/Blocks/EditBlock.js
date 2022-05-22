@@ -9,7 +9,7 @@ import ShareBlock from './Flyouts/ShareBlock';
 import UseBlock from './UseBlock';
 import { OrphanedBlock } from './BlockViews';
 
-import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
+import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext } from 'webapps-react';
 
 export const FlyoutContext = createContext({});
 
@@ -31,10 +31,12 @@ const EditBlock = props => {
     const [repeater, setRepeater] = useState(0);
     const [context, setContext] = useState(null);
     const [isUseBlock, setIsUseBlock] = useState(false);
+    const [canShare, setCanShare] = useState(true);
 
     /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
 
+    const { user, checkGroup } = useContext(AuthContext);
     const { theme, useFlyouts } = useContext(WebAppsUXContext);
     const { flyout, openFlyout, closeFlyout } = useFlyouts;
     const { addToast, updateToast } = useToasts();
@@ -52,9 +54,14 @@ const EditBlock = props => {
         };
     }, []);
 
-    useEffect((block) => {
+    useEffect(async () => {
         /* istanbul ignore next */
-        if (mounted && block !== undefined) {
+        if (mounted && block) {
+            if (block.owner != user.id) {
+                setCanShare(false);
+                await checkGroup('Administrators')
+                    .then(r => setCanShare(r));
+            }
             if (block.scripts !== undefined) {
                 eval(block.scripts);
             }
@@ -349,12 +356,18 @@ const EditBlock = props => {
                         placeholder="Unnamed Block" />
                 </div>
                 <div className="w-full flex flex-row justify-end mb-4 gap-2">
-                    <Button type="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleShare}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                        Share Block
-                    </Button>
+                    {/* If you dont own the block you shouldnt be able to share or delete it. just edit/save/use */}
+                    {
+                        (canShare)
+                            ? (
+                                <Button type="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleShare}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                    </svg>
+                                    Share Block
+                                </Button>
+                            ) : null
+                    }
                     <Button type="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleProperties}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -224,7 +224,7 @@ class UIController extends Controller
                 'path' => '/blocks/shared',
                 'name' => 'Shared Blocks',
                 'exact' => true,
-                'component' => 'SharedBlocks',
+                'component' => 'ViewSharedBlocks',
             ];
         }
 

@@ -3,6 +3,7 @@ import PreviewModal from './PreviewModal';
 import EditBlock from './EditBlock';
 import ViewBlock from './ViewBlock';
 import ViewBlocks from './ViewBlocks';
+import ViewSharedBlocks from './ViewSharedBlocks';
 import { NoBlocks } from './BlockViews';
 
 export {
@@ -11,5 +12,6 @@ export {
     EditBlock,
     ViewBlock,
     ViewBlocks,
+    ViewSharedBlocks,
     NoBlocks
 }

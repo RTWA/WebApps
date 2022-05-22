@@ -81,9 +81,11 @@ Route::group(
 
         // Blocks
         Route::get('/blocks', [BlocksController::class, 'index']);
+        Route::get('/blocks/shared', [BlocksController::class, 'shared']);
         Route::get('/blocks/count', [BlocksController::class, 'count']);
         Route::get('/blocks/views', [BlocksController::class, 'views']);
         Route::get('/blocks/user/{username}', [BlocksController::class, 'index']);
+        Route::get('/blocks/shared/user/{username}', [BlocksController::class, 'shared']);
         Route::get('/blocks/{publicId}', [BlocksController::class, 'show']);
         Route::put('/blocks/{publicId}', [BlocksController::class, 'update']);
         Route::delete('/blocks/{publicId}', [BlocksController::class, 'delete']);
