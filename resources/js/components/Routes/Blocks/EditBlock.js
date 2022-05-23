@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, useHistory } from 'react-router-dom';
 
 import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
 
@@ -9,7 +9,7 @@ import ShareBlock from './Flyouts/ShareBlock';
 import UseBlock from './UseBlock';
 import { OrphanedBlock } from './BlockViews';
 
-import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext } from 'webapps-react';
+import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext, ConfirmDeleteButton } from 'webapps-react';
 
 export const FlyoutContext = createContext({});
 
@@ -35,6 +35,7 @@ const EditBlock = props => {
 
     /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
+    const history = useHistory();
 
     const { user, checkGroup } = useContext(AuthContext);
     const { theme, useFlyouts } = useContext(WebAppsUXContext);
@@ -150,6 +151,24 @@ const EditBlock = props => {
                 if (mounted)
                     saving = false;
             });
+    }
+
+    const deleteBlock = async () => {
+        await APIClient(`/api/blocks/${block.publicId}`, undefined, { method: 'DELETE', signal: APIController.signal })
+            .then(json => {
+                /* istanbul ignore else */
+                if (mounted) {
+                    addToast(json.data.message, '', { appearance: 'success' });
+                    history.goBack();
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                /* istanbul ignore else */
+                if (mounted) {
+                    addToast('Unable to delete block.', '', { appearance: 'error' });
+                }
+            })
     }
 
     const update = (field, value, ref, index) => {
@@ -355,7 +374,7 @@ const EditBlock = props => {
                         value={block.title}
                         placeholder="Unnamed Block" />
                 </div>
-                <div className="w-full flex flex-row justify-end mb-4 gap-2">
+                <div className="w-full flex flex-col lg:flex-row justify-end mb-4 gap-2">
                     {/* If you dont own the block you shouldnt be able to share or delete it. just edit/save/use */}
                     {
                         (canShare)
@@ -392,14 +411,15 @@ const EditBlock = props => {
                                 </Button>
                             )
                     }
+                    <ConfirmDeleteButton type="link" text="Delete this Block" className="lg:hidden flex" onClick={deleteBlock} />
                 </div>
-                <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 xl:flex-row w-full">
-                    <div className={`${(flyout.opened) ? 'w-0 hidden' : 'w-full xl:w-5/12'}`}>
-                        <div className={block.plugin.slug} id="block-preview">
+                <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 lg:flex-row w-full">
+                    <div className={`${(flyout.opened) ? 'w-0 hidden' : 'w-full lg:w-5/12'}`}>
+                        <div className={`${block.plugin.slug} mt-6 xl:mt-0`} id="block-preview">
                             {preview(block, transform)}
                         </div>
                     </div>
-                    <div className={`${(flyout.opened) ? 'w-full' : 'w-full xl:w-7/12'}`}>
+                    <div className={`${(flyout.opened) ? 'w-full' : 'w-full lg:w-7/12'}`}>
                         <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${theme}-600 dark:border-${theme}-500 border-t-2`}>
                             <div className="flex flex-col flex-col-reverse sm:flex-row border-b border-gray-200 dark:border-gray-700 text-lg">
                                 <div className="flex flex-row px-4 py-2">
@@ -452,6 +472,7 @@ const EditBlock = props => {
                                     )
                             }
                         </div>
+                        <ConfirmDeleteButton type="link" text="Delete this Block" className="ml-auto mt-8 hidden lg:flex" onClick={deleteBlock} />
                     </div>
                 </div>
             </PageWrapper>
