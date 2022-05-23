@@ -1,24 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Moment from 'react-moment';
-import { APIClient, Button, Loader, WebApps, WebAppsContext } from 'webapps-react';
+import { APIClient, Button, Loader } from 'webapps-react';
 
 // import ReactDOM from 'react-dom';
 
 import { NoBlocks } from '../components/Routes/Blocks';
 
 const RecentBlocks = () => {
-    const { modals, setModals } = useContext(WebAppsContext);
     const [blocks, setBlocks] = useState(null);
     const [noAccess, setNoAccess] = useState(false);
 
     const APIController = new AbortController();
 
+    const history = useHistory();
+    const handleClick = (block) => history.push(`/blocks/edit/${block.publicId}`);
+
     useEffect(() => {
         loadRecent();
         return () => {
             APIController.abort();
-            delete modals.preview_blocks;
-            setModals({ ...modals });
         }
     }, []);
 
@@ -47,38 +48,6 @@ const RecentBlocks = () => {
             });
     }
 
-    const previewBlock = block => {
-        modals.preview_blocks = {
-            show: true,
-            block: block,
-            delete: deleteBlock,
-        }
-        setModals({ ...modals });
-    }
-
-    const deleteBlock = async () => {
-        await APIClient(`/api/blocks/${modals.preview_blocks.block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
-            .then(json => {
-                Object(blocks).map(function (b, i) {
-                    if (b === modals.preview_blocks.block) {
-                        delete blocks[i];
-                    }
-                });
-                let _blocks = blocks.filter(function () {
-                    return true;
-                });
-                setBlocks(_blocks);
-                delete modals.preview_blocks;
-                setModals({ ...modals });
-                loadRecent();
-            })
-            .catch(error => {
-                if (!error.status.isAbort) {
-                    // TODO: Handle errors
-                    console.error(error);
-                }
-            });
-    }
     if (noAccess) {
         return null;
     }
@@ -168,7 +137,7 @@ const RecentBlocks = () => {
                     <tbody>
                         {
                             blocks.map((block, i) => (
-                                <tr key={i} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => previewBlock(block)}>
+                                <tr key={i} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => handleClick(block)}>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{(block.plugin) ? block.plugin.name : 'Unavailable'}</td>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{block.title || block.publicId}</td>
                                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
