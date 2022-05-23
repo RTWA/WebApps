@@ -200,12 +200,6 @@ class UIController extends Controller
                     'component' => 'ViewBlocks',
                 );
             }
-            $routes[] = array(
-                'path'      => '/blocks/view/:id',
-                'name'      => 'View Block',
-                'exact'     => true,
-                'component' => 'ViewBlock',
-            );
             if ($user->hasPermissionTo('blocks.create')) {
                 $routes[] = array(
                     'path'      => '/blocks/new',

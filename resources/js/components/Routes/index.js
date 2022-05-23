@@ -2,7 +2,7 @@ import AuthenticatedRoute from './AuthenticatedRoute';
 import UnauthenticatedRoute from './UnauthenticatedRoute';
 
 import { Dashboard } from './Dashboard';
-import { NewBlock, EditBlock, ViewBlock, ViewBlocks, ViewSharedBlocks } from './Blocks';
+import { NewBlock, EditBlock, ViewBlocks, ViewSharedBlocks } from './Blocks';
 import { Settings } from './Settings';
 import { ChangePassword, Preferences } from './User';
 import { ViewApp } from './ViewApp';
@@ -14,7 +14,6 @@ export {
     Dashboard,
     NewBlock,
     EditBlock,
-    ViewBlock,
     ViewBlocks,
     ViewSharedBlocks,
     Settings,
