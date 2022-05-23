@@ -66,7 +66,7 @@ class BlocksController extends Controller
             }));
             if ($sort['order'] === 'ASC') {
                 $blocks = array_reverse($sorted);
-            } else if ($sort['order'] === 'DESC') {
+            } elseif ($sort['order'] === 'DESC') {
                 $blocks = $sorted;
             }
         }
@@ -77,7 +77,7 @@ class BlocksController extends Controller
             }));
             if ($sort['order'] === 'ASC') {
                 $blocks = array_reverse($sorted);
-            } else if ($sort['order'] === 'DESC') {
+            } elseif ($sort['order'] === 'DESC') {
                 $blocks = $sorted;
             }
         }
@@ -153,7 +153,7 @@ class BlocksController extends Controller
             }));
             if ($sort['order'] === 'ASC') {
                 $blocks = array_reverse($sorted);
-            } else if ($sort['order'] === 'DESC') {
+            } elseif ($sort['order'] === 'DESC') {
                 $blocks = $sorted;
             }
         }
@@ -164,7 +164,7 @@ class BlocksController extends Controller
             }));
             if ($sort['order'] === 'ASC') {
                 $blocks = array_reverse($sorted);
-            } else if ($sort['order'] === 'DESC') {
+            } elseif ($sort['order'] === 'DESC') {
                 $blocks = $sorted;
             }
         }
@@ -222,8 +222,7 @@ class BlocksController extends Controller
             if ($block === null) {
                 abort(406, "View ($publicId) not found. Please check and try again.");
             }
-            if (
-                $block->owner != Auth::user()->id
+            if ($block->owner != Auth::user()->id
                 && !Auth::user()->hasRole('Administrators')
                 && !$blocksService->blockIsSharedWith($block, Auth::user()->id)
             ) {
@@ -264,8 +263,7 @@ class BlocksController extends Controller
         $blockData['settings'] = json_encode($blockData['settings']);
 
         // Verify the logged in User is the Block owner, or an Admin
-        if (
-            (Auth::user()->id <> $blockData['owner'] 
+        if ((Auth::user()->id <> $blockData['owner']
             && !Auth::user()->hasRole('Administrators')
             && !(new BlocksService())->blockIsSharedWith(Block::find($blockData['id']), Auth::user()->id))
             || !Auth::user()->hasPermissionTo('blocks.create')
