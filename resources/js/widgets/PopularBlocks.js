@@ -20,7 +20,7 @@ const PopularBlocks = () => {
     }, []);
 
     const loadPopular = async () => {
-        await APIClient('/api/blocks?limit=5&offset=0&filter=&sort=views', undefined, { signal: APIController.signal })
+        await APIClient(`/api/blocks?limit=5&offset=0&filter=&sort=${JSON.stringify({by:'Popularity',order:'ASC'})}`, undefined, { signal: APIController.signal })
             .then(json => {
                 const { blocks, styles } = json.data;
                 if (blocks !== undefined) {
