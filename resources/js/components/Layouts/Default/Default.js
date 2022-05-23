@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import {
@@ -6,12 +6,12 @@ import {
     Headerbar,
     Loader,
     Sidebar,
-    withWebAppsUX
+    WebAppsUXContext
 } from 'webapps-react';
 import * as RouteComponents from '../../Routes';
-import Modals from './Modals';
 
-const Default = ({ useNavigation, theme }) => {
+const Default = () => {
+    const { theme, useNavigation } = useContext(WebAppsUXContext);
     const { navigation, toggleNavigation } = useNavigation;
 
     if (theme === undefined || navigation.menu === undefined || navigation.routes === undefined) {
@@ -53,9 +53,8 @@ const Default = ({ useNavigation, theme }) => {
                     </div>
                 </div>
             </AppError>
-            <Modals />
         </div>
     )
 }
 
-export default withWebAppsUX(Default);
+export default Default;

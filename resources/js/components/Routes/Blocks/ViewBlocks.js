@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { confirmAlert } from 'react-confirm-alert';
 
-import { APIClient, Button, ConfirmDeleteModal, Loader, PageWrapper, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, ConfirmDeleteModal, Loader, PageWrapper, useToasts } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
 let load = 30;
 
-const ViewBlocks = ({ modals, setModals, ...props }) => {
+const ViewBlocks = props => {
     const username = props.match.params.username;
     const ownBlocks = (username === undefined);
 
@@ -115,14 +115,6 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
             setIsFiltering(false);
         }
     }, [sort]);
-
-    useEffect(() => {
-        /* istanbul ignore else */
-        if (modals.preview_blocks !== undefined && isMounted) {
-            modals.preview_blocks.block = curBlock;
-            setModals({ ...modals });
-        }
-    }, [curBlock]);
 
     const loadMore = async () => {
         let offset = (filter === null) ? blocks.length : 0;
@@ -285,19 +277,6 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
             })
     }
 
-    const previewBlock = _block => {
-        /* istanbul ignore else */
-        if (isMounted) {
-            setCurBlock(_block);
-            modals.preview_blocks = {
-                show: true,
-                block: _block,
-                delete: deleteBlock
-            }
-            setModals({ ...modals });
-        }
-    }
-
     const blockFilter = e => {
         if (e.target.value !== filter) {
             setIsFiltering(true);
@@ -356,7 +335,6 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
                             renameBlock={renameBlock}
                             contextDelete={contextDelete}
                             saveName={saveName}
-                            previewBlock={previewBlock}
                             loadMore={loadMore}
                             hasMore={hasMore} />
                     ) : <Loader type="circle" height="12" width="12" />
@@ -365,4 +343,4 @@ const ViewBlocks = ({ modals, setModals, ...props }) => {
     )
 }
 
-export default withWebApps(ViewBlocks);
+export default ViewBlocks;

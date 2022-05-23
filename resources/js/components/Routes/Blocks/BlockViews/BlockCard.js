@@ -2,15 +2,14 @@ import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
 
-const BlockCard = ({ block, curBlock, rename, renameBlock, saveName, contextDelete, previewBlock, ...props }) => {
+const BlockCard = ({ block, curBlock, rename, renameBlock, saveName, contextDelete, ...props }) => {
     return (
         <div id={block.publicId} className="w-56 relative rounded bg-white dark:bg-gray-800 p-2 pb-0 shadow focus:outline-none" {...props}>
             <div className="flex items-center border-b border-gray-200 dark:border-gray-900 pb-2">
                 <div className="flex w-full items-start justify-between">
                     <div className="w-full truncate">
                         <div className={(block.rename === true) ? 'hidden' : ''}>
-                            <p onClick={() => { alert('previewBlock(block)') }}
-                                className="truncate text-xl font-medium leading-5 text-gray-800 dark:text-gray-300 focus:outline-none">
+                            <p className="truncate text-xl font-medium leading-5 text-gray-800 dark:text-gray-300 focus:outline-none">
                                 {block.title || block.publicId}
                             </p>
                         </div>
@@ -41,14 +40,6 @@ const BlockCard = ({ block, curBlock, rename, renameBlock, saveName, contextDele
                 <div className="output preview">{ReactHtmlParser(block.output)}</div>
             </div>
             <div className="flex flex-row items-center gap-3 justify-between z-50 rounded-b text-gray-700 bg-gray-800/40 hover:bg-gray-800/80 dark:bg-gray-600/90 dark:hover:bg-gray-600/100 absolute bottom-0 left-0 right-0 p-2 transition-all duration-500">
-                <a href="#" onClick={(e) => { e.preventDefault(); previewBlock(block); }}
-                    className="flex items-center gap-1.5 w-5 min-w-5 overflow-hidden hover:w-24 hover:text-blue-600 transition-all ease-in-out duration-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="text-blue-600 h-5 w-5 min-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Preview
-                </a>
                 <Link to={`/blocks/edit/${block.publicId}`}
                     className="flex items-center gap-1.5 w-5 min-w-5 overflow-hidden hover:w-24 hover:text-lime-600 transition-all ease-in-out duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" className="text-lime-600 h-5 w-5 min-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
