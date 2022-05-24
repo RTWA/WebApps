@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { APIClient, WebApps } from 'webapps-react';
+import { APIClient, WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../resources/js/__mocks__/mockData';
 
@@ -24,12 +24,12 @@ const loginUser = async (username, password) => {
 describe('Login Component', () => {
   test('Render Login form', () => {
     render(
-      <WebApps>
+      <WebAppsUX>
         <BrowserRouter>
           <Login loginUser={loginUser} />
           <Route path="/">Logged In</Route>
         </BrowserRouter>
-      </WebApps>
+      </WebAppsUX>
     );
 
     // Expect the fields to be defined
