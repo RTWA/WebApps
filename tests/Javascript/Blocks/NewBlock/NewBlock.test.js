@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { Auth, WebAppsUX, WebApps } from 'webapps-react';
 
 import NewBlock from '../../../../resources/js/components/Routes/Blocks/NewBlock';
 
 describe('NewBlock Component', () => {
     test('Can Render', async () => {
-        render(<WebApps><BrowserRouter><NewBlock /></BrowserRouter></WebApps>);
-        await waitFor(() => expect(screen.getByRole('heading', { name: /select the plugin you wish to use\.\.\./i })).toBeDefined());
+        render(<Auth><WebAppsUX><WebApps><BrowserRouter><NewBlock /></BrowserRouter></WebApps></WebAppsUX></Auth>);
+        await waitFor(() => expect(screen.getByText(/select the plugin you wish to use\.\.\./i)).toBeDefined());
 
         expect(screen.getByText(/sample/i)).toBeDefined();
         expect(screen.getByText(/jest/i)).toBeDefined();

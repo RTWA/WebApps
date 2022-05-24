@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import UserAvatar from 'react-user-avatar';
 import { FlyoutContext } from '../EditBlock';
 import { APIClient, FlyoutContent, FlyoutFooter, FlyoutHeader, Input, UserSuggest, useToasts } from 'webapps-react';
-
-let _mounted = false;
 
 const ShareBlock = ({ block, setBlock }) => {
     const [users, setUsers] = useState([]);
@@ -12,21 +10,21 @@ const ShareBlock = ({ block, setBlock }) => {
     const { addToast } = useToasts();
 
     const APIController = new AbortController();
+    const isMountedRef = useRef(true);
+    const isMounted = useCallback(() => isMountedRef.current, []);
 
     useEffect(async () => {
-        _mounted = true;
-
         /* istanbul ignore else */
         if (users.length === 0) {
             await APIClient('/api/users', undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
-                    if (_mounted) {
+                    if (isMounted) {
                         setUsers(json.data.users);
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    if (_mounted) {
+                    if (isMounted) {
                         addToast('An error occurred loading user data!', '', { appearance: 'error' });
                     }
                 });
@@ -34,7 +32,7 @@ const ShareBlock = ({ block, setBlock }) => {
 
         return /* istanbul ignore next */ () => {
             APIController.abort();
-            _mounted = false;
+            void (isMountedRef.current = false);
         }
     }, []);
 
@@ -54,8 +52,10 @@ const ShareBlock = ({ block, setBlock }) => {
                 { signal: APIController.signal, method: 'POST' }
             )
                 .then(json => {
-                    block.shares = json.data.shares;
-                    setBlock({ ...block });
+                    if (isMounted) {
+                        block.shares = json.data.shares;
+                        setBlock({ ...block });
+                    }
                 })
                 .catch(error => {
                     if (!error.status?.isAbort) {
@@ -74,8 +74,10 @@ const ShareBlock = ({ block, setBlock }) => {
             { signal: APIController.signal, method: 'DELETE' }
         )
             .then(json => {
-                block.shares = json.data.shares;
-                setBlock({ ...block });
+                if (isMounted) {
+                    block.shares = json.data.shares;
+                    setBlock({ ...block });
+                }
             })
             .catch(error => {
                 if (!error.status?.isAbort) {

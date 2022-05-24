@@ -256,9 +256,6 @@ const ViewBlocks = props => {
                     setBlocks(_blocks);
                     setCurBlock([]);
 
-                    delete modals.preview_blocks;
-                    setModals({ ...modals });
-
                     /* istanbul ignore else */
                     if (total === 1) {
                         setHasBlocks(false);
@@ -269,7 +266,6 @@ const ViewBlocks = props => {
                 }
             })
             .catch(error => {
-                console.log(error);
                 /* istanbul ignore else */
                 if (isMounted) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });

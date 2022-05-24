@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { Auth, WebAppsUX } from 'webapps-react';
 
 import { users } from '../../../../resources/js/__mocks__/mockData';
 import EditBlock from '../../../../resources/js/components/Routes/Blocks/EditBlock';
 
 describe('EditBlock Component', () => {
     test('Can Render', async () => {
-        render(<WebApps><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebApps>);
+        render(<Auth><WebAppsUX><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebAppsUX></Auth>);
         await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
         await waitFor(() => expect(screen.getByText(/enter the sample message/i)).toBeDefined());
     });
@@ -23,7 +23,7 @@ describe('EditBlock Component', () => {
             fireEvent.click(screen.getByRole('button', { name: /block properties/i }));
         });
         await waitFor(() =>
-            screen.getByText(/block title:/i)
+            screen.getByRole('textbox', { name: /block title:/i })
         );
         expect(screen.getByRole('textbox', { name: /block title:/i, hidden: true })).toHaveValue("Test Block\'s Title");
 
@@ -43,10 +43,10 @@ describe('EditBlock Component', () => {
 
         /* Reset */
         await act(async () => {
-            fireEvent.change(screen.getByRole('textbox', { name: /block title:/i, hidden: true }), { target: { value: 'Test Block\'s Title' } });
-            await screen.getByRole('textbox', { name: /block title:/i, hidden: true }).value === 'Test Block\'s Title';
+            fireEvent.change(screen.getByRole('textbox', { name: /block title/i, hidden: true }), { target: { value: 'Test Block\'s Title' } });
+            await screen.getByRole('textbox', { name: /block title/i, hidden: true }).value === 'Test Block\'s Title';
         });
-        expect(screen.getByRole('textbox', { name: /block title:/i, hidden: true })).toHaveValue("Test Block's Title");
+        expect(screen.getByRole('textbox', { name: /block title/i, hidden: true })).toHaveValue("Test Block's Title");
     });
 
     test('Can Open The Flyout But Cannot Change The Owner To The Current Owner', async () => {
@@ -85,12 +85,9 @@ describe('EditBlock Component', () => {
     test('Can Open The Flyout But Cannot Change The Owner Due To An Error', async () => {
         expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
         expect(screen.getByRole('button', { name: /block properties/i })).toBeDefined();
-        expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("Test Block\'s Title");
+        expect(screen.getByRole('textbox', { name: /block title:/i })).toHaveValue("Test Block\'s Title");
 
-        await act(async () => {
-            fireEvent.click(screen.getByRole('button', { name: /block properties/i }));
-        });
-        await waitFor(() => screen.getByRole('button', { name: /change owner/i, hidden: true }));
+        expect(screen.getByRole('button', { name: /change owner/i, hidden: true }));
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
         });
@@ -117,13 +114,9 @@ describe('EditBlock Component', () => {
     test('Can Open The Flyout And Change The Owner', async () => {
         expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined();
         expect(screen.getByRole('button', { name: /block properties/i })).toBeDefined();
+        expect(screen.getByRole('textbox', { name: /block title:/i })).toHaveValue("Test Block\'s Title");
 
-        expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("Test Block\'s Title");
-
-        await act(async () => {
-            fireEvent.click(screen.getByRole('button', { name: /block properties/i }));
-        });
-        await waitFor(() => screen.getByRole('button', { name: /change owner/i, hidden: true }));
+        expect(screen.getByRole('button', { name: /change owner/i, hidden: true }));
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /change owner/i, hidden: true }));
         });
@@ -209,31 +202,31 @@ describe('EditBlock Component', () => {
             await screen.getByRole('textbox', { name: /enter the sample message/i }).value === 'New Value';
         });
         await waitFor(() => expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toHaveValue('New Value'));
-        expect(screen.getByRole('button', { name: /save changes & view/i })).toBeDefined();
+        expect(screen.getByRole('button', { name: /save changes/i })).toBeDefined();
 
         await act(async () => {
-            fireEvent.click(screen.getByRole('button', { name: /save changes & view/i }));
+            fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
         });
         await waitFor(() => screen.getByRole('button', { name: /saving\.\.\./i }));
         await waitFor(() => expect(screen.getByText(/saved!/i)).toBeDefined());
     });
 
-    // FIXME: This does not pass, error is not caught or not sent by msw?
-    // test('Cannot Successfully Save Changes', async () => {
-    //     expect(screen.getByRole('heading', { name: /new value/i })).toBeDefined();
-    //     expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toBeDefined();
+    test('Cannot Successfully Save Changes', async () => {
+        expect(screen.getByRole('heading', { name: /new value/i })).toBeDefined();
+        expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toBeDefined();
 
-    //     await act(async () => {
-    //         fireEvent.change(screen.getByRole('textbox', { name: /enter the sample message/i }), { target: { value: 'Error This' } });
-    //         await screen.getByRole('textbox', { name: /enter the sample message/i }).value === 'Error This';
-    //     });
-    //     await waitFor(() => expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toHaveValue('Error This'));
-    //     expect(screen.getByRole('button', { name: /save changes & view/i })).toBeDefined();
+        await act(async () => {
+            fireEvent.change(screen.getByRole('textbox', { name: /enter the sample message/i }), { target: { value: 'Error This' } });
+            await screen.getByRole('textbox', { name: /enter the sample message/i }).value === 'Error This';
+        });
+        await waitFor(() => expect(screen.getByRole('textbox', { name: /enter the sample message/i })).toHaveValue('Error This'));
+        expect(screen.getByRole('button', { name: /save changes/i })).toBeDefined();
 
-    //     await act(async () => {
-    //         fireEvent.click(screen.getByRole('button', { name: /save changes & view/i }));
-    //     });
-    //     await waitFor(() => screen.getByRole('button', { name: /saving\.\.\./i }));
-    //     await waitFor(expect(screen.getByText(/an error occurred whilst saving the block\./i)).toBeDefined());
-    // });
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+        });
+        await waitFor(() => screen.getByRole('button', { name: /saving\.\.\./i }));
+        await waitFor(() => screen.getByText(/an error occurred whilst saving the block\./i));
+        expect(screen.getByText(/an error occurred whilst saving the block\./i)).toBeDefined();
+    });
 });

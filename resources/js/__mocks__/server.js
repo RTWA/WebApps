@@ -222,6 +222,15 @@ const handlers = [
         )
     }),
 
+    rest.post('/api/group/check', (req, res, ctx) => {
+        return res(
+            ctx.status(200),
+            ctx.json({
+                in_group: true
+            })
+        )
+    }),
+
     rest.post('/api/permissions', (req, res, ctx) => {
         if (req.body.perm == '10000') {
             return res(
@@ -235,6 +244,15 @@ const handlers = [
                 })
             )
         }
+    }),
+
+    rest.post('/api/permission/check', (req, res, ctx) => {
+        return res(
+            ctx.status(200),
+            ctx.json({
+                has_permission: true
+            })
+        )
     }),
 
     rest.get('/api/apps', (req, res, ctx) => {
@@ -491,7 +509,7 @@ const handlers = [
     }),
 
     rest.delete('/api/blocks/:id', (req, res, ctx) => {
-        if (req.params.id === 'test-block-2') {
+        if (req.params.id === 'Test-Block-2') {
             return res(
                 ctx.status(500)
             )

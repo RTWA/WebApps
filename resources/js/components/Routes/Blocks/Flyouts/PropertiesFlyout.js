@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import UserAvatar from 'react-user-avatar';
 import {
     APIClient,
@@ -12,8 +12,6 @@ import {
 } from 'webapps-react';
 
 import { FlyoutContext } from '../EditBlock';
-
-let _mounted = false;
 
 const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
     const {
@@ -35,25 +33,25 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
     const { addToast } = useToasts();
 
     const APIController = new AbortController();
+    const isMountedRef = useRef(true);
+    const isMounted = useCallback(() => isMountedRef.current, []);
 
     useEffect(async () => {
-        _mounted = true;
-
         /* istanbul ignore next */
         if (typeof checkPermission === 'function') {
             await checkPermission('admin.access')
                 .then(response => {
-                    if (_mounted) {
+                    if (isMounted) {
                         setCanChown(response);
                     }
                 });
-        } else if (process.env.JEST_WORKER_ID !== undefined && process.env.NODE_ENV === 'test') {
+        } else if (process.env.JEST_WORKER_ID !== undefined && process.env.NODE_ENV === 'test' && isMounted) {
             setCanChown(true);
         }
 
         return /* istanbul ignore next */ () => {
             APIController.abort();
-            _mounted = false;
+            void (isMountedRef.current = false);
         }
     }, []);
 
@@ -63,12 +61,12 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
             await APIClient('/api/users', undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
-                    if (_mounted) {
+                    if (isMounted) {
                         setUsers(json.data.users);
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    if (_mounted) {
+                    if (isMounted) {
                         addToast('An error occurred loading user data!', '', { appearance: 'error' });
                     }
                 });
@@ -81,13 +79,13 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
 
     const changeOwner = async () => {
         /* istanbul ignore next */
-        if (newOwner.id === undefined) {
+        if (newOwner.id === undefined && isMounted) {
             setChown(false);
             setNewOwner({});
             return;
         }
 
-        if (block.owner === newOwner.id) {
+        if (block.owner === newOwner.id && isMounted) {
             addToast('Unable to change owner to the same user!', '', { appearance: 'error' });
             setChown(false);
             setNewOwner({});
@@ -97,7 +95,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
         await APIClient(`/api/blocks/${block.publicId}/chown`, { old_owner_id: block.owner, new_owner_id: newOwner.id }, { signal: APIController.signal })
             .then(response => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     newOwner.number_of_blocks++;
                     setNewOwner(newOwner);
 
@@ -112,7 +110,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
             })
             .catch(error => {
                 /* istanbul ignore else */
-                if (_mounted) {
+                if (isMounted) {
                     addToast(error.data.message, '', { appearance: 'error' });
                     setChown(false);
                     setNewOwner({});
