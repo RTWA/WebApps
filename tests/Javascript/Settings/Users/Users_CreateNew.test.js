@@ -9,9 +9,8 @@ import UsersGroups from '../../../../resources/js/components/Routes/Settings/Use
 describe('UsersGroups Component - Create New Users', () => {
     test('Renders User list', async () => {
         render(<WebAppsUX><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebAppsUX>);
-        await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
+        await waitFor(() => screen.getByRole('heading', { name: /users/i }));
 
-        expect(screen.getByRole('heading', { name: /users/i })).toBeDefined();
         expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
         expect(screen.getByRole('button', { name: /add new user/i })).toBeDefined();
         expect(screen.getByText(/test jest user/i)).toBeDefined();

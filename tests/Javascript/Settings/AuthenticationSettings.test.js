@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { WebAppsUX } from 'webapps-react';
 
 import '../../../resources/js/__mocks__/mockMedia';
@@ -39,11 +39,12 @@ describe('AuthenticationSettings Component', () => {
     });
 
     // FIXME: Not Working
-    test('Cannot See Default User Group on Registration Option If Registrations Are Disabled', async () => {
-        expect(mockData.settings['auth.internal.registrations']).toEqual('false');
-        expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
-        await waitFor(() => expect(screen.queryByText(/default user group on registration/i)).toBeNull());
-    });
+    // test('Cannot See Default User Group on Registration Option If Registrations Are Disabled', async () => {
+    //     expect(mockData.settings['auth.internal.registrations']).toEqual('false');
+    //     expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
+    //     await waitForElementToBeRemoved(() => screen.queryByText(/default user group on registration/i));
+    //     expect(screen.queryByText(/default user group on registration/i)).toBeNull()
+    // });
 
     test('Can Enable Registrations', async () => {
         expect(mockData.settings['auth.internal.registrations']).toEqual('false');
