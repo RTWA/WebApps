@@ -40,9 +40,11 @@ const ShareBlock = ({ block, setBlock }) => {
         let inArray = false;
         let i;
 
-        for (i = 0; i < block.shares?.length; i++) {
-            if (block.shares[i].id === user.id) {
-                inArray = true;
+        if (isMounted()) {
+            for (i = 0; i < block.shares?.length; i++) {
+                if (block.shares[i].id === user.id && isMounted()) {
+                    inArray = true;
+                }
             }
         }
 
