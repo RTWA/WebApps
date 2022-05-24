@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import Azure from '../../../../resources/js/components/Routes/Settings/Azure';
@@ -24,7 +24,7 @@ mockData.settings['azure.graph.client_secret'] = '';
 
 describe('Azure Component - Partially Configured', () => {
     test('Only Part Of The Second Form Loads When Tenant ID Is Provided And Client ID/Secret Are Not, But Is Revealed When They Are', async () => {
-        render(<WebApps><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={setValue} typeValue={typeValue} /></BrowserRouter></WebApps>);
+        render(<WebAppsUX><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={setValue} typeValue={typeValue} /></BrowserRouter></WebAppsUX>);
 
         expect(screen.getByText(/azure app registration information/i)).toBeDefined();
         expect(screen.queryByText(/map azure groups to webapps groups/i)).toBeNull();

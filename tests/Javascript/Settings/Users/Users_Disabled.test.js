@@ -1,15 +1,14 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import UsersGroups from '../../../../resources/js/components/Routes/Settings/UsersGroups';
 
 describe('UsersGroups Component - Disabled Users List', () => {
     test('Renders User list', async () => {
-        render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
-        await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
+        render(<WebAppsUX><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebAppsUX>);
         await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
         expect(screen.getByRole('heading', { name: /users/i })).toBeDefined();
@@ -33,7 +32,7 @@ describe('UsersGroups Component - Disabled Users List', () => {
         await act(async () => {
             fireEvent.click(screen.getByText(/jest second user/i));
         });
-        await waitFor(() => expect(screen.getByRole('heading', { name: /jest second user \- properties/i })).toBeDefined());
+        await waitFor(() => expect(screen.getByRole('heading', { name: /jest second user/i })).toBeDefined());
     });
 
     test('Can Enable A Disabled User', async () => {
@@ -53,7 +52,7 @@ describe('UsersGroups Component - Disabled Users List', () => {
     });
 
     test('Can Delete A Disabled User', async () => {
-        expect(screen.getByRole('heading', { name: /jest second user \- properties/i })).toBeDefined();
+        expect(screen.getByRole('heading', { name: /jest second user/i })).toBeDefined();
         expect(screen.getByRole('button', { name: /delete user account/i })).toBeDefined();
 
         await act(async () => {
@@ -63,7 +62,7 @@ describe('UsersGroups Component - Disabled Users List', () => {
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /are you sure\?/i }));
         });
-        await waitForElementToBeRemoved(() => screen.getByRole('heading', { name: /jest second user \- properties/i }));
+        await waitForElementToBeRemoved(() => screen.getByRole('heading', { name: /jest second user/i }));
         await waitFor(() => expect(screen.queryByText(/jest second user/i)).toBeNull());
     });
 });

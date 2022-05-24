@@ -65,8 +65,8 @@ const CreateUserFlyout = props => {
             .then(json => {
                 pushUser(json.data.user);
                 addToast(json.data.message, '', { appearance: 'success' });
-                toggleCreateUserFlyout();
                 resetState();
+                closeAllFlyouts();
             })
             .catch(error => {
                 if (error.status.code === 422) {

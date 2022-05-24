@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 import AccessPermissions from '../../../resources/js/components/Routes/Settings/AccessPermissions';
@@ -11,7 +11,7 @@ const updateGroup = (group_index, new_group) => {
 
 describe('AccessPermissions Component', () => {
     test('Renders', () => {
-        render(<WebApps><AccessPermissions updateGroup={updateGroup} groups={mockData.groups} permissions={mockData.permissions} /></WebApps>);
+        render(<WebAppsUX><AccessPermissions updateGroup={updateGroup} groups={mockData.groups} permissions={mockData.permissions} /></WebAppsUX>);
 
         expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
         expect(screen.getByRole('heading', { name: /mocked permission/i })).toBeDefined();

@@ -41,7 +41,7 @@ const GroupFlyout = props => {
                 <ConfirmDeleteButton
                     text="Delete Group"
                     confirmText="Are you sure?"
-                    style="outline"
+                    type="outline"
                     square
                     className="flex"
                     onClick={deleteGroup} />

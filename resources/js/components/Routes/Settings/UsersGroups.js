@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { APIClient, Button, PageWrapper, Flyout, useToasts, withWebAppsUX, withWebApps, Loader } from 'webapps-react';
+import { APIClient, Button, PageWrapper, Flyout, useToasts, withWebAppsUX, Loader } from 'webapps-react';
 import { CreateGroupFlyout, CreateUserFlyout, GroupFlyout, UserFlyout } from './Flyouts';
 import { GroupList, UserList } from './Lists';
 
@@ -9,7 +9,7 @@ export const FlyoutsContext = createContext({});
 let _mounted = false;
 let old_name = '';
 
-const UsersGroups = ({ UI, ...props }) => {
+const UsersGroups = props => {
     const {
         useFlyouts,
         groups,
@@ -370,7 +370,7 @@ const UsersGroups = ({ UI, ...props }) => {
                 if (_mounted) {
                     setDisabled(_disabled);
                     setUser([]);
-                    toggleUserModal();
+                    closeAllFlyouts();
                 }
             })
             .catch(/* istanbul ignore next */ error => {
@@ -395,7 +395,7 @@ const UsersGroups = ({ UI, ...props }) => {
 
                     setGroups(_groups);
                     setSelectedGroup([]);
-                    toggleGroupModal();
+                    closeAllFlyouts();
                 }
             })
             .catch(/* istanbul ignore next */ error => {
@@ -482,4 +482,4 @@ const UsersGroups = ({ UI, ...props }) => {
     )
 }
 
-export default withWebAppsUX(withWebApps(UsersGroups));
+export default withWebAppsUX(UsersGroups);

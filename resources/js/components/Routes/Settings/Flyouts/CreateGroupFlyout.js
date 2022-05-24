@@ -43,8 +43,8 @@ const CreateGroupFlyout = props => {
             .then(json => {
                 pushGroup(json.data.group);
                 addToast(json.data.message, '', { appearance: 'success' });
-                toggleCreateGroupFlyout();
                 setState('');
+                closeAllFlyouts();
             })
             .catch(error => {
                 setState('error');

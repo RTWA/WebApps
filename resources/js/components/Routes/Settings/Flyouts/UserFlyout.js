@@ -228,7 +228,7 @@ const UserFlyout = props => {
                             <ConfirmDeleteButton
                                 text="Delete User Account"
                                 confirmText="Are you sure?"
-                                style="outline"
+                                type="outline"
                                 square
                                 className="ml-auto flex"
                                 onClick={deleteUser} />

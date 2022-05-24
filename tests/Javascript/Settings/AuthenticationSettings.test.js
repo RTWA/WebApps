@@ -1,6 +1,6 @@
 import React from 'react';
-import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { WebAppsUX } from 'webapps-react';
 
 import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
@@ -23,7 +23,7 @@ mockData.settings['azure.graph.client_secret'] = 'abc';
 
 describe('AuthenticationSettings Component', () => {
     test('Can Render', () => {
-        render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} roles={mockData.groups} states={{}} /></WebApps>);
+        render(<WebAppsUX><AuthenticationSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} roles={mockData.groups} states={{}} /></WebAppsUX>);
 
         expect(screen.getByText(/allow registration/i)).toBeDefined();
     });
@@ -38,6 +38,7 @@ describe('AuthenticationSettings Component', () => {
         await waitFor(() => expect(mockData.settings['auth.internal.registrations']).toEqual('false'));
     });
 
+    // FIXME: Not Working
     test('Cannot See Default User Group on Registration Option If Registrations Are Disabled', async () => {
         expect(mockData.settings['auth.internal.registrations']).toEqual('false');
         expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();

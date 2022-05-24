@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import UsersGroups from '../../../../resources/js/components/Routes/Settings/UsersGroups';
@@ -12,10 +12,8 @@ const mockFunction = jest.fn((e) => {
 
 describe('UserGroups Component - Select Group And Make Changes', () => {
     test('Can View Groups List', async () => {
-        render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
-        await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
-
-        expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
+        render(<WebAppsUX><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebAppsUX>);
+        await waitFor(() => screen.getByRole('heading', { name: /groups/i }));
 
         await act(async () => {
             fireEvent.click(screen.getByRole('heading', { name: /groups/i }));
@@ -27,7 +25,7 @@ describe('UserGroups Component - Select Group And Make Changes', () => {
         await act(async () => {
             fireEvent.click(screen.getByRole('heading', { name: /mocked group/i }));
         });
-        await waitFor(() => screen.getByRole('heading', { name: /mocked group \- group properties/i }));
+        await waitFor(() => screen.getByRole('textbox', {  name: /group name/i}));
         expect(screen.getByRole('button', { name: /delete group/i })).toBeDefined();
     });
 
@@ -71,7 +69,7 @@ describe('UserGroups Component - Select Group And Make Changes', () => {
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /are you sure\?/i }));
         });
-        await waitForElementToBeRemoved(() => screen.getByRole('heading', { name: /new name \- group properties/i }));
-        expect(screen.queryByRole('heading', { name: /new name \- group properties/i })).toBeNull();
+        await waitForElementToBeRemoved(() => screen.getByRole('textbox', { name: /group name/i }));
+        expect(screen.queryByRole('textbox', { name: /group name/i })).toBeNull();
     });
 });

@@ -1,15 +1,14 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import UsersGroups from '../../../../resources/js/components/Routes/Settings/UsersGroups';
 
 describe('UsersGroups Component - Create New Users', () => {
     test('Renders User list', async () => {
-        render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
-        await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
+        render(<WebAppsUX><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebAppsUX>);
         await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
         expect(screen.getByRole('heading', { name: /users/i })).toBeDefined();
@@ -24,7 +23,7 @@ describe('UsersGroups Component - Create New Users', () => {
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /add new user/i }));
         });
-        await waitFor(() => expect(screen.getByRole('heading', { name: /add new user/i })).toBeDefined());
+        await waitFor(() => expect(screen.getByRole('textbox', { name: /user's name/i })).toBeDefined());
 
         expect(screen.getByText(/user's name/i)).toBeDefined();
     });

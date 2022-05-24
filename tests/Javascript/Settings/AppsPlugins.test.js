@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebApps, WebAppsUX } from 'webapps-react';
 
 import AppsPlugins from '../../../resources/js/components/Routes/Settings/AppsPlugins';
 
 test('Renders Apps & Plugins', async () => {
-    render(<WebApps><BrowserRouter><AppsPlugins /></BrowserRouter></WebApps>);
+    render(<WebAppsUX><WebApps><BrowserRouter><AppsPlugins /></BrowserRouter></WebApps></WebAppsUX>);
     await waitForElementToBeRemoved(() => screen.getByText(/No Plugins Downloaded!/i));
 
     // Test Plugins

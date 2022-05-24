@@ -46,13 +46,13 @@ const UserList = props => {
                 Object.keys(grouped).map(function (i) {
                     let letter = grouped[i].letter;
                     return (
-                        <>
-                            <div className="px-6 py-1 md:px-8 border-t border-b dark:border-gray-800 font-medium uppercase text-secondary bg-gray-50 dark:bg-gray-900 dark:text-white" key={i}>{letter}</div>
+                        <div key={i}>
+                            <div className="px-6 py-1 md:px-8 border-t border-b dark:border-gray-800 font-medium uppercase text-secondary bg-gray-50 dark:bg-gray-900 dark:text-white">{letter}</div>
                             <div className="divide-y dark:divide-gray-800">
                             {
                                 grouped[i].users.map(function (user) {
                                     return (
-                                        <div key={user.id} className="grid grid-cols-2 xl:grid-cols-4 dark:text-white bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 cursor-pointer" onClick={() => selectUser(user)}>
+                                        <div key={`user-${user.id}`} className="grid grid-cols-2 xl:grid-cols-4 dark:text-white bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 cursor-pointer" onClick={() => selectUser(user)}>
                                             <div className="col-span-2 py-2 flex flex-row items-center">
                                                 <div className="flex-grow-0 pr-5 relative">
                                                     <UserAvatar size="48" name={user.name} src={`/user/${user.id}/photo`} />
@@ -71,7 +71,7 @@ const UserList = props => {
                                 })
                             }
                             </div>
-                        </>
+                        </div>
                     )
                 })
             }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
@@ -20,7 +20,7 @@ const setValue = (key, value, ce) => {
 
 describe('EmailSettings Component', () => {
     test('Renders with SMTP', () => {
-        render(<WebApps><EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} /></WebApps>);
+        render(<WebAppsUX><EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} /></WebAppsUX>);
 
         expect(mockData.settings['mail.driver']).toEqual('smtp');
         expect(screen.getByText(/smtp server host/i)).toBeDefined();
