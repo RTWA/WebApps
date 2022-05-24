@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import { server } from '../../../resources/js/__mocks__/server';
 
@@ -13,7 +13,7 @@ const mockFunction = jest.fn((e) => {
 
 describe('Image Field Component', () => {
     test('Can Render Image', () => {
-        render(<WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps>);
+        render(<WebAppsUX><Image name="test" value={{}} update={mockFunction} /></WebAppsUX>);
 
         expect(screen.getByRole('link', { name: /enter url/i })).toBeDefined();
     });
