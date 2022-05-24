@@ -74,7 +74,9 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
     }, [chown]);
 
     const chownSelect = user => {
-        setNewOwner(user);
+        if (isMounted()) {
+            setNewOwner(user);
+        }
     }
 
     const changeOwner = async () => {

@@ -60,7 +60,7 @@ const ShareBlock = ({ block, setBlock }) => {
                     }
                 })
                 .catch(error => {
-                    if (!error.status?.isAbort) {
+                    if (!error.status?.isAbort && isMounted()) {
                         // TODO: Handle Errors
                         console.log(error);
                     }
@@ -82,7 +82,7 @@ const ShareBlock = ({ block, setBlock }) => {
                 }
             })
             .catch(error => {
-                if (!error.status?.isAbort) {
+                if (!error.status?.isAbort && isMounted()) {
                     // TODO: Handle Errors
                     console.log(error);
                 }
