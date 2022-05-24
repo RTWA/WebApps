@@ -96,7 +96,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
 
         await APIClient('/api/email/test', { to: testTo }, { signal: APIController.signal })
             .then(json => {
-                if (isMounted) {
+                if (isMounted()) {
                     addToast(
                         "Test Email Sent",
                         '',
@@ -110,7 +110,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         setTestMailsate({ ...testMailState });
 
                         timers[1] = setTimeout(/* istanbul ignore next */ function () {
-                            if (isMounted) {
+                            if (isMounted()) {
                                 testMailState.state = '';
                                 setTestMailsate({ ...testMailState });
                                 timers[1] = null;
@@ -120,7 +120,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 }
             })
             .catch(error => {
-                if (isMounted) {
+                if (isMounted()) {
                     addToast(
                         "Unable to send test Email",
                         '',
@@ -135,7 +135,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         setTestMailsate({ ...testMailState });
 
                         timers[1] = setTimeout(function () {
-                            if (isMounted) {
+                            if (isMounted()) {
                                 testMailState.state = '';
                                 testMailState.error = '';
                                 setTestMailsate({ ...testMailState });

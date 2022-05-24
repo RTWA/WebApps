@@ -57,7 +57,7 @@ const EditBlock = props => {
 
     useEffect(async () => {
         /* istanbul ignore next */
-        if (isMounted && block) {
+        if (isMounted() && block) {
             if (block.owner != user?.id) {
                 setCanShare(false);
                 await checkGroup('Administrators')
@@ -76,7 +76,7 @@ const EditBlock = props => {
     }, [block]);
 
     useEffect(() => {
-        if (isMounted && block !== null) {
+        if (isMounted() && block !== null) {
             /* istanbul ignore else */
             if (block.preview.repeater !== undefined) {
                 eval(block.preview.repeater);
@@ -88,7 +88,7 @@ const EditBlock = props => {
         await APIClient(`/api/blocks/${id}?edit=true`, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     Object.keys(json.data.styles).map(function (i) {
                         if (!document.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document.createElement("style");
@@ -112,7 +112,7 @@ const EditBlock = props => {
         e.preventDefault();
 
         /* istanbul ignore else */
-        if (isMounted) {
+        if (isMounted()) {
             saving = true;
         }
 
@@ -126,7 +126,7 @@ const EditBlock = props => {
         await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block) }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     saving = false;
 
                     updateToast(
@@ -151,7 +151,7 @@ const EditBlock = props => {
                 );
 
                 /* istanbul ignore else */
-                if (isMounted)
+                if (isMounted())
                     saving = false;
             });
     }
@@ -160,7 +160,7 @@ const EditBlock = props => {
         await APIClient(`/api/blocks/${block.publicId}`, undefined, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     addToast(json.data.message, '', { appearance: 'success' });
                     history.goBack();
                 }
@@ -168,19 +168,19 @@ const EditBlock = props => {
             .catch(error => {
                 console.log(error);
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });
                 }
             })
     }
 
     const update = (field, value, ref, index) => {
-        if (ref !== undefined && isMounted) {
+        if (ref !== undefined && isMounted()) {
             block.settings[ref][index][field] = value;
             setBlock({ ...block });
         } else
             /* istanbul ignore else */
-            if (isMounted) {
+            if (isMounted()) {
                 block.settings[field] = value;
                 setBlock({ ...block });
             }
@@ -191,7 +191,7 @@ const EditBlock = props => {
         block[name] = e.target.value;
 
         /* istanbul ignore else */
-        if (isMounted)
+        if (isMounted())
             setBlock({ ...block });
     }
 
@@ -239,14 +239,14 @@ const EditBlock = props => {
         let name = e.target.dataset.name;
         let _new = JSON.parse(JSON.stringify(block.new[name][0]));
         block.settings[name] = block.settings[name].concat(_new);
-        if (isMounted) {
+        if (isMounted()) {
             setBlock({ ...block });
             setRepeater(block.settings[name].length - 1);
         }
     }
 
     const removeRepeater = (field, i) => {
-        if (isMounted) {
+        if (isMounted()) {
             delete block.settings[field][i];
             block.settings[field] = block.settings[field].filter(function () {
                 return true;
@@ -257,7 +257,7 @@ const EditBlock = props => {
 
     /* istanbul ignore next */
     const repeaterSortEnd = (collection, oldIndex, newIndex) => {
-        if (isMounted) {
+        if (isMounted()) {
             let oldObject = block.settings[collection][oldIndex];
             let newObject = block.settings[collection][newIndex];
 

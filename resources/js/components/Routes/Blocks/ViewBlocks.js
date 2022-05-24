@@ -39,12 +39,12 @@ const ViewBlocks = props => {
         await APIClient('/api/plugins/active', undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     setPlugins(json.data.plugins);
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                if (!error.status?.isAbort && isMounted) {
+                if (!error.status?.isAbort && isMounted()) {
                     // TODO: Handle errors
                     console.error(error);
                 }
@@ -78,7 +78,7 @@ const ViewBlocks = props => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                if (!error.status?.isAbort && isMounted) {
+                if (!error.status?.isAbort && isMounted()) {
                     // TODO: Handle errors
                     console.error(error);
                 }
@@ -92,12 +92,12 @@ const ViewBlocks = props => {
 
     useEffect(async () => {
         /* istanbul ignore else */
-        if (blocks !== undefined && isMounted) {
+        if (blocks !== undefined && isMounted()) {
             if ((blocks.length + load) >= (total + load - 1)) {
                 setHasMore(false);
             }
         }
-        if (isFiltering && isMounted && blocks.length === 0) {
+        if (isFiltering && isMounted() && blocks.length === 0) {
             await loadMore();
             setIsFiltering(false);
         }
@@ -110,7 +110,7 @@ const ViewBlocks = props => {
         setTotal(30);
         setHasMore(true);
 
-        if (blocks.length === 0 && isMounted) {
+        if (blocks.length === 0 && isMounted()) {
             await loadMore();
             setIsFiltering(false);
         }
@@ -137,13 +137,13 @@ const ViewBlocks = props => {
                         });
                     }
                     Object.keys(json.data.blocks).map(function (i) { blocks.push(json.data.blocks[i]); });
-                    if (isMounted) {
+                    if (isMounted()) {
                         setTotal(json.data.total);
                         setBlocks([...blocks]);
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    if (!error.status?.isAbort && isMounted) {
+                    if (!error.status?.isAbort && isMounted()) {
                         // TODO: Handle errors
                         console.error(error);
                     }
@@ -162,7 +162,7 @@ const ViewBlocks = props => {
             }
         });
         /* istanbul ignore else */
-        if (isMounted) {
+        if (isMounted()) {
             setBlocks(blocks);
             setCurBlock(_block);
         }
@@ -170,7 +170,7 @@ const ViewBlocks = props => {
 
     const renameBlock = e => {
         /* istanbul ignore else */
-        if (isMounted) {
+        if (isMounted()) {
             curBlock.title = e.target.value;
             setCurBlock({ ...curBlock });
         }
@@ -198,7 +198,7 @@ const ViewBlocks = props => {
         await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock) }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     updateToast(
                         toastId,
                         {
@@ -213,7 +213,7 @@ const ViewBlocks = props => {
             })
             .catch(error => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     updateToast(
                         toastId,
                         {
@@ -243,7 +243,7 @@ const ViewBlocks = props => {
         await APIClient(`/api/blocks/${_block.publicId}`, undefined, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     Object(blocks).map(function (b, i) {
                         /* istanbul ignore else */
                         if (b === _block)
@@ -267,7 +267,7 @@ const ViewBlocks = props => {
             })
             .catch(error => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });
                 }
             })

@@ -19,12 +19,12 @@ const ShareBlock = ({ block, setBlock }) => {
             await APIClient('/api/users', undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
-                    if (isMounted) {
+                    if (isMounted()) {
                         setUsers(json.data.users);
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    if (isMounted) {
+                    if (isMounted()) {
                         addToast('An error occurred loading user data!', '', { appearance: 'error' });
                     }
                 });
@@ -52,7 +52,7 @@ const ShareBlock = ({ block, setBlock }) => {
                 { signal: APIController.signal, method: 'POST' }
             )
                 .then(json => {
-                    if (isMounted) {
+                    if (isMounted()) {
                         block.shares = json.data.shares;
                         setBlock({ ...block });
                     }
@@ -74,7 +74,7 @@ const ShareBlock = ({ block, setBlock }) => {
             { signal: APIController.signal, method: 'DELETE' }
         )
             .then(json => {
-                if (isMounted) {
+                if (isMounted()) {
                     block.shares = json.data.shares;
                     setBlock({ ...block });
                 }

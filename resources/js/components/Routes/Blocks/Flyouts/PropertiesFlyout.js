@@ -41,11 +41,11 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
         if (typeof checkPermission === 'function') {
             await checkPermission('admin.access')
                 .then(response => {
-                    if (isMounted) {
+                    if (isMounted()) {
                         setCanChown(response);
                     }
                 });
-        } else if (process.env.JEST_WORKER_ID !== undefined && process.env.NODE_ENV === 'test' && isMounted) {
+        } else if (process.env.JEST_WORKER_ID !== undefined && process.env.NODE_ENV === 'test' && isMounted()) {
             setCanChown(true);
         }
 
@@ -61,12 +61,12 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
             await APIClient('/api/users', undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
-                    if (isMounted) {
+                    if (isMounted()) {
                         setUsers(json.data.users);
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    if (isMounted) {
+                    if (isMounted()) {
                         addToast('An error occurred loading user data!', '', { appearance: 'error' });
                     }
                 });
@@ -79,13 +79,13 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
 
     const changeOwner = async () => {
         /* istanbul ignore next */
-        if (newOwner.id === undefined && isMounted) {
+        if (newOwner.id === undefined && isMounted()) {
             setChown(false);
             setNewOwner({});
             return;
         }
 
-        if (block.owner === newOwner.id && isMounted) {
+        if (block.owner === newOwner.id && isMounted()) {
             addToast('Unable to change owner to the same user!', '', { appearance: 'error' });
             setChown(false);
             setNewOwner({});
@@ -95,7 +95,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
         await APIClient(`/api/blocks/${block.publicId}/chown`, { old_owner_id: block.owner, new_owner_id: newOwner.id }, { signal: APIController.signal })
             .then(response => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     newOwner.number_of_blocks++;
                     setNewOwner(newOwner);
 
@@ -110,7 +110,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
             })
             .catch(error => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     addToast(error.data.message, '', { appearance: 'error' });
                     setChown(false);
                     setNewOwner({});
