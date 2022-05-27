@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { WebAppsUX } from 'webapps-react';
 
@@ -6,24 +6,30 @@ import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 import EmailSettings from '../../../resources/js/components/Routes/Settings/EmailSettings';
 
-const typeValue = (key, value) => {
-    mockData.settings[key] = value;
-}
+const TestElement = () => {
+    const [settings, setSettings] = useState(mockData.settings);
 
-const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
+    const typeValue = (key, value) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
     }
-    mockData.settings[key] = value;
+
+    const setValue = (key, value, ce) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    return <EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} />
 }
 
 describe('EmailSettings Component', () => {
-    test('Renders with SMTP', () => {
-        render(<WebAppsUX><EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} /></WebAppsUX>);
+    test('Renders with SMTP', async () => {
+        render(<WebAppsUX><TestElement /></WebAppsUX>);
 
         expect(mockData.settings['mail.driver']).toEqual('smtp');
-        expect(screen.getByText(/smtp server host/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/smtp server host/i)).toBeDefined());
         expect(screen.getByText(/smtp server port/i)).toBeDefined();
         expect(screen.getByText(/smtp server encryption/i)).toBeDefined();
         expect(screen.getByText(/smtp from email address/i)).toBeDefined();
@@ -83,7 +89,7 @@ describe('EmailSettings Component', () => {
             fireEvent.click(screen.getByRole('checkbox', { name: /send with microsoft azure/i }));
         });
         await waitFor(() => expect(mockData.settings['mail.driver']).toEqual('msgraph'));
-        
+
         expect(screen.getByText(/please enter a valid organisational email address/i)).toBeDefined();
         expect(screen.getByText(/from email address/i)).toBeDefined();
         expect(screen.getByRole('checkbox', { name: /send with smtp/i })).toBeDefined();

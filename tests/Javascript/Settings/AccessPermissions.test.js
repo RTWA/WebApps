@@ -10,10 +10,10 @@ const updateGroup = (group_index, new_group) => {
 }
 
 describe('AccessPermissions Component', () => {
-    test('Renders', () => {
+    test('Renders', async () => {
         render(<WebAppsUX><AccessPermissions updateGroup={updateGroup} groups={mockData.groups} permissions={mockData.permissions} /></WebAppsUX>);
 
-        expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
+        await waitFor(() => expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined());
         expect(screen.getByRole('heading', { name: /mocked permission/i })).toBeDefined();
     });
 
@@ -54,7 +54,8 @@ describe('AccessPermissions Component', () => {
         await waitFor(() => expect(mockData.groups[0].permissions.length).toEqual(1));
     });
 
-    test('Cannot Add A Permission Due To An Error', async () => {expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
+    test('Cannot Add A Permission Due To An Error', async () => {
+        expect(screen.getByRole('button', { name: /mocked permissions group/i })).toBeDefined();
         expect(screen.getByRole('button', { name: /second group/i })).toBeDefined();
 
         await act(async () => {

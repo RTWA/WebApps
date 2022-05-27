@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { WebAppsUX } from 'webapps-react';
 
@@ -6,23 +6,29 @@ import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 import ApplicationSettings from '../../../resources/js/components/Routes/Settings/ApplicationSettings';
 
-const typeValue = (key, value) => {
-    mockData.settings[key] = value;
-}
+const TestElement = () => {
+    const [settings, setSettings] = useState(mockData.settings);
 
-const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
+    const typeValue = (key, value) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
     }
-    mockData.settings[key] = value;
+
+    const setValue = (key, value, ce) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    return <ApplicationSettings loginMethods={mockData.loginMethods} settings={settings} typeValue={typeValue} setValue={setValue} states={{}} />
 }
 
 describe('ApplicationSettings Component', () => {
-    test('Renders Application Settings Page', () => {
-        render(<WebAppsUX><ApplicationSettings loginMethods={mockData.loginMethods} settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} /></WebAppsUX>);
+    test('Renders', async () => {
+        render(<WebAppsUX><TestElement /></WebAppsUX>);
 
-        expect(screen.getByText(/theme colour/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/theme colour/i)).toBeDefined());
         expect(screen.getByText(/dark mode only/i)).toBeDefined();
         expect(screen.getByText(/display "return to cms" link/i)).toBeDefined();
         expect(screen.getByText(/cms url/i)).toBeDefined();
@@ -39,16 +45,15 @@ describe('ApplicationSettings Component', () => {
         await waitFor(() => expect(screen.getByRole('checkbox', { name: /enable error reporting/i }).checked).toEqual(true));
     });
 
-    // FIXME: Not working
-    // test('Can Disable Error Reporting', async () => {
-    //     expect(screen.getByRole('checkbox', { name: /enable error reporting/i })).toBeDefined();        
-    //     expect(screen.getByRole('checkbox', { name: /enable error reporting/i }).checked).toEqual(true);
+    test('Can Disable Error Reporting', async () => {
+        expect(screen.getByRole('checkbox', { name: /enable error reporting/i })).toBeDefined();
+        expect(screen.getByRole('checkbox', { name: /enable error reporting/i }).checked).toEqual(true);
 
-    //     await act(async () => {
-    //         fireEvent.click(screen.getByRole('checkbox', { name: /enable error reporting/i }));
-    //     });
-    //     await waitFor(() => expect(screen.getByRole('checkbox', { name: /enable error reporting/i }).checked).toEqual(false));
-    // });
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox', { name: /enable error reporting/i }));
+        });
+        await waitFor(() => expect(screen.getByRole('checkbox', { name: /enable error reporting/i }).checked).toEqual(false));
+    });
 
     test('Can Select The Same Colour Theme', async () => {
         expect(screen.getByText(/theme colour/i)).toBeDefined();
@@ -91,8 +96,7 @@ describe('ApplicationSettings Component', () => {
             await screen.getByRole('textbox', { name: /custom colour/i }).value === '#55AA22';
             fireEvent.blur(screen.getByRole('textbox', { name: /custom colour/i }));
         });
-        await waitFor(() => expect(screen.getByText(/#f3f9f0/i)).toBeDefined());
-        expect(screen.getByText(/branding updated!/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/branding updated!/i)).toBeDefined());
     });
 
     test('Can Select Light Mode', async () => {
@@ -158,8 +162,8 @@ describe('ApplicationSettings Component', () => {
     });
 
     test('Can Type CMS Link Text', async () => {
-         expect(screen.getByText(/"return to cms" link text/i)).toBeDefined();
-         expect(mockData.settings['core.cms.text']).toEqual('');
+        expect(screen.getByText(/"return to cms" link text/i)).toBeDefined();
+        expect(mockData.settings['core.cms.text']).toEqual('');
 
         await act(async () => {
             fireEvent.change(screen.getByRole('textbox', { name: /"return to cms" link text/i }), { target: { value: 'Text' } });

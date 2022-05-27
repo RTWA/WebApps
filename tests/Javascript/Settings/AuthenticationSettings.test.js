@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { WebAppsUX } from 'webapps-react';
 
@@ -6,26 +6,32 @@ import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 import AuthenticationSettings from '../../../resources/js/components/Routes/Settings/AuthenticationSettings';
 
-const typeValue = (key, value) => {
-    mockData.settings[key] = value;
-}
-
-const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
-    }
-    mockData.settings[key] = value;
-}
-
 mockData.settings['azure.graph.client_id'] = '000';
 mockData.settings['azure.graph.client_secret'] = 'abc';
 
-describe('AuthenticationSettings Component', () => {
-    test('Can Render', () => {
-        render(<WebAppsUX><AuthenticationSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} roles={mockData.groups} states={{}} /></WebAppsUX>);
+const TestElement = () => {
+    const [settings, setSettings] = useState(mockData.settings);
 
-        expect(screen.getByText(/allow registration/i)).toBeDefined();
+    const typeValue = (key, value) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    const setValue = (key, value, ce) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    return <AuthenticationSettings settings={settings} typeValue={typeValue} setValue={setValue} roles={mockData.groups} states={{}} />
+}
+
+describe('AuthenticationSettings Component', () => {
+    test('Can Render', async () => {
+        render(<WebAppsUX><TestElement /></WebAppsUX>);
+
+        await waitFor(() => expect(screen.getByText(/allow registration/i)).toBeDefined());
     });
 
     test('Can Disable Registrations', async () => {
@@ -38,13 +44,11 @@ describe('AuthenticationSettings Component', () => {
         await waitFor(() => expect(mockData.settings['auth.internal.registrations']).toEqual('false'));
     });
 
-    // FIXME: Not Working
-    // test('Cannot See Default User Group on Registration Option If Registrations Are Disabled', async () => {
-    //     expect(mockData.settings['auth.internal.registrations']).toEqual('false');
-    //     expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
-    //     await waitForElementToBeRemoved(() => screen.queryByText(/default user group on registration/i));
-    //     expect(screen.queryByText(/default user group on registration/i)).toBeNull()
-    // });
+    test('Cannot See Default User Group on Registration Option If Registrations Are Disabled', async () => {
+        expect(mockData.settings['auth.internal.registrations']).toEqual('false');
+        expect(screen.getByText(/allow registration of webapps users/i)).toBeDefined();
+        await waitFor(() => expect(screen.queryByText(/default user group on registration/i)).toBeNull());
+    });
 
     test('Can Enable Registrations', async () => {
         expect(mockData.settings['auth.internal.registrations']).toEqual('false');

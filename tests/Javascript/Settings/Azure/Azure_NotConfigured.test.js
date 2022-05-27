@@ -13,10 +13,10 @@ const mockFunction = (e) => {
 mockData.settings["azure.graph.tenant"] = '';
 
 describe('Azure Component - Not Configured', () => {
-    test('Renders Azure', () => {
+    test('Renders Azure', async () => {
         render(<WebAppsUX><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={mockFunction} typeValue={mockFunction} /></BrowserRouter></WebAppsUX>);
 
-        expect(screen.getByText(/microsoft azure integration/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/microsoft azure integration/i)).toBeDefined());
         expect(screen.getByText(/please follow the guidance found in the/i)).toBeDefined();
         expect(screen.getByText(/to create your app registration in azure, then provide the required information below\./i)).toBeDefined();
     });

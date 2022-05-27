@@ -11,10 +11,6 @@ const typeValue = (key, value) => {
 }
 
 const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
-    }
     mockData.settings[key] = value;
 }
 
@@ -26,20 +22,20 @@ describe('Azure Component - Partially Configured', () => {
     test('Only Part Of The Second Form Loads When Tenant ID Is Provided And Client ID/Secret Are Not, But Is Revealed When They Are', async () => {
         render(<WebAppsUX><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={setValue} typeValue={typeValue} /></BrowserRouter></WebAppsUX>);
 
-        expect(screen.getByText(/azure app registration information/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/azure app registration information/i)).toBeDefined());
         expect(screen.queryByText(/map azure groups to webapps groups/i)).toBeNull();
         expect(screen.queryByText(/azure synchronisation status/i)).toBeNull();
 
         await act(async () => {
-            fireEvent.change(screen.getByRole('textbox', {  name: /application \(client\) id/i}), { target: { value: '1234' } });
-            await screen.getByRole('textbox', {  name: /application \(client\) id/i}).value === '1234';
-            fireEvent.blur(screen.getByRole('textbox', {  name: /application \(client\) id/i}), { target: { value: '1234' } });
+            fireEvent.change(screen.getByRole('textbox', { name: /application \(client\) id/i }), { target: { value: '1234' } });
+            await screen.getByRole('textbox', { name: /application \(client\) id/i }).value === '1234';
+            fireEvent.blur(screen.getByRole('textbox', { name: /application \(client\) id/i }), { target: { value: '1234' } });
         });
         await waitFor(() => expect(mockData.settings['azure.graph.client_id']).toEqual('1234'));
         await act(async () => {
-            fireEvent.change(screen.getByRole('textbox', {  name: /client secret/i}), { target: { value: '4321' } });
-            await screen.getByRole('textbox', {  name: /client secret/i}).value === '4321';
-            fireEvent.blur(screen.getByRole('textbox', {  name: /client secret/i}), { target: { value: '4321' } });
+            fireEvent.change(screen.getByRole('textbox', { name: /client secret/i }), { target: { value: '4321' } });
+            await screen.getByRole('textbox', { name: /client secret/i }).value === '4321';
+            fireEvent.blur(screen.getByRole('textbox', { name: /client secret/i }), { target: { value: '4321' } });
         });
         await waitFor(() => expect(mockData.settings['azure.graph.client_secret']).toEqual('4321'));
 
