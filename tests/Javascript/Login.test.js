@@ -22,7 +22,7 @@ const loginUser = async (username, password) => {
 }
 
 describe('Login Component', () => {
-  test('Render Login form', () => {
+  test('Render Login form', async () => {
     render(
       <WebAppsUX>
         <BrowserRouter>
@@ -32,15 +32,15 @@ describe('Login Component', () => {
       </WebAppsUX>
     );
 
-    // Expect the fields to be defined
-    expect(screen.getByRole('form')).toHaveFormValues({
-      username: '',
-      password: ''
+    await waitFor(() => {
+      expect(screen.getByRole('form')).toHaveFormValues({
+        username: '',
+        password: ''
+      })
     });
   });
 
   test('Validation fails when empty Login form is submitted', async () => {
-
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
     await waitFor(() =>
@@ -104,5 +104,4 @@ describe('Login Component', () => {
 
     expect(screen.getByText(/logged in/i)).toHaveTextContent(/Logged In/);
   });
-
 });
