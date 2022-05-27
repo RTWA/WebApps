@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 
-import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
+import parse from 'html-react-parser';
 
 import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
@@ -280,7 +280,7 @@ const EditBlock = props => {
                     type: "text"
                 }];
                 delete node.attribs['data-val'];
-                return convertNodeToElement(node, key, transform);
+                return node;
             }
             return null;
         }
@@ -292,11 +292,15 @@ const EditBlock = props => {
                     let regex = new RegExp(state, 'g');
                     let stateItem = state.split(/{|}/g)[1];
                     /* istanbul ignore else */
-                    if (stateItem !== undefined)
+                    if (stateItem !== undefined) {
                         template = template.replace('{' + stateItem + '}', Get(stateItem));
+                    }
                     node.attribs[attr] = template;
                 });
-                return convertNodeToElement(node, key, transform);
+                if (key) {
+                    node.attribs.key = key;
+                }
+                return node;
             })
         }
         if (node.type === "text") {
@@ -310,7 +314,7 @@ const EditBlock = props => {
                     template = template.replace(regex, Get(stateItem));
                 node.data = template;
             });
-            return convertNodeToElement(node, key, transform);
+            return node;
         }
     }
 
@@ -324,28 +328,34 @@ const EditBlock = props => {
         }
     }
 
+    let key = 0;
     const preview = (block, transform) => {
         /* istanbul ignore next */
         if (block.preview !== Object(block.preview)) {
             value = block.settings || '';
-            return (ReactHtmlParser(block.preview, { transform: transform }));
+            return (parse(block.preview, { replace: transform }));
         }
-
         const html = [];
-        html.push(ReactHtmlParser(block.preview.before));
+        if (block.preview.before) {
+            key++;
+            html.push(parse(block.preview.before, { replace: domNode => transform(domNode, key) }));
+        }
         Object.keys(block.options).map(function (field) {
             if (block.options[field].type === "repeater") {
                 Object.keys(block.settings[field]).map(function (r, idx) {
                     value = block.settings[field][r];
                     index = idx + 1;
-                    html.push(ReactHtmlParser(block.preview[field].each, { transform: transform }));
+                    html.push(parse(block.preview[field].each, { replace: domNode => transform(domNode, `${key}-${index}`) }));
                 });
             } else {
                 value = block.settings[field] || '';
-                html.push(ReactHtmlParser(block.preview[field], { transform: transform }));
+                html.push(parse(block.preview[field], { replace: transform }));
             }
         });
-        html.push(ReactHtmlParser(block.preview.after));
+        if (block.preview.after) {
+            key++;
+            html.push(parse(block.preview.after, { replace: domNode => transform(domNode, key) }));
+        }
         return html;
     }
 

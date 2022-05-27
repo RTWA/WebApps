@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
 
 const BlockCard = ({ block, curBlock, rename, renameBlock, saveName, contextDelete, ...props }) => {
@@ -37,7 +37,7 @@ const BlockCard = ({ block, curBlock, rename, renameBlock, saveName, contextDele
                 </div>
             </div>
             <div className="w-54 h-54 overflow-hidden">
-                <div className="output preview">{ReactHtmlParser(block.output)}</div>
+                <div className="output preview">{parse(block.output)}</div>
             </div>
             <div className="flex flex-row items-center gap-3 justify-between z-50 rounded-b text-gray-700 bg-gray-800/40 hover:bg-gray-800/80 dark:bg-gray-600/90 dark:hover:bg-gray-600/100 absolute bottom-0 left-0 right-0 p-2 transition-all duration-500">
                 <Link to={`/blocks/edit/${block.publicId}`}
