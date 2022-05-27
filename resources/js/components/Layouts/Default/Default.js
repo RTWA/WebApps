@@ -14,7 +14,7 @@ const Default = () => {
     const { theme, useNavigation } = useContext(WebAppsUXContext);
     const { navigation, toggleNavigation } = useNavigation;
 
-    if (theme === undefined || navigation.menu === undefined || navigation.routes === undefined) {
+    if (theme === undefined || !navigation.menu) {
         return <Loader />
     }
 
@@ -37,7 +37,7 @@ const Default = () => {
                     <div className="flex flex-col flex-auto overflow-hidden">
                         <Switch>
                             {
-                                navigation.routes.map((route, idx) => {
+                                navigation.routes?.map((route, idx) => {
                                     let C = RouteComponents[route.component];
                                     return route.component ? (
                                         <Route key={idx} path={route.path} exact={route.exact} name={route.name}
