@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { WebAppsUX } from 'webapps-react';
 
@@ -10,11 +10,10 @@ const mockFunction = jest.fn((e) => {
 });
 
 describe('Select Field Component', () => {
-    test('Can Render Select', () => {
+    test('Can Render', async () => {
         let value = '1';
         render(<WebAppsUX><Select name="test" field={{ label: 'Test Select', options: ['1', 'a', 'test'] }} value={value} update={mockFunction} /></WebAppsUX>);
-
-        expect(screen.getByRole('combobox', { name: /test select/i })).toBeDefined();
+        await waitFor(() => expect(screen.getByRole('combobox', { name: /test select/i })).toBeDefined());
     });
 
     test('Can Select An Option', async () => {
