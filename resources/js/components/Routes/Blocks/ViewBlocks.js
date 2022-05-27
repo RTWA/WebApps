@@ -126,6 +126,10 @@ const ViewBlocks = props => {
             await APIClient(uri, undefined, { signal: APIController.signal })
                 .then(json => {
                     /* istanbul ignore else */
+                    if (json.data.message === "No blocks found.") {
+                        return;
+                    }
+                    /* istanbul ignore else */
                     if (document) {
                         Object.keys(json.data.styles).map(function (i) {
                             if (!document.querySelectorAll('style[ref=' + i + ']').length) {
