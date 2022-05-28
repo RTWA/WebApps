@@ -26,6 +26,7 @@ let index = 0;
 let saving = false;
 
 const EditBlock = props => {
+    const [error, setError] = useState();
     const [block, setBlock] = useState(null);
     const [repeater, setRepeater] = useState(0);
     const [context, setContext] = useState(null);
@@ -100,10 +101,10 @@ const EditBlock = props => {
                     setBlock(json.data.block);
                 }
             })
-            .catch(/* istanbul ignore next */ error => {
-                if (!error.status.isAbort) {
-                    // TODO: Handle errors
-                    console.error(error);
+            .catch(error => {
+                /* istanbul ignore else */
+                if (!error.status.isAbort && isMounted()) {
+                    setError(error.data.message);
                 }
             });
     }
@@ -166,7 +167,6 @@ const EditBlock = props => {
                 }
             })
             .catch(error => {
-                console.log(error);
                 /* istanbul ignore else */
                 if (isMounted()) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });
@@ -361,6 +361,10 @@ const EditBlock = props => {
             }
             return html;
         } catch (error) { console.error(error); }
+    }
+
+    if (error) {
+        throw new Error(error);
     }
 
     if (block === null) {
