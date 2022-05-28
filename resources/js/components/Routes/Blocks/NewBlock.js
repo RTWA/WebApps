@@ -1,15 +1,7 @@
-import React, { useState } from 'react';
-import { Icon, Loader, PageWrapper, withWebApps } from 'webapps-react';
-import EditBlock from './EditBlock';
+import React from 'react';
+import { Icon, Link, Loader, PageWrapper, withWebApps } from 'webapps-react';
 
-const NewBlock = ({ plugins, ...props }) => {
-    const [plugin, setPlugin] = useState(null);
-
-    const selectPlugin = (e, plugin) => {
-        e.preventDefault();
-        setPlugin(plugin);
-    }
-
+const NewBlock = ({ plugins }) => {
     if (plugins.active === null || plugins.active === undefined) {
         return <Loader />
     }
@@ -28,30 +20,26 @@ const NewBlock = ({ plugins, ...props }) => {
         )
     }
 
-    if (plugin === null) {
-        return (
-            <PageWrapper title="Select the Plugin you wish to use...">
-                <div className="flex flex-wrap gap-1 lg:gap-4">
-                    {
-                        plugins.active.map(({ slug, icon, name }, i) => (
-                            <div key={i} className="w-full md:w-4/12 lg:w-2/12 plugin">
-                                <a href="#" onClick={e => { selectPlugin(e, slug) }}>
-                                    <div className="overflow-hidden rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-4 hover:bg-gray-800 dark:hover:bg-gray-600 hover:text-white">
-                                        <Icon icon={icon} className="h-20 w-20 mx-auto" />
-                                        <div className="text-center pt-4">
-                                            {name}
-                                        </div>
+    return (
+        <PageWrapper title="Select the Plugin you wish to use...">
+            <div className="flex flex-wrap gap-1 lg:gap-4">
+                {
+                    plugins.active.map(({ slug, icon, name }, i) => (
+                        <div key={i} className="w-full md:w-4/12 lg:w-2/12 plugin">
+                            <Link to={`/blocks/edit/${slug}`}>
+                                <div className="overflow-hidden rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-4 hover:bg-gray-800 dark:hover:bg-gray-600 hover:text-white">
+                                    <Icon icon={icon} className="h-20 w-20 mx-auto" />
+                                    <div className="text-center pt-4">
+                                        {name}
                                     </div>
-                                </a>
-                            </div>
-                        ))
-                    }
-                </div>
-            </PageWrapper>
-        )
-    }
-
-    return <EditBlock {...props} id={plugin} />
+                                </div>
+                            </Link>
+                        </div>
+                    ))
+                }
+            </div>
+        </PageWrapper>
+    )
 }
 
 export default withWebApps(NewBlock);
