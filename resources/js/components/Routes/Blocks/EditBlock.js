@@ -267,8 +267,14 @@ const EditBlock = props => {
         }
     }
 
-    const transform = (node, key) => {
+    let key = 0;
+    const transform = (node) => {
         let Get = get;
+        if (node.attribs) {
+            // console.log(node, `receives key`, key)
+            node.attribs.key = key;
+            key++;
+        }
         if (node.type === "tag" && 'data-val' in node.attribs) {
             let variable = node.attribs['data-val'];
             if (Get(variable) !== "") {
@@ -286,19 +292,18 @@ const EditBlock = props => {
         }
         if (node.type === "tag") {
             Object.keys(node.attribs).map(function (attr) {
-                let template = node.attribs[attr];
-                let r = template.match(/{[^}]+}/g);
-                r && r.forEach((state) => {
-                    let regex = new RegExp(state, 'g');
-                    let stateItem = state.split(/{|}/g)[1];
-                    /* istanbul ignore else */
-                    if (stateItem !== undefined) {
-                        template = template.replace('{' + stateItem + '}', Get(stateItem));
-                    }
-                    node.attribs[attr] = template;
-                });
-                if (key) {
-                    node.attribs.key = key;
+                if (attr !== 'key') {
+                    let template = node.attribs[attr];
+                    let r = template.match(/{[^}]+}/g);
+                    r && r.forEach((state) => {
+                        let regex = new RegExp(state, 'g');
+                        let stateItem = state.split(/{|}/g)[1];
+                        /* istanbul ignore else */
+                        if (stateItem !== undefined) {
+                            template = template.replace('{' + stateItem + '}', Get(stateItem));
+                        }
+                        node.attribs[attr] = template;
+                    });
                 }
                 return node;
             })
@@ -328,35 +333,34 @@ const EditBlock = props => {
         }
     }
 
-    let key = 0;
-    const preview = (block, transform) => {
-        /* istanbul ignore next */
-        if (block.preview !== Object(block.preview)) {
-            value = block.settings || '';
-            return (parse(block.preview, { replace: transform }));
-        }
-        const html = [];
-        if (block.preview.before) {
-            key++;
-            html.push(parse(block.preview.before, { replace: domNode => transform(domNode, key) }));
-        }
-        Object.keys(block.options).map(function (field) {
-            if (block.options[field].type === "repeater") {
-                Object.keys(block.settings[field]).map(function (r, idx) {
-                    value = block.settings[field][r];
-                    index = idx + 1;
-                    html.push(parse(block.preview[field].each, { replace: domNode => transform(domNode, `${key}-${index}`) }));
-                });
-            } else {
-                value = block.settings[field] || '';
-                html.push(parse(block.preview[field], { replace: transform }));
+    const preview = (block) => {
+        try {
+            /* istanbul ignore next */
+            if (block.preview !== Object(block.preview)) {
+                value = block.settings || '';
+                return (parse(block.preview, { replace: domNode => transform(domNode) }));
             }
-        });
-        if (block.preview.after) {
-            key++;
-            html.push(parse(block.preview.after, { replace: domNode => transform(domNode, key) }));
-        }
-        return html;
+            const html = [];
+            if (block.preview.before) {
+                html.push(parse(block.preview.before, { replace: domNode => transform(domNode) }));
+            }
+            Object.keys(block.options).map(function (field) {
+                if (block.options[field].type === "repeater") {
+                    Object.keys(block.settings[field]).map(function (r, idx) {
+                        value = block.settings[field][r];
+                        index = idx + 1;
+                        html.push(parse(block.preview[field].each, { replace: domNode => transform(domNode) }));
+                    });
+                } else {
+                    value = block.settings[field] || '';
+                    html.push(parse(block.preview[field], { replace: transform }));
+                }
+            });
+            if (block.preview.after) {
+                html.push(parse(block.preview.after, { replace: domNode => transform(domNode) }));
+            }
+            return html;
+        } catch (error) { console.error(error); }
     }
 
     if (block === null) {
@@ -435,7 +439,7 @@ const EditBlock = props => {
                 <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 lg:flex-row w-full">
                     <div className={`${(flyout.opened) ? 'w-0 hidden' : 'w-full lg:w-5/12'}`}>
                         <div className={`${block.plugin.slug} mt-6 xl:mt-0`} id="block-preview">
-                            {preview(block, transform)}
+                            {preview(block)}
                         </div>
                     </div>
                     <div className={`${(flyout.opened) ? 'w-full' : 'w-full lg:w-7/12'}`}>

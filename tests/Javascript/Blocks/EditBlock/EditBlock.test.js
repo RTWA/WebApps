@@ -10,7 +10,7 @@ describe('EditBlock Component', () => {
     test('Can Render', async () => {
         render(<Auth><WebAppsUX><BrowserRouter><EditBlock id="TestBlock" /></BrowserRouter></WebAppsUX></Auth>);
         await waitFor(() => expect(screen.getByRole('heading', { name: /sample message/i })).toBeDefined());
-        await waitFor(() => expect(screen.getByText(/enter the sample message/i)).toBeDefined());
+        expect(screen.getByText(/enter the sample message/i)).toBeDefined();
     });
 
     test('Can Open The Flyout And Change The Properties', async () => {
