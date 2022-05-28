@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import {
+    AppLoader,
     AppError,
     Headerbar,
-    Loader,
     Sidebar,
     WebAppsUXContext
 } from 'webapps-react';
@@ -15,7 +15,7 @@ const Default = () => {
     const { navigation, toggleNavigation } = useNavigation;
 
     if (theme === undefined || !navigation.menu) {
-        return <Loader />
+        return <AppLoader theme={theme} />
     }
 
     return (
