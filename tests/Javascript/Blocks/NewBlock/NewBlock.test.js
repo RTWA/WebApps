@@ -24,4 +24,39 @@ describe('NewBlock Component', () => {
         await waitFor(() => screen.getByRole('button', { name: /block properties/i }));
         await waitFor(() => expect(screen.getByText(/enter the sample message/i)).toBeDefined());
     });
+
+    test('Can Open The Flyout And Can Set The Title', async () => {
+        expect(screen.getByRole('button', { name: /block properties/i })).toBeDefined();
+
+        expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("Test Block\'s Title");
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /block properties/i }));
+        });
+        await waitFor(() =>
+            screen.getByRole('textbox', { name: /block title:/i })
+        );
+        expect(screen.getByRole('textbox', { name: /block title:/i, hidden: true })).toHaveValue("Test Block\'s Title");
+
+        await act(async () => {
+            fireEvent.change(screen.getByRole('textbox', { name: /block title:/i, hidden: true }), { target: { value: 'New Title' } });
+            await screen.getByRole('textbox', { name: /block title:/i, hidden: true }).value === 'New Title';
+        });
+        expect(screen.getByRole('textbox', { name: /block title:/i, hidden: true })).toHaveValue("New Title");
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /close panel/i }));
+        });
+        await waitFor(() =>
+            screen.getByRole('textbox', { name: /block title/i }).value === 'New Title'
+        );
+        expect(screen.getByRole('textbox', { name: /block title/i })).toHaveValue("New Title");
+
+        /* Reset */
+        await act(async () => {
+            fireEvent.change(screen.getByRole('textbox', { name: /block title/i, hidden: true }), { target: { value: 'Test Block\'s Title' } });
+            await screen.getByRole('textbox', { name: /block title/i, hidden: true }).value === 'Test Block\'s Title';
+        });
+        expect(screen.getByRole('textbox', { name: /block title/i, hidden: true })).toHaveValue("Test Block's Title");
+    });
 });
