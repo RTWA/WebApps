@@ -5,8 +5,8 @@ import { WebApps, WebAppsUX } from 'webapps-react';
 
 import AppsPlugins from '../../../resources/js/components/Routes/Settings/AppsPlugins';
 
-// test('Renders Apps & Plugins', async () => {
-//     render(<WebAppsUX><WebApps><BrowserRouter><AppsPlugins /></BrowserRouter></WebApps></WebAppsUX>);
+test('Renders Apps & Plugins', async () => {
+    render(<WebAppsUX><WebApps><BrowserRouter><AppsPlugins /></BrowserRouter></WebApps></WebAppsUX>);
 //     await waitFor(() => screen.getByText(/No Plugins Downloaded!/i));
 //     await waitForElementToBeRemoved(() => screen.getByText(/No Plugins Downloaded!/i));
 
@@ -20,4 +20,4 @@ import AppsPlugins from '../../../resources/js/components/Routes/Settings/AppsPl
 //     expect(screen.getByRole('heading', { name: /apps/i })).toBeDefined();
 //     expect(screen.getByText(/demo app/i)).toBeDefined();
 //     expect(screen.getByRole('link', { name: /get more apps/i })).toBeDefined();
-// });
+});
