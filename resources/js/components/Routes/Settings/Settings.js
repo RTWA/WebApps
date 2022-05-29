@@ -315,92 +315,122 @@ const Settings = props => {
                     <Plugins />
                 </Route>
                 <Route exact path="/settings/authentication">
-                    {
-                        (errors.settings)
-                            ? <ComponentErrorTrigger error={errors.settings} />
-                            : (errors.groups)
-                                ? <ComponentErrorTrigger error={errors.groups} />
-                                : <AuthenticationSettings
-                                    settings={settings}
-                                    setValue={setValue}
-                                    roles={groups}
-                                    states={states}
-                                />
-                    }
+                    <ComponentError
+                        retry={() => {
+                            errors.settings = null;
+                            errors.groups = null;
+                            setErrors({ ...errors });
+                            loadSettings();
+                            loadGroups();
+                        }}
+                    >
+                        {
+                            (errors.settings)
+                                ? <ComponentErrorTrigger error={errors.settings} />
+                                : (errors.groups)
+                                    ? <ComponentErrorTrigger error={errors.groups} />
+                                    : <AuthenticationSettings
+                                        settings={settings}
+                                        setValue={setValue}
+                                        roles={groups}
+                                        states={states}
+                                    />
+                        }
+                    </ComponentError>
                 </Route>
                 <Route exact path="/settings/blocks">
-                    {
-                        (errors.settings)
-                            ? <ComponentErrorTrigger error={errors.settings} />
-                            : <BlockSettings
-                                settings={settings}
-                                typeValue={typeValue}
-                                setValue={setValue}
-                                states={states}
-                            />
-                    }
-                </Route>
-                <Route exact path="/settings/email">
-                    {
-                        (errors.settings)
-                            ? <ComponentErrorTrigger error={errors.settings} />
-                            : <EmailSettings
-                                settings={settings}
-                                typeValue={typeValue}
-                                setValue={setValue}
-                                states={states}
-                            />
-                    }
-                </Route>
-                <Route exact path="/settings/azure">
-                    {
-                        (errors.settings)
-                            ? <ComponentErrorTrigger error={errors.settings} />
-                            : (errors.groups)
-                                ? <ComponentErrorTrigger error={errors.groups} />
-                                : <Azure
+                    <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
+                        {
+                            (errors.settings)
+                                ? <ComponentErrorTrigger error={errors.settings} />
+                                : <BlockSettings
                                     settings={settings}
-                                    states={states}
                                     typeValue={typeValue}
                                     setValue={setValue}
-                                    groups={groups}
+                                    states={states}
                                 />
-                    }
+                        }
+                    </ComponentError>
+                </Route>
+                <Route exact path="/settings/email">
+                    <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
+                        {
+                            (errors.settings)
+                                ? <ComponentErrorTrigger error={errors.settings} />
+                                : <EmailSettings
+                                    settings={settings}
+                                    typeValue={typeValue}
+                                    setValue={setValue}
+                                    states={states}
+                                />
+                        }
+                    </ComponentError>
+                </Route>
+                <Route exact path="/settings/azure">
+                    <ComponentError
+                        retry={() => {
+                            errors.settings = null;
+                            errors.groups = null;
+                            setErrors({ ...errors });
+                            loadSettings();
+                            loadGroups();
+                        }}
+                    >
+                        {
+                            (errors.settings)
+                                ? <ComponentErrorTrigger error={errors.settings} />
+                                : (errors.groups)
+                                    ? <ComponentErrorTrigger error={errors.groups} />
+                                    : <Azure
+                                        settings={settings}
+                                        states={states}
+                                        typeValue={typeValue}
+                                        setValue={setValue}
+                                        groups={groups}
+                                    />
+                        }
+                    </ComponentError>
                 </Route>
                 <Route exact path="/settings/permissions">
-                    {
-                        (errors.groups)
-                            ? <ComponentErrorTrigger error={errors.groups} />
-                            : <AccessPermissions
-                                groups={groups}
-                                permissions={permissions}
-                                updateGroup={updateGroup}
-                            />
-                    }
+                    <ComponentError retry={() => { errors.groups = null; setErrors({ ...errors }); loadGroups(); }}>
+                        {
+                            (errors.groups)
+                                ? <ComponentErrorTrigger error={errors.groups} />
+                                : <AccessPermissions
+                                    groups={groups}
+                                    permissions={permissions}
+                                    updateGroup={updateGroup}
+                                />
+                        }
+                    </ComponentError>
                 </Route>
                 <Route exact path="/settings/usersgroups">
-                    {
-                        (errors.groups)
-                            ? <ComponentErrorTrigger error={errors.groups} />
-                            : <UsersGroups
-                                groups={groups}
-                                setGroups={setGroups}
-                            />
-                    }
+                    <ComponentError retry={() => { errors.groups = null; setErrors({ ...errors }); loadGroups(); }}>
+                        {
+                            (errors.groups)
+                                ? <ComponentErrorTrigger error={errors.groups} />
+                                : <UsersGroups
+                                    groups={groups}
+                                    setGroups={setGroups}
+                                />
+                        }
+                    </ComponentError>
                 </Route>
                 <Route exact path="/settings/advanced">
-                    {
-                        (errors.settings)
-                            ? <ComponentErrorTrigger error={errors.settings} />
-                            : <ConfigEditor
-                                settings={settings}
-                                typeValue={typeValue}
-                                setValue={setValue}
-                                createKey={createKey}
-                                deleteKey={deleteKey}
-                                states={states}
-                            />
-                    }
+                    <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
+                        {
+                            (errors.settings)
+                                ? <ComponentErrorTrigger error={errors.settings} />
+                                : <ConfigEditor
+                                    settings={settings}
+                                    typeValue={typeValue}
+                                    setValue={setValue}
+                                    createKey={createKey}
+                                    deleteKey={deleteKey}
+                                    states={states}
+                                />
+                        }
+                    </ComponentError>
                 </Route>
                 <Route exact path="/settings">
                     <SystemInfo />
