@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { APIClient, AzureGroupSearch, Button, Input, Switch, PageWrapper, withWebApps, Loader } from 'webapps-react';
+import { APIClient, AzureGroupSearch, Button, Input, Switch, PageWrapper, withWebApps, Loader, ComponentError, ComponentErrorTrigger } from 'webapps-react';
 import moment from 'moment';
 
 let _mounted = false;
@@ -16,6 +16,7 @@ const Azure = ({ UI, ...props }) => {
         groups
     } = props;
 
+    const [errors, setErrors] = useState({});
     const [client, setClient] = useState({ id: '', secret: '' });
 
     const [graphApp, setGraphApp] = useState({});
@@ -93,8 +94,8 @@ const Azure = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle errors
-                    console.error(error);
+                    errors.groupData = error.data?.message;
+                    setErrors({ ...errors });
                 }
             })
     }
@@ -125,10 +126,8 @@ const Azure = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (!error.status.isAbort) {
-                    // TODO: Handle errors
-                    console.error(error);
-
                     groupData[group].state = 'error';
+                    groupData[group].error = error.data.message;
                     setGroupData([...groupData]);
 
                     let timer = setTimeout(/* istanbul ignore next */ function () {
@@ -271,20 +270,28 @@ const Azure = ({ UI, ...props }) => {
                                 state={states['azure.graph.default_login']}
                                 className="w-full mb-6" />
                             <h6 className="text-gray-600 dark:text-gray-400 text-xl">Map Azure Groups to WebApps Groups</h6>
-                            <p className="mb-6 text-gray-600 dark:text-gray-400 text-sm">
+                            <p className={`${(typeof groupData === 'string') ? '' : 'mb-6'} text-gray-600 dark:text-gray-400 text-sm`}>
                                 Members of each Azure Group will be assigned to the mapped WebApps Group.
                                 User accounts will only be automatically created for members of these Groups.
                             </p>
-                            {
-                                Object(groups).map(function (group, i) {
-                                    return (
-                                        <div className="mb-6" key={i}>
-                                            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={`${group.id}`}>{group.name}</label>
-                                            <AzureGroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
-                                        </div>
-                                    )
-                                })
-                            }
+                            <ComponentError retry={() => {
+                                errors.groupData = null;
+                                setErrors({ ...errors });
+                                getGroupMaps()
+                            }} title="Failed to load data!">
+                                {
+                                    (typeof errors.groupData === 'string')
+                                        ? <ComponentErrorTrigger error={errors.groupData} />
+                                        : Object(groups).map(function (group, i) {
+                                            return (
+                                                <div className="mb-6" key={i}>
+                                                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={`${group.id}`}>{group.name}</label>
+                                                    <AzureGroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
+                                                </div>
+                                            )
+                                        })
+                                }
+                            </ComponentError>
                             <h6 className="mb-4 text-gray-600 dark:text-gray-400 text-xl">Azure Synchronisation Status</h6>
                             <Input
                                 id="azure.graph.last_sync"
