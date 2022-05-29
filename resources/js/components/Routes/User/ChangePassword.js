@@ -101,8 +101,11 @@ const ChangePassword = ({ user }) => {
                         }
                     } else {
                         if (!error.status.isAbort) {
-                            // TODO: Handle errors
-                            console.error(error);
+                            addToast(
+                                'Failed to change password',
+                                error.data.message,
+                                { appearance: 'error' }
+                            );
                         }
                     }
                 });

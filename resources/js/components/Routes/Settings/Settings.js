@@ -10,6 +10,8 @@ import {
     DrawerItem,
     useToasts,
     WebAppsUXContext,
+    ComponentError,
+    ComponentErrorTrigger,
 } from 'webapps-react';
 
 import { Apps, Plugins } from './Online';
@@ -27,6 +29,7 @@ import SystemInfo from './SystemInfo';
 let _mounted = false;
 
 const Settings = props => {
+    const [errors, setErrors] = useState({});
     const [updateInfo, setUpdateInfo] = useState({}); //
     const [settings, setSettings] = useState({});
     const [groups, setGroups] = useState([]);
@@ -103,8 +106,13 @@ const Settings = props => {
             })
             .catch(error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle Errors
-                    console.log(error);
+                    addToast(
+                        "Unable to check for App or Plugin updates",
+                        error.data.message,
+                        {
+                            appearance: 'error',
+                        }
+                    );
                 }
             })
     }
@@ -118,8 +126,8 @@ const Settings = props => {
             })
             .catch(error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle Errors
-                    console.log(error)
+                    errors.groups = error.data.message;
+                    setErrors({ ...errors });
                 }
             });
     }
@@ -133,8 +141,8 @@ const Settings = props => {
             })
             .catch(error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle Errors
-                    console.log(error)
+                    errors.permissions = error.data.message;
+                    setErrors({ ...errors });
                 }
             });
     }
@@ -148,8 +156,8 @@ const Settings = props => {
             })
             .catch(error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle Errors
-                    console.log(error)
+                    errors.settings = error.data.message;
+                    setErrors({ ...errors });
                 }
             });
     }
@@ -164,8 +172,8 @@ const Settings = props => {
             .catch(error => {
                 if (!error.status?.isAbort) {
                     addToast(
+                        "Unable to create setting",
                         "An unknown error occurred.",
-                        '',
                         { appearance: 'error' }
                     );
                 }
@@ -182,8 +190,8 @@ const Settings = props => {
             .catch(error => {
                 if (!error.status?.isAbort) {
                     addToast(
+                        "Unable to delete setting",
                         "An unknown error occurred.",
-                        '',
                         { appearance: 'error' }
                     );
                 }
@@ -225,8 +233,8 @@ const Settings = props => {
             .catch(error => {
                 if (!error.status?.isAbort) {
                     addToast(
+                        "Unable to save setting",
                         "An unknown error occurred.",
-                        '',
                         { appearance: 'error' }
                     );
 
@@ -284,12 +292,18 @@ const Settings = props => {
             </Drawer>
             <Switch>
                 <Route exact path="/settings/application">
-                    <ApplicationSettings
-                        settings={settings}
-                        typeValue={typeValue}
-                        setValue={setValue}
-                        states={states}
-                    />
+                    <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
+                        {
+                            (errors.settings)
+                                ? <ComponentErrorTrigger error={errors.settings} />
+                                : <ApplicationSettings
+                                    settings={settings}
+                                    typeValue={typeValue}
+                                    setValue={setValue}
+                                    states={states}
+                                />
+                        }
+                    </ComponentError>
                 </Route>
                 <Route exact path="/settings/appsplugins">
                     <AppsPlugins />
@@ -301,65 +315,95 @@ const Settings = props => {
                     <Plugins />
                 </Route>
                 <Route exact path="/settings/authentication">
-                    <AuthenticationSettings
-                        settings={settings}
-                        setValue={setValue}
-                        roles={groups}
-                        states={states}
-                    />
+                    {
+                        (errors.settings)
+                            ? <ComponentErrorTrigger error={errors.settings} />
+                            : (errors.groups)
+                                ? <ComponentErrorTrigger error={errors.groups} />
+                                : <AuthenticationSettings
+                                    settings={settings}
+                                    setValue={setValue}
+                                    roles={groups}
+                                    states={states}
+                                />
+                    }
                 </Route>
                 <Route exact path="/settings/blocks">
-                    <BlockSettings
-                        settings={settings}
-                        typeValue={typeValue}
-                        setValue={setValue}
-                        states={states}
-                    />
+                    {
+                        (errors.settings)
+                            ? <ComponentErrorTrigger error={errors.settings} />
+                            : <BlockSettings
+                                settings={settings}
+                                typeValue={typeValue}
+                                setValue={setValue}
+                                states={states}
+                            />
+                    }
                 </Route>
                 <Route exact path="/settings/email">
-                    <EmailSettings
-                        settings={settings}
-                        typeValue={typeValue}
-                        setValue={setValue}
-                        states={states}
-                    />
+                    {
+                        (errors.settings)
+                            ? <ComponentErrorTrigger error={errors.settings} />
+                            : <EmailSettings
+                                settings={settings}
+                                typeValue={typeValue}
+                                setValue={setValue}
+                                states={states}
+                            />
+                    }
                 </Route>
                 <Route exact path="/settings/azure">
-                    <Azure
-                        settings={settings}
-                        states={states}
-                        typeValue={typeValue}
-                        setValue={setValue}
-                        groups={groups}
-                    />
+                    {
+                        (errors.settings)
+                            ? <ComponentErrorTrigger error={errors.settings} />
+                            : (errors.groups)
+                                ? <ComponentErrorTrigger error={errors.groups} />
+                                : <Azure
+                                    settings={settings}
+                                    states={states}
+                                    typeValue={typeValue}
+                                    setValue={setValue}
+                                    groups={groups}
+                                />
+                    }
                 </Route>
                 <Route exact path="/settings/permissions">
-                    <AccessPermissions
-                        groups={groups}
-                        permissions={permissions}
-                        updateGroup={updateGroup}
-                    />
+                    {
+                        (errors.groups)
+                            ? <ComponentErrorTrigger error={errors.groups} />
+                            : <AccessPermissions
+                                groups={groups}
+                                permissions={permissions}
+                                updateGroup={updateGroup}
+                            />
+                    }
                 </Route>
                 <Route exact path="/settings/usersgroups">
-                    <UsersGroups
-                        groups={groups}
-                        setGroups={setGroups}
-                    />
+                    {
+                        (errors.groups)
+                            ? <ComponentErrorTrigger error={errors.groups} />
+                            : <UsersGroups
+                                groups={groups}
+                                setGroups={setGroups}
+                            />
+                    }
                 </Route>
                 <Route exact path="/settings/advanced">
-                    <ConfigEditor
-                        settings={settings}
-                        typeValue={typeValue}
-                        setValue={setValue}
-                        createKey={createKey}
-                        deleteKey={deleteKey}
-                        states={states}
-                    />
+                    {
+                        (errors.settings)
+                            ? <ComponentErrorTrigger error={errors.settings} />
+                            : <ConfigEditor
+                                settings={settings}
+                                typeValue={typeValue}
+                                setValue={setValue}
+                                createKey={createKey}
+                                deleteKey={deleteKey}
+                                states={states}
+                            />
+                    }
                 </Route>
                 <Route exact path="/settings">
-                    <SystemInfo
-                        updateInfo={updateInfo}
-                    />
+                    <SystemInfo />
                 </Route>
             </Switch>
         </AppPage>

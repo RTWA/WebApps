@@ -1,13 +1,14 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { APIClient, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
+import { APIClient, ComponentError, ComponentErrorTrigger, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
 import moment from 'moment';
 
 let APIController = new AbortController;
 
-const SystemInfo = ({ updateInfo, ...props }) => {
+const SystemInfo = () => {
     const { addToast } = useToasts();
     const { theme } = useContext(WebAppsUXContext);
 
+    const [errors, setErrors] = useState({});
     const [productInfo, setProductInfo] = useState({});
     const [updateCheck, setUpdateCheck] = useState(null);
     const [showUpdateHistory, setShowUpdateHistory] = useState(false);
@@ -34,8 +35,8 @@ const SystemInfo = ({ updateInfo, ...props }) => {
             })
             .catch(error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle Errors
-                    console.log(error)
+                    errors.productInfo = error.data.message;
+                    setErrors({ ...errors });
                 }
             });
     }
@@ -65,8 +66,14 @@ const SystemInfo = ({ updateInfo, ...props }) => {
             })
             .catch(error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle Errors
-                    console.log(error)
+                    addToast(
+                        "Unable to check for updates to WebApps",
+                        error.data.message,
+                        {
+                            appearance: 'error',
+                        }
+                    );
+                    setUpdateCheck(<a href="#" onClick={checkForUpdate} className="hover:text-gray-900 dark:hover:text-white">Check for updates</a>);
                 }
             });
     }
@@ -80,8 +87,13 @@ const SystemInfo = ({ updateInfo, ...props }) => {
             })
             .catch(error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle Errors
-                    console.log(error)
+                    addToast(
+                        "Failed to clear system cache",
+                        error.data.message,
+                        {
+                            appearance: 'error',
+                        }
+                    );
                 }
             });
     }
@@ -113,47 +125,60 @@ const SystemInfo = ({ updateInfo, ...props }) => {
                 </div>
             </div>
 
-            <div className={`${(showUpdateHistory) ? 'max-h-[1000rem]' : 'max-h-0'} transition-all text-gray-400 overflow-hidden flex justify-center`}>
-                <table className="mb-6 w-2/12 text-center">
-                    <thead>
-                        <tr className="border border-gray-100 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
-                            <th>Version</th>
-                            <th>Installed</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="border border-gray-100 dark:border-gray-700">
-                            <td>{productInfo.app_version}</td>
-                            <td className="group">
-                                <time dateTime={productInfo.installed}>{moment(productInfo.installed?.replace('am', '')?.replace('pm', '')).fromNow()}</time>
-                                <span className="hidden text-center absolute z-10 group-hover:inline-block py-1 px-1.5 text-xs font-medium text-gray-600 bg-gray-400 rounded-lg dark:bg-gray-700 ml-2">{productInfo.installed}</span>
-                            </td>
-                        </tr>
-                        {
-                            productInfo.history?.map(function (info, i) {
-                                return (
-                                    <tr className="border border-gray-100 dark:border-gray-700" key={i}>
-                                        <td>{info.version}</td>
+            <div className={`${(showUpdateHistory) ? 'max-h-[1000rem] mt-4' : 'max-h-0'} transition-all text-gray-400 overflow-hidden flex justify-center`}>
+                <ComponentError
+                    title="Unable to load update history!"
+                    retry={() => {
+                        delete errors.productInfo
+                        setErrors({ ...errors });
+                        loadProductInfo();
+                    }}
+                >
+                    {
+                        (errors.productInfo)
+                            ? <ComponentErrorTrigger error={errors.productInfo} />
+                            : <table className="mb-6 w-2/12 text-center">
+                                <thead>
+                                    <tr className="border border-gray-100 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
+                                        <th>Version</th>
+                                        <th>Installed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border border-gray-100 dark:border-gray-700">
+                                        <td>{productInfo.app_version}</td>
                                         <td className="group">
-                                            {
-                                                (typeof info.installed === 'string')
-                                                    ? (
-                                                        <>
-                                                            <time dateTime={info.installed}>{moment(info.installed.replace('am', '').replace('pm', '')).fromNow()}</time>
-                                                            <span className="hidden text-center absolute z-10 group-hover:inline-block py-1 px-1.5 text-xs font-medium text-gray-600 bg-gray-400 rounded-lg dark:bg-gray-700 ml-2">{info.installed}</span>
-                                                        </>
-                                                    ) : null
-                                            }
+                                            <time dateTime={productInfo.installed}>{moment(productInfo.installed?.replace('am', '')?.replace('pm', '')).fromNow()}</time>
+                                            <span className="hidden text-center absolute z-10 group-hover:inline-block py-1 px-1.5 text-xs font-medium text-gray-600 bg-gray-400 rounded-lg dark:bg-gray-700 ml-2">{productInfo.installed}</span>
                                         </td>
                                     </tr>
-                                )
-                            })
-                        }
-                        <tr>
-                            <td colSpan={3} className="cursor-pointer text-xs text-center pt-2"><div onClick={toggleUpdateHistory}>{(showUpdateHistory) ? 'Hide Update History' : ''}</div></td>
-                        </tr>
-                    </tbody>
-                </table>
+                                    {
+                                        productInfo.history?.map(function (info, i) {
+                                            return (
+                                                <tr className="border border-gray-100 dark:border-gray-700" key={i}>
+                                                    <td>{info.version}</td>
+                                                    <td className="group">
+                                                        {
+                                                            (typeof info.installed === 'string')
+                                                                ? (
+                                                                    <>
+                                                                        <time dateTime={info.installed}>{moment(info.installed.replace('am', '').replace('pm', '')).fromNow()}</time>
+                                                                        <span className="hidden text-center absolute z-10 group-hover:inline-block py-1 px-1.5 text-xs font-medium text-gray-600 bg-gray-400 rounded-lg dark:bg-gray-700 ml-2">{info.installed}</span>
+                                                                    </>
+                                                                ) : null
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                    <tr>
+                                        <td colSpan={3} className="cursor-pointer text-xs text-center pt-2"><div onClick={toggleUpdateHistory}>{(showUpdateHistory) ? 'Hide Update History' : ''}</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    }
+                </ComponentError>
             </div>
         </PageWrapper>
     );
