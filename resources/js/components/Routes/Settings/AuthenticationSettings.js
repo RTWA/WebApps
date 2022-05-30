@@ -23,7 +23,8 @@ const AuthenticationSettings = ({ UI, ...props }) => {
         setValue(key, value);
     }
 
-    if (settings['auth.internal.registrations'] === undefined) { 
+    /* istanbul ignore next */
+    if (settings['auth.internal.registrations'] === undefined) {
         return <Loader />
     }
 
