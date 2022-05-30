@@ -60,6 +60,7 @@ const ConfigEditor = ({ UI, ...props }) => {
         'focus:ring-0'
     )
 
+    /* istanbul ignore next */
     if (settings['core.ui.theme'] === undefined) {
         return <Loader />
     }
