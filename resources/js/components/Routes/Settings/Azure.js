@@ -33,6 +33,7 @@ const Azure = ({ UI, ...props }) => {
 
         return () => {
             APIController.abort();
+            /* istanbul ignore next */
             if (timer) {
                 clearTimeout(timer);
             }
@@ -115,7 +116,7 @@ const Azure = ({ UI, ...props }) => {
                     groupData[group].state = 'saved';
                     setGroupData([...groupData]);
 
-                    setTimeout(/* istanbul ignore next */ function () {
+                    setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
@@ -130,7 +131,7 @@ const Azure = ({ UI, ...props }) => {
                     groupData[group].error = error.data.message;
                     setGroupData([...groupData]);
 
-                    let timer = setTimeout(/* istanbul ignore next */ function () {
+                    let timer = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
