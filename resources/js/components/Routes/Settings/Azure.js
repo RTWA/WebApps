@@ -179,6 +179,7 @@ const Azure = ({ UI, ...props }) => {
         setValue('azure.graph.client_secret', e.target.value);
     }
 
+    /* istanbul ignore next */
     if (settings['azure.graph.tenant'] === undefined) {
         return <Loader />
     }
