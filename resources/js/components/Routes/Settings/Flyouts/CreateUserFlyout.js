@@ -159,7 +159,7 @@ const CreateUserFlyout = props => {
                     label="Select Security Group"
                     onChange={typeValue}
                     value={group}
-                    wrapperClassName="mt-8">
+                    wrapperClassName="pb-6">
                     <option value="0">Select Group...</option>
                     {
                         Object(groups).map(function (role, i) {
