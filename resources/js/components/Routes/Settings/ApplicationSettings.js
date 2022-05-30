@@ -237,6 +237,7 @@ const ApplicationSettings = props => {
         typeValue(e.target.id, e.target.value);
     }
 
+    /* istanbul ignore next */
     if (settings['core.ui.theme'] === undefined) {
         return <Loader />
     }
@@ -294,12 +295,12 @@ const ApplicationSettings = props => {
                 helpText="If you choose to allow the user to select, their system preferences will be respected."
             />
             <ColorGridSelect
-                            id="core.sidebar.color_mode"
-                            label="Sidebar Color Mode Option"
-                            colors={sidebarColorOptions}
-                            onSelect={changeSidebarColorMode}
-                            helpText="Light Sidebar will not be in use when Dark Mode is enabled."
-                        />
+                id="core.sidebar.color_mode"
+                label="Sidebar Color Mode Option"
+                colors={sidebarColorOptions}
+                onSelect={changeSidebarColorMode}
+                helpText="Light Sidebar will not be in use when Dark Mode is enabled."
+            />
             <Switch
                 label='Display "Return to CMS" Link'
                 id="core.cms.display_link"
