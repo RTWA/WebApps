@@ -48,6 +48,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
     const changeDriver = e => {
         /* istanbul ignore else */
         if (e.target.id === 'mail.driver.smtp') {
+            /* istanbul ignore else */
             if (isMounted()) {
                 setValue('mail.driver', 'smtp');
                 driverStates['smtp'] = 'saved';
@@ -56,6 +57,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
 
             timers[0] = setTimeout(function () {
                 // Don't do anything if testing
+                /* istanbul ignore next */
                 if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     driverStates['smtp'] = '';
                     setDriverStates({ ...driverStates });
@@ -63,6 +65,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 }
             }, 2500);
         } else if (e.target.id === 'mail.driver.msgraph') {
+            /* istanbul ignore else */
             if (isMounted()) {
                 setValue('mail.driver', 'msgraph');
                 driverStates['msgraph'] = 'saved';
@@ -96,6 +99,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
 
         await APIClient('/api/email/test', { to: testTo }, { signal: APIController.signal })
             .then(json => {
+                /* istanbul ignore else */
                 if (isMounted()) {
                     addToast(
                         "Test Email Sent",
@@ -120,6 +124,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 }
             })
             .catch(error => {
+                /* istanbul ignore else */
                 if (isMounted()) {
                     addToast(
                         "Unable to send test Email",
@@ -147,6 +152,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
             })
     }
 
+    /* istanbul ignore next */
     if (settings['mail.driver'] === undefined) {
         return <Loader />
     }
