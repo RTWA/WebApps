@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { Default } from './Layouts';
-import { Login } from './Auth';
+import { Login, Logout } from './Auth';
 
-import { withAuth, WebAppsUX, WebApps } from 'webapps-react';
+import { AuthContext, WebAppsUX, WebApps } from 'webapps-react';
 import { AuthenticatedRoute, UnauthenticatedRoute } from './Routes';
 
-const App = ({ signIn, signOut }) => {
+const App = ()=> {
+    const { signIn } = useContext(AuthContext);
+
     return (
         <BrowserRouter>
             <Switch>
                 <UnauthenticatedRoute exact path="/login" name="Login Page"
                     component={props => <Login loginUser={signIn} {...props} />} />
-                <Route exact path="/logout" name="Logout" component={signOut} />
+                <Route exact path="/logout" name="Logout" component={Logout} />
 
                 <WebAppsUX>
                     <WebApps>
@@ -25,4 +27,4 @@ const App = ({ signIn, signOut }) => {
     );
 }
 
-export default withAuth(App);
+export default App;
