@@ -17,7 +17,7 @@ const AccessPermissions = props => {
 
     const [tab, setTab] = useState(0);
     const [states, setStates] = useState({});
-    
+
     const APIController = new AbortController();
     let timers = [null, null];
 
@@ -26,9 +26,11 @@ const AccessPermissions = props => {
 
         return () => {
             APIController.abort();
+            /* istanbul ignore next */
             if (timers[0]) {
                 clearTimeout(timers[0]);
             }
+            /* istanbul ignore next */
             if (timers[1]) {
                 clearTimeout(timers[1]);
             }
@@ -46,7 +48,7 @@ const AccessPermissions = props => {
                     states[check_id] = 'saved';
                     setStates({ ...states });
 
-                    timers[0] = setTimeout(/* istanbul ignore next */ function () {
+                    timers[0] = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
@@ -67,7 +69,7 @@ const AccessPermissions = props => {
                     states[check_id] = 'error';
                     setStates({ ...states });
 
-                    timers[0] = setTimeout(/* istanbul ignore next */ function () {
+                    timers[0] = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
@@ -156,6 +158,7 @@ const AccessPermissions = props => {
         (tab === id) ? 'block' : 'hidden'
     )
 
+    /* istanbul ignore next */
     if (permissions.length === 0) {
         return <Loader />
     }
