@@ -32,12 +32,8 @@ describe('Login Component', () => {
       </WebAppsUX>
     );
 
-    await waitFor(() => {
-      expect(screen.getByRole('form')).toHaveFormValues({
-        username: '',
-        password: ''
-      })
-    });
+    await waitFor(() => expect(screen.getByLabelText(/password/i).value === '').toBe(true));
+    expect(screen.getByLabelText(/username/i).value === '').toBe(true)
   });
 
   test('Validation fails when empty Login form is submitted', async () => {
@@ -53,13 +49,13 @@ describe('Login Component', () => {
 
   test('User cannot login without correct credentials', async () => {
     await act(async () => {
-      fireEvent.change(screen.getByRole('textbox', { name: /username:/i }), { target: { value: mockData.User.username } });
-      fireEvent.change(screen.getByLabelText(/password:/i), { target: { value: 'incorrectPassword' } });
+      fireEvent.change(screen.getByRole('textbox', { name: /username/i }), { target: { value: mockData.User.username } });
+      fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'incorrectPassword' } });
     });
 
     await waitFor(async () => {
-      await screen.getByRole('textbox', { name: /username:/i }).value === mockData.User.username;
-      await screen.getByLabelText(/password:/i).value === 'incorrectPassword';
+      await screen.getByRole('textbox', { name: /username/i }).value === mockData.User.username;
+      await screen.getByLabelText(/password/i).value === 'incorrectPassword';
     });
 
     await act(async () => {
@@ -74,12 +70,13 @@ describe('Login Component', () => {
   });
 
   test('User cannot login with correct credentials but a disabled account', async () => {
+    await waitFor(() => expect(screen.getByRole('button', { name: /login/i })).toBeDefined());
     await act(async () => {
-      fireEvent.change(screen.getByRole('textbox', { name: /username:/i }), { target: { value: mockData.users[1].username } });
-      fireEvent.change(screen.getByLabelText(/password:/i), { target: { value: mockData.users[1].password } });
+      fireEvent.change(screen.getByRole('textbox', { name: /username/i }), { target: { value: mockData.users[1].username } });
+      fireEvent.change(screen.getByLabelText(/password/i), { target: { value: mockData.users[1].password } });
 
-      await screen.getByRole('textbox', { name: /username:/i }).value === mockData.users[1].username;
-      await screen.getByLabelText(/password:/i).value === mockData.users[1].password;
+      await screen.getByRole('textbox', { name: /username/i }).value === mockData.users[1].username;
+      await screen.getByLabelText(/password/i).value === mockData.users[1].password;
 
       fireEvent.click(screen.getByRole('button', { name: /login/i }));
     });
@@ -92,12 +89,13 @@ describe('Login Component', () => {
   });
 
   test('User can login with correct credentials', async () => {
+    await waitFor(() => expect(screen.getByRole('button', { name: /login/i })).toBeDefined());
     await act(async () => {
-      fireEvent.change(screen.getByRole('textbox', { name: /username:/i }), { target: { value: mockData.User.username } });
-      fireEvent.change(screen.getByLabelText(/password:/i), { target: { value: mockData.User.password } });
+      fireEvent.change(screen.getByRole('textbox', { name: /username/i }), { target: { value: mockData.User.username } });
+      fireEvent.change(screen.getByLabelText(/password/i), { target: { value: mockData.User.password } });
 
-      await screen.getByRole('textbox', { name: /username:/i }).value === mockData.User.username;
-      await screen.getByLabelText(/password:/i).value === mockData.User.password;
+      await screen.getByRole('textbox', { name: /username/i }).value === mockData.User.username;
+      await screen.getByLabelText(/password/i).value === mockData.User.password;
 
       fireEvent.click(screen.getByRole('button', { name: /login/i }));
     });
