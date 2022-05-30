@@ -18,7 +18,7 @@ const UserList = props => {
         let _grouped = users;
 
         const obj = _grouped.reduce((acc, user) => {
-            const letter = user.name[0].toUpperCase();
+            const letter = user.name[0]?.toUpperCase();
             acc[letter] = (acc[letter] || []).concat(user);
             return acc;
         }, {})
