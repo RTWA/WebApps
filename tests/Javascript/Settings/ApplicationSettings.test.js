@@ -129,6 +129,36 @@ describe('ApplicationSettings Component', () => {
         await waitFor(() => expect(mockData.settings['core.ui.dark_mode']).toEqual('user'));
     });
 
+    test('Can Select Light Sidebar', async () => {
+        expect(screen.getByText(/sidebar color mode option/i)).toBeDefined();
+        expect(mockData.settings['core.sidebar.color_mode']).toEqual('user');
+
+        await act(async () => {
+            fireEvent.click(screen.getByText("Light Sidebar"));
+        });
+        await waitFor(() => expect(mockData.settings['core.sidebar.color_mode']).toEqual('light'));
+    });
+
+    test('Can Select Dark Sidebar', async () => {
+        expect(screen.getByText(/sidebar color mode option/i)).toBeDefined();
+        expect(mockData.settings['core.sidebar.color_mode']).toEqual('light');
+
+        await act(async () => {
+            fireEvent.click(screen.getByText(/dark sidebar/i));
+        });
+        await waitFor(() => expect(mockData.settings['core.sidebar.color_mode']).toEqual('dark'));
+    });
+
+    test('Can Select User Selectable Sidebar', async () => {
+        expect(screen.getByText(/sidebar color mode option/i)).toBeDefined();
+        expect(mockData.settings['core.sidebar.color_mode']).toEqual('dark');
+
+        await act(async () => {
+            fireEvent.click(screen.getAllByText(/user selectable/i)[1]);
+        });
+        await waitFor(() => expect(mockData.settings['core.sidebar.color_mode']).toEqual('user'));
+    });
+
     test('Can Disable CMS Link', async () => {
         expect(screen.getByText(/display "return to cms" link/i)).toBeDefined();
         expect(mockData.settings['core.cms.display_link']).toEqual('true');
