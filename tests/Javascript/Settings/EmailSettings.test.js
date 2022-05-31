@@ -21,7 +21,12 @@ const TestElement = () => {
         setSettings({ ...settings });
     }
 
-    return <EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} />
+    return (
+        <>
+            <EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} />
+            <button onClick={() => setValue('azure.graph.tenant', '', false)}>Clear Tenant</button>
+        </>
+    )
 }
 
 describe('EmailSettings Component', () => {
@@ -81,7 +86,7 @@ describe('EmailSettings Component', () => {
         await waitFor(() => expect(screen.getByText(/test email sent/i)).toBeDefined());
     });
 
-    test('Can Change To Mail Driver', async () => {
+    test('Can Change Mail Driver', async () => {
         expect(mockData.settings['mail.driver']).toEqual('smtp');
         expect(screen.getByRole('checkbox', { name: /send with microsoft azure/i })).toBeDefined();
 
@@ -98,5 +103,18 @@ describe('EmailSettings Component', () => {
             fireEvent.click(screen.getByRole('checkbox', { name: /send with smtp/i }));
         });
         await waitFor(() => expect(mockData.settings['mail.driver']).toEqual('smtp'));
+    });
+
+    test('Cannot Select Azure Mail Driver When Not Configured', async () => {
+        expect(mockData.settings['mail.driver']).toEqual('smtp');
+        expect(screen.getByRole('checkbox', { name: /send with microsoft azure/i })).toBeDefined();
+        expect(screen.getByRole('button', { name: /clear tenant/i })).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /clear tenant/i }));
+        });
+        await waitFor(() => expect(mockData.settings['azure.graph.tenant']).toEqual(''));
+
+        expect(screen.queryByRole('checkbox', { name: /send with microsoft azure/i })).toBeNull();
     });
 });
