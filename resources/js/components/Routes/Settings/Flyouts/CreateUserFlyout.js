@@ -23,11 +23,11 @@ const CreateUserFlyout = props => {
     }, []);
 
     const init = {
-        name: [],
-        username: [],
-        email: [],
-        password: [],
-        password_confirmation: [],
+        name: {},
+        username: {},
+        email: {},
+        password: {},
+        password_confirmation: {},
     }
 
     const [user, setUser] = useState(init);
@@ -78,7 +78,7 @@ const CreateUserFlyout = props => {
                 } else {
                     addToast(
                         "An unknown error occurred.",
-                        '',
+                        error.data?.message,
                         { appearance: 'error' }
                     );
                 }

@@ -43,6 +43,17 @@ const handlers = [
     }),
 
     rest.post('/api/user', (req, res, ctx) => {
+        if (req.body.username === '' && req.body.name === '') {
+            return res(
+                ctx.status(422),
+                ctx.json({
+                    message: "The given data was invalid.",
+                    errors: {
+                        name: ["The name field is required."]
+                    }
+                })
+            )
+        }
         if (req.body.username === mockData.User.username) {
             return res(
                 ctx.status(422),
@@ -67,7 +78,9 @@ const handlers = [
                         name: req.body.name,
                         username: req.body.username,
                         email: req.body.email,
-                        active: true
+                        active: true,
+                        azure_id: null,
+                        roles: []
                     }
                 })
             )

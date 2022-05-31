@@ -106,16 +106,21 @@ const UsersGroups = props => {
     }
 
     const pushUser = user => {
-        let _users = [];
-        users.map(function (_user) { _users.push(_user) });
-        _users.push(user);
-        setUsers(_users);
+        if (user.roles.length !== 0) {
+            user._CurrentGroup = user.roles[0].name;
+            user._CurrentGroupId = user.roles[0].id;
+        } else {
+            user._CurrentGroupId = 0;
+        }
+        setUsers([...users, user]);
     }
 
     const pushGroup = group => {
         let _groups = [];
         groups.map(function (_group) { _groups.push(_group) });
         _groups.push(group);
+
+        _groups.sort((a, b) => (a.letter > b.letter) ? 1 : -1)
         setGroups(_groups);
     }
 
@@ -381,7 +386,7 @@ const UsersGroups = props => {
     }
 
     const deleteGroup = async () => {
-        await APIClient('/api/group', { name: selectGroup.name, _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
+        await APIClient('/api/group', { name: selectedGroup.name, _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {

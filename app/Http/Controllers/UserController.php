@@ -69,9 +69,10 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->input('name'),
             'username' => $request->input('username'),
-            'name' => $request->input('username'),
             'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password'))
+            'password' => Hash::make($request->input('password')),
+            'active' => '1',
+            'azure_id' => null,
         ]);
         $user->assignRole(Role::where('id', '=', $request->input('group'))->first());
 
