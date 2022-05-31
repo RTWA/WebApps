@@ -171,6 +171,8 @@ class AppsService
             $_app->background_color = $app['background_color'];
             $_app->author = $app['author'];
             $_app->save();
+
+            $this->removeFromUpdateList($slug);
         }
 
         return true;
@@ -227,6 +229,23 @@ class AppsService
                 'version' => $this->repoData[$slug]['latest']['version'],
                 'changelog' => $this->repoData[$slug]['latest']['changelog']
             ];
+            ApplicationSettings::set('core.available.updates', json_encode($updates));
+        }
+    }
+
+    /**
+     * Removes App data to the Updates List
+     */
+    private function removeFromUpdateList($slug)
+    {
+        $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
+
+        if (!isset($updates['apps'])) {
+            $updates['apps'] = [];
+        }
+        
+        if (in_array($slug, $updates['apps'])) {
+            unset($updates['apps'][$slug]);
             ApplicationSettings::set('core.available.updates', json_encode($updates));
         }
     }
