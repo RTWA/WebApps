@@ -106,6 +106,7 @@ const UsersGroups = props => {
     }
 
     const pushUser = user => {
+        /* istanbul ignore next */
         if (user.roles.length !== 0) {
             user._CurrentGroup = user.roles[0].name;
             user._CurrentGroupId = user.roles[0].id;
@@ -120,7 +121,7 @@ const UsersGroups = props => {
         groups.map(function (_group) { _groups.push(_group) });
         _groups.push(group);
 
-        _groups.sort((a, b) => (a.letter > b.letter) ? 1 : -1)
+        _groups.sort(/* istanbul ignore next */ (a, b) => (a.letter > b.letter) ? 1 : -1)
         setGroups(_groups);
     }
 
