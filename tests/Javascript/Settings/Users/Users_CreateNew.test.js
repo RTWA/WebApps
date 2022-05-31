@@ -28,8 +28,8 @@ describe('UsersGroups Component - Create New Users', () => {
     });
 
     test('Cannot Create A New User With No Data', async () => {
+        expect(screen.getByText(/user's name/i)).toBeDefined();
         expect(screen.getByRole('textbox', { name: /username/i, hidden: true })).toBeDefined();
-
         expect(screen.getByRole('button', { name: /create user/i })).toBeDefined();
 
         await act(async () => {
