@@ -5,7 +5,7 @@ const AppPlugins = ({ apps, plugins }) => {
     return (
         <PageWrapper title="Apps & Plugins">
             <h6 className="mb-4 text-gray-600 dark:text-gray-400 text-xl">Apps</h6>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-6">
                 {
                     (apps.local === null || apps.local === undefined || typeof apps !== 'object' || apps.local.length === 0) ?
                         (
@@ -36,7 +36,7 @@ const AppPlugins = ({ apps, plugins }) => {
             </div>
 
             <h6 className="mb-4 text-gray-600 dark:text-gray-400 text-xl">Plugins</h6>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {
                     (plugins.all === null || plugins.all === undefined || typeof plugins !== 'object' || plugins.all.length === 0) ?
                         (
