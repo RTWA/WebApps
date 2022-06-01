@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { APIClient, Button, Input, Select, Switch, useToasts, withAuth, withWebApps } from 'webapps-react';
+import { APIClient, Button, Input, Select, Switch, PageWrapper, useToasts, withAuth, withWebApps, Loader } from 'webapps-react';
 
 const EmailSettings = ({ user, UI, ...props }) => {
     const isMountedRef = useRef(true);
@@ -48,6 +48,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
     const changeDriver = e => {
         /* istanbul ignore else */
         if (e.target.id === 'mail.driver.smtp') {
+            /* istanbul ignore else */
             if (isMounted()) {
                 setValue('mail.driver', 'smtp');
                 driverStates['smtp'] = 'saved';
@@ -56,6 +57,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
 
             timers[0] = setTimeout(function () {
                 // Don't do anything if testing
+                /* istanbul ignore next */
                 if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                     driverStates['smtp'] = '';
                     setDriverStates({ ...driverStates });
@@ -63,6 +65,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 }
             }, 2500);
         } else if (e.target.id === 'mail.driver.msgraph') {
+            /* istanbul ignore else */
             if (isMounted()) {
                 setValue('mail.driver', 'msgraph');
                 driverStates['msgraph'] = 'saved';
@@ -96,7 +99,8 @@ const EmailSettings = ({ user, UI, ...props }) => {
 
         await APIClient('/api/email/test', { to: testTo }, { signal: APIController.signal })
             .then(json => {
-                if (isMounted) {
+                /* istanbul ignore else */
+                if (isMounted()) {
                     addToast(
                         "Test Email Sent",
                         '',
@@ -110,7 +114,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         setTestMailsate({ ...testMailState });
 
                         timers[1] = setTimeout(/* istanbul ignore next */ function () {
-                            if (isMounted) {
+                            if (isMounted()) {
                                 testMailState.state = '';
                                 setTestMailsate({ ...testMailState });
                                 timers[1] = null;
@@ -120,7 +124,8 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 }
             })
             .catch(error => {
-                if (isMounted) {
+                /* istanbul ignore else */
+                if (isMounted()) {
                     addToast(
                         "Unable to send test Email",
                         '',
@@ -135,7 +140,7 @@ const EmailSettings = ({ user, UI, ...props }) => {
                         setTestMailsate({ ...testMailState });
 
                         timers[1] = setTimeout(function () {
-                            if (isMounted) {
+                            if (isMounted()) {
                                 testMailState.state = '';
                                 testMailState.error = '';
                                 setTestMailsate({ ...testMailState });
@@ -147,8 +152,13 @@ const EmailSettings = ({ user, UI, ...props }) => {
             })
     }
 
+    /* istanbul ignore next */
+    if (settings['mail.driver'] === undefined) {
+        return <Loader />
+    }
+
     return (
-        <>
+        <PageWrapper title="Email Settings">
             <div className="my-6">
                 <label htmlFor="mail.driver" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Email send method</label>
                 <div className="w-full flex flex-col sm:flex-row gap-x-4 gap-y-1 mt-2 xl:mt-0">
@@ -271,14 +281,14 @@ const EmailSettings = ({ user, UI, ...props }) => {
                 state={testMailState.state}
                 error={testMailState.error}
                 action={
-                    <Button style="ghost" color="gray" size="small" square
+                    <Button type="ghost" color="gray" size="small" square
                         className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
                         onClick={sendTest}>
                         Send test Email
                     </Button>
                 }
             />
-        </>
+        </PageWrapper>
     )
 }
 

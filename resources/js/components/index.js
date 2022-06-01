@@ -4,13 +4,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import ReactTooltip from 'react-tooltip';
 
-import { Auth } from 'webapps-react';
+import { CoreError, Auth } from 'webapps-react';
 
 ReactDOM.render(
-    <Auth>
-        <App />
-        <ReactTooltip effect="solid" />
-    </Auth>,
+    <CoreError>
+        <Auth>
+            <App />
+            <ReactTooltip effect="solid" />
+        </Auth>
+    </CoreError>,
     document.getElementById('WebApps')
 );
 

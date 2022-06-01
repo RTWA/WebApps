@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
-import { WebApps } from 'webapps-react';
+import { WebApps, WebAppsUX } from 'webapps-react';
 
 import { server } from '../../../../resources/js/__mocks__/server';
 import NewBlock from '../../../../resources/js/components/Routes/Blocks/NewBlock';
@@ -28,7 +28,7 @@ describe('NewBlock Component - No Plugins', () => {
             }),
         )
 
-        render(<WebApps><BrowserRouter><NewBlock /></BrowserRouter></WebApps>);
+        render(<WebAppsUX><WebApps><BrowserRouter><NewBlock /></BrowserRouter></WebApps></WebAppsUX>);
         await waitFor(() => expect(screen.getByRole('heading', { name: /no active plugins!/i })).toBeDefined());
 
         expect(screen.getByRole('heading', { name: /no active plugins!/i })).toBeDefined();

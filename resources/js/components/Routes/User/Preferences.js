@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { ColorGridSelect, withAuth, withWebApps } from 'webapps-react';
+import React, { useContext, useEffect, useState } from 'react';
+import { APIClient, ColorGridSelect, Loader, PageWrapper, WebAppsUXContext, withAuth } from 'webapps-react';
 
-const Preferences = ({ user, preferences, setPreference, UI }) => {
+let APIController = new AbortController();
+
+const Preferences = ({ user, preferences, setPreference }) => {
     const [darkOptions, setDarkOptions] = useState([]);
+    const [sidebarColorOptions, setSidebarColorOptions] = useState([]);
+    const [settings, setSettings] = useState(null);
+
+    const { useNavigation } = useContext(WebAppsUXContext);
+    const { navigation, setNavigation } = useNavigation;
+
+    useEffect(async () => {
+        await APIClient('/api/setting', { key: JSON.stringify(['core.ui.dark_mode', 'core.sidebar.color_mode']) }, { signal: APIController.signal })
+            .then(json => {
+                setSettings(json.data);
+            });
+
+        return () => {
+            APIController.abort();
+        }
+    }, []);
 
     useEffect(() => {
-        // Workaround for current bug in Auth Context
-        // * Current preferences are not available on preferences, only user.preferences in JSON
-        if (preferences?.dark_mode === undefined && (user.preferences && JSON.parse(user.preferences).dark_mode)) {
-            preferences = JSON.parse(user.preferences);
-            setPreference('dark_mode', preferences.dark_mode);
-        }
-
         setDarkOptions([
             {
                 value: 'light',
@@ -29,7 +40,21 @@ const Preferences = ({ user, preferences, setPreference, UI }) => {
                 value: '',
                 bgClasses: 'bg-gradient-to-r from-gray-200 to-gray-900',
                 name: 'Use System Settings',
-                selected: (preferences?.dark_mode === ''),
+                selected: (preferences?.dark_mode === '' || !preferences.dark_mode),
+            }
+        ]);
+        setSidebarColorOptions([
+            {
+                value: 'light',
+                bgClasses: 'bg-gray-200',
+                name: 'Light Sidebar',
+                selected: (preferences?.['sidebar.color_mode'] === 'light' || !preferences['sidebar.color_mode']),
+            },
+            {
+                value: 'dark',
+                bgClasses: 'bg-gray-900',
+                name: 'Dark Sidebar',
+                selected: (preferences?.['sidebar.color_mode'] === 'dark'),
             }
         ]);
     }, [preferences]);
@@ -53,31 +78,42 @@ const Preferences = ({ user, preferences, setPreference, UI }) => {
         setPreference('dark_mode', value);
     }
 
-    return (
-        <div className="mt-10 sm:mt-0 py-0 sm:py-8">
-            <div className="md:grid md:grid-cols-3 md:gap-6">
-                <div className="md:col-span-1 flex justify-between">
-                    <div className="px-4 sm:px-0">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{user.name}</h3>
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Change your WebApps preferences here
-                        </p>
-                    </div>
-                </div>
+    const setSidebarColorMode = value => {
+        navigation.color_mode = value;
+        setNavigation({ ...navigation });
+        setPreference('sidebar.color_mode', value);
+    }
 
-                <div className="mt-5 md:mt-0 md:col-span-2">
-                    <div className="px-4 py-5 bg-white dark:bg-gray-800 sm:p-6 shadow sm:rounded-md">
+    if (!settings) {
+        return <Loader />
+    }
+
+    return (
+        <PageWrapper title={user.name}>
+            {
+                (settings['core.ui.dark_mode'] === 'user' || !settings['core.ui.dark_mode'])
+                    ? (
                         <ColorGridSelect
                             id="core.ui.dark_mode"
                             label="Dark Mode Option"
                             colors={darkOptions}
                             onSelect={setDarkMode}
                         />
-                    </div>
-                </div>
-            </div>
-        </div>
+                    ) : null
+            }
+            {
+                (settings['core.sidebar.color_mode'] === 'user' || !settings['core.sidebar.color_mode'])
+                    ? (
+                        <ColorGridSelect
+                            id="core.sidebar.color_mode"
+                            label="Sidebar Color Mode Option"
+                            colors={sidebarColorOptions}
+                            onSelect={setSidebarColorMode}
+                        />
+                    ) : null
+            }
+        </PageWrapper>
     )
 }
 
-export default withAuth(withWebApps(Preferences));
+export default withAuth(Preferences);

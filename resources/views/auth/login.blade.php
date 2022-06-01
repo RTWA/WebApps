@@ -47,7 +47,7 @@
                 </div>
             @endif
 
-            <div class="mt-10" id="WebApps"></div>
+            <div class="mt-10 min-h-[192px]" id="WebApps"></div>
 
             @if ($registration == 'true')
                 <div class="flex justify-center items-center mt-6">

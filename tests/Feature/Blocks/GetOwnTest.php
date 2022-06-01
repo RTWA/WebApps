@@ -39,7 +39,7 @@ class GetOwnTest extends TestCase
         if (file_exists(storage_path('webapps/installed.json'))) {
             unlink(storage_path('webapps/installed.json'));
         }
-        
+
         if (file_exists(Plugin::path() . 'Sample/plugin.json')) {
             (new PluginsService())->rrmdir(Plugin::path() . 'Sample');
         }
@@ -214,7 +214,8 @@ class GetOwnTest extends TestCase
             'time' => now()->subMinutes(11)
         ]);
 
-        $response = $this->getJson('/api/blocks?limit=2&offset=0&filter=&sort=views');
+        $sort = json_encode(['by' => 'Popularity', 'order' => 'ASC']);
+        $response = $this->getJson('/api/blocks?limit=2&offset=0&filter=&sort=' . $sort);
 
         $response->assertStatus(200);
         $response->assertJsonFragment([

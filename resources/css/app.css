@@ -1,27 +1,48 @@
+@import 'webapps-react/dist/webapps-react.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer components {
+    body {
+        @apply max-w-full max-h-screen overflow-hidden
+    }
+    
     .app {
-        @apply bg-gray-200 dark:bg-gray-900 h-screen w-screen overflow-hidden;
+        @apply flex flex-auto flex-col bg-gray-200 dark:bg-gray-900 dark:text-white h-screen w-screen overflow-hidden;
     }
 
     .dark .input-field option {
         @apply bg-gray-600;
     }
 
+    .webapps-sidebar {
+        @apply w-72 max-w-[18rem] min-w-[18rem] h-screen sticky flex flex-col flex-auto top-0 z-[200] transition-[visibility,margin-left,margin-right,transform,width,max-width,min-width] ease-[cubic-bezier(.25,.8,.25,1)] duration-500 !important
+    }
+
+    .webapps-sidebar-overlay {
+        @apply fixed left-0 top-0 !important
+    }
+
+    .webapps-drawer {
+        @apply w-72 max-w-[18rem] min-w-[18rem] h-full sticky flex flex-col flex-auto z-[100] transition-[visibility,margin-left,margin-right,transform,width,max-width,min-width] ease-[cubic-bezier(.25,.8,.25,1)] duration-500 !important
+    }
+
+    .webapps-drawer-overlay {
+        @apply fixed left-0 top-0 z-[200] !important
+    }
+
+    .webapps-flyout {
+        @apply right-0 dark:text-white border-l dark:border-gray-800 transition-[visibility,margin-left,margin-right,transform,width,max-width,min-width] ease-[cubic-bezier(.25,.8,.25,1)] duration-500 !important
+    }
+
+    .webapps-flyout-overlay {
+        @apply fixed bottom-0 top-0 z-[200] !important
+    }
+
     .focus\:ring-0:focus {
         --tw-ring-offset-width: 0;
-    }
-
-    .masonry {
-        display: flex;
-        width: 100%;
-    }
-
-    .masonry-col {
-        background-clip: padding-box;
     }
 
     .block .overlay {
@@ -165,7 +186,11 @@
 
 @layer utilities {
     .max-w-1\/2-gap-3 {
-        max-width: 49.8rem !important;
+        max-width: 49.3% !important;
+    }
+
+    .min-w-5 {
+        min-width: 1.25rem !important;
     }
 
     .w-1\/2-gap-3 {

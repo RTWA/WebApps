@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { APIClient, Button, Input, useToasts, withAuth } from 'webapps-react';
+import { APIClient, Button, Input, PageWrapper, useToasts, withAuth } from 'webapps-react';
 
 const ChangePassword = ({ user }) => {
     const [states, setStates] = useState({ currentPassword: {}, newPassword: {}, confirmedPassword: {} });
@@ -61,7 +61,7 @@ const ChangePassword = ({ user }) => {
         }
 
         if (!hasError) {
-            await APIClient('/api/user/password', { 
+            await APIClient('/api/user/password', {
                 id: user.id,
                 current_password: currentPassword,
                 password: newPassword,
@@ -101,8 +101,11 @@ const ChangePassword = ({ user }) => {
                         }
                     } else {
                         if (!error.status.isAbort) {
-                            // TODO: Handle errors
-                            console.error(error);
+                            addToast(
+                                'Failed to change password',
+                                error.data.message,
+                                { appearance: 'error' }
+                            );
                         }
                     }
                 });
@@ -110,59 +113,42 @@ const ChangePassword = ({ user }) => {
     }
 
     return (
-        <div className="mt-10 sm:mt-0 py-0 sm:py-8">
-            <div className="md:grid md:grid-cols-3 md:gap-6">
-                <div className="md:col-span-1 flex justify-between">
-                    <div className="px-4 sm:px-0">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Update Password</h3>
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Ensure your account is using a long, random password to stay secure.
-                        </p>
-                    </div>
-                </div>
+        <PageWrapper title="Update Password">
+            <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+                Ensure your account is using a long, random password to stay secure.
+            </p>
+            <Input
+                type="password"
+                label="Current Password"
+                name="currentPassword"
+                id="currentPassword"
+                value={currentPassword}
+                onChange={update}
+                state={states.currentPassword.state}
+                error={states.currentPassword.error} />
+            <Input
+                type="password"
+                label="New Password"
+                name="newPassword"
+                id="newPassword"
+                value={newPassword}
+                onChange={update}
+                state={states.newPassword.state}
+                error={states.newPassword.error} />
+            <Input
+                type="password"
+                label="Confirm Password"
+                name="confirmedPassword"
+                id="confirmedPassword"
+                value={confirmedPassword}
+                onChange={update}
+                state={states.confirmedPassword.state}
+                error={states.confirmedPassword.error} />
 
-                <div className="mt-5 md:mt-0 md:col-span-2">
-                    <div className="px-4 py-5 bg-white dark:bg-gray-800 sm:p-6 shadow sm:rounded-tl-md sm:rounded-tr-md">
-                        <div className="grid grid-cols-6 gap-6">
-                            <Input
-                                type="password"
-                                wrapperClassName="col-span-6 sm:col-span-4"
-                                label="Current Password"
-                                name="currentPassword"
-                                id="currentPassword"
-                                value={currentPassword}
-                                onChange={update}
-                                state={states.currentPassword.state}
-                                error={states.currentPassword.error} />
-                            <Input
-                                type="password"
-                                wrapperClassName="col-span-6 sm:col-span-4"
-                                label="New Password"
-                                name="newPassword"
-                                id="newPassword"
-                                value={newPassword}
-                                onChange={update}
-                                state={states.newPassword.state}
-                                error={states.newPassword.error} />
-                            <Input
-                                type="password"
-                                wrapperClassName="col-span-6 sm:col-span-4"
-                                label="Confirm Password"
-                                name="confirmedPassword"
-                                id="confirmedPassword"
-                                value={confirmedPassword}
-                                onChange={update}
-                                state={states.confirmedPassword.state}
-                                error={states.confirmedPassword.error} />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-end px-4 py-3 bg-gray-50 dark:bg-gray-700 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
-                        <Button className="text-xs uppercase tracking-widest" onClick={changePassword}>Save</Button>
-                    </div>
-                </div>
+            <div className="flex items-center justify-end">
+                <Button className="text-xs uppercase tracking-widest" onClick={changePassword}>Save</Button>
             </div>
-        </div>
+        </PageWrapper>
     )
 }
 

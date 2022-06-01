@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { APIClient, AzureGroupSearch, Button, Input, Switch, withWebApps } from 'webapps-react';
+import { APIClient, AzureGroupSearch, Button, Input, Switch, PageWrapper, withWebApps, Loader, ComponentError, ComponentErrorTrigger } from 'webapps-react';
 import moment from 'moment';
 
 let _mounted = false;
@@ -16,6 +16,7 @@ const Azure = ({ UI, ...props }) => {
         groups
     } = props;
 
+    const [errors, setErrors] = useState({});
     const [client, setClient] = useState({ id: '', secret: '' });
 
     const [graphApp, setGraphApp] = useState({});
@@ -32,6 +33,7 @@ const Azure = ({ UI, ...props }) => {
 
         return () => {
             APIController.abort();
+            /* istanbul ignore next */
             if (timer) {
                 clearTimeout(timer);
             }
@@ -93,8 +95,8 @@ const Azure = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (!error.status?.isAbort) {
-                    // TODO: Handle errors
-                    console.error(error);
+                    errors.groupData = error.data?.message;
+                    setErrors({ ...errors });
                 }
             })
     }
@@ -114,7 +116,7 @@ const Azure = ({ UI, ...props }) => {
                     groupData[group].state = 'saved';
                     setGroupData([...groupData]);
 
-                    setTimeout(/* istanbul ignore next */ function () {
+                    setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
@@ -125,13 +127,11 @@ const Azure = ({ UI, ...props }) => {
             })
             .catch(/* istanbul ignore next */ error => {
                 if (!error.status.isAbort) {
-                    // TODO: Handle errors
-                    console.error(error);
-
                     groupData[group].state = 'error';
+                    groupData[group].error = error.data.message;
                     setGroupData([...groupData]);
 
-                    let timer = setTimeout(/* istanbul ignore next */ function () {
+                    let timer = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
@@ -179,182 +179,142 @@ const Azure = ({ UI, ...props }) => {
         setValue('azure.graph.client_secret', e.target.value);
     }
 
+    /* istanbul ignore next */
+    if (settings['azure.graph.tenant'] === undefined) {
+        return <Loader />
+    }
+
     if (graphApp.tenantId === null || graphApp.tenantId === "" || graphApp.tenantId === undefined) {
         return (
-            <>
-                <Button to="/settings" style="link" className="flex flex-auto -mt-8 -ml-4 text-sm uppercase">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                    </svg>
-                    Back to settings
-                </Button>
-                <div className="w-full py-6" id="azure">
-                    <div className="flex flex-row">
-                        <h6 className="text-gray-600 dark:text-gray-400 inline-block cursor-pointer text-2xl font-bold">Microsoft Azure Integration</h6>
-                    </div>
-                    <div className="flex flex-col min-w-0 break-words w-full my-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
-                        <div className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 py-6">
-                            <div className="px-4 py-2 -mt-2">
-                                <p>Please follow the guidance found in the
-                                    <Button href="https://docs.getwebapps.uk/configuration/azure-integration-setup" target="_blank" size="small" style="link">WebApps Documentation</Button>
-                                    to create your App Registration in Azure, then provide the required information below.
+            <PageWrapper title="Microsoft Azure Integration">
+                <p className="mb-6 text-gray-600 dark:text-gray-400 text-sm">
+                    Please follow the guidance found in the
+                    <Button href="https://docs.getwebapps.uk/configuration/microsoft-azure-integration/setup" target="_blank" size="small" type="link">WebApps Documentation</Button>
+                    to create your App Registration in Azure, then provide the required information below.
+                </p>
+                <Input
+                    id="client_id"
+                    name="client_id"
+                    label="Application (Client) ID"
+                    type="text"
+                    value={client.id}
+                    onChange={setClientID} />
+                <Input
+                    id="client_secret"
+                    name="client_secret"
+                    label="Client Secret"
+                    type="text"
+                    defaultValue={client.secret}
+                    onChange={setClientSecret} />
+                {
+                    (client.id !== "" && client.secret !== "")
+                        ? (
+                            <div className="text-center">
+                                <p>Click the button below to get started with Microsoft Azure Integration</p>
+                                <p className="mt-4">
+                                    <Button href={`https://login.microsoftonline.com/common/adminconsent?client_id=${client.id}&redirect_uri=${callback}`}
+                                        size="large">
+                                        Get Started
+                                    </Button>
                                 </p>
-                                <Input
-                                    id="client_id"
-                                    name="client_id"
-                                    label="Application (Client) ID"
-                                    type="text"
-                                    value={client.id}
-                                    onChange={setClientID} />
-                                <Input
-                                    id="client_secret"
-                                    name="client_secret"
-                                    label="Client Secret"
-                                    type="text"
-                                    defaultValue={client.secret}
-                                    onChange={setClientSecret} />
-                                {
-                                    (client.id !== "" && client.secret !== "")
-                                        ? (
-                                            <div className="text-center">
-                                                <p>Click the button below to get started with Microsoft Azure Integration</p>
-                                                <p className="mt-4">
-                                                    <Button href={`https://login.microsoftonline.com/common/adminconsent?client_id=${client.id}&redirect_uri=${callback}`}
-                                                        size="large">
-                                                        Get Started
-                                                    </Button>
-                                                </p>
-                                            </div>
-                                        )
-                                        : null
-                                }
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </>
+                        )
+                        : null
+                }
+            </PageWrapper>
         )
     }
 
     return (
-        <>
-            <Button to="/settings" style="link" className="flex flex-auto -mt-8 -ml-4 text-sm uppercase">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                </svg>
-                Back to settings
-            </Button>
-            <div className="w-full py-6" id="azure">
-                <div className="flex flex-row">
-                    <h6 className="text-gray-600 dark:text-gray-400 inline-block cursor-pointer text-2xl font-bold">Microsoft Azure Integration</h6>
-                </div>
-                <div className="flex flex-col min-w-0 break-words w-full my-6 shadow-lg rounded-lg bg-gray-100 dark:bg-gray-600 border-0 overflow-hidden">
-                    <div className="flex flex-col">
-                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
-                            <p className="font-semibold">Azure App Registration Information</p>
-                        </div>
-                        <div className="px-4 pt-4">
+        <PageWrapper title="Microsoft Azure Integration">
+            <h6 className="mb-4 text-gray-600 dark:text-gray-400 text-xl">Azure App Registration Information</h6>
+            <Input
+                id="azure.graph.client_id"
+                name="azure.graph.client_id"
+                label="Application (Client) ID"
+                type="text"
+                value={settings['azure.graph.client_id'] || ''}
+                onChange={onType}
+                onBlur={onChange}
+                state={states['azure.graph.client_id']} />
+            <Input
+                id="azure.graph.client_secret"
+                name="azure.graph.client_secret"
+                label="Client Secret"
+                type="text"
+                placeholder="(Not displayed)"
+                defaultValue=""
+                onChange={onType}
+                onBlur={onChange}
+                state={states['azure.graph.client_secret']} />
+            {
+                (settings['azure.graph.client_id'] !== "" && settings['azure.graph.client_secret'] !== "")
+                    ? (
+                        <>
+                            <h6 className="text-gray-600 dark:text-gray-400 text-xl">Azure Authentication</h6>
+                            <p className="mb-6 text-gray-600 dark:text-gray-400 text-sm">
+                                A User must be in a member of an Azure Mapped Group to authenticate with WebApps.
+                            </p>
+                            <Switch
+                                id="azure.graph.login_enabled"
+                                name="azure.graph.login_enabled"
+                                label="Enable Azure Authentication"
+                                checked={(settings['azure.graph.login_enabled'] === 'true')}
+                                onChange={onChange}
+                                state={states['azure.graph.login_enabled']}
+                                className="w-full mb-6" />
+                            <Switch
+                                id="azure.graph.default_login"
+                                name="azure.graph.default_login"
+                                label="Use Azure Authentication by Default"
+                                checked={(settings['azure.graph.default_login'] === 'true')}
+                                onChange={onChange}
+                                state={states['azure.graph.default_login']}
+                                className="w-full mb-6" />
+                            <h6 className="text-gray-600 dark:text-gray-400 text-xl">Map Azure Groups to WebApps Groups</h6>
+                            <p className={`${(typeof groupData === 'string') ? '' : 'mb-6'} text-gray-600 dark:text-gray-400 text-sm`}>
+                                Members of each Azure Group will be assigned to the mapped WebApps Group.
+                                User accounts will only be automatically created for members of these Groups.
+                            </p>
+                            <ComponentError retry={() => {
+                                errors.groupData = null;
+                                setErrors({ ...errors });
+                                getGroupMaps()
+                            }} title="Failed to load data!">
+                                {
+                                    (typeof errors.groupData === 'string')
+                                        ? <ComponentErrorTrigger error={errors.groupData} />
+                                        : Object(groups).map(function (group, i) {
+                                            return (
+                                                <div className="mb-6" key={i}>
+                                                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={`${group.id}`}>{group.name}</label>
+                                                    <AzureGroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
+                                                </div>
+                                            )
+                                        })
+                                }
+                            </ComponentError>
+                            <h6 className="mb-4 text-gray-600 dark:text-gray-400 text-xl">Azure Synchronisation Status</h6>
                             <Input
-                                id="azure.graph.client_id"
-                                name="azure.graph.client_id"
-                                label="Application (Client) ID"
+                                id="azure.graph.last_sync"
+                                name="azure.graph.last_sync"
+                                label="Last Synced"
                                 type="text"
-                                value={settings['azure.graph.client_id'] || ''}
-                                onChange={onType}
-                                onBlur={onChange}
-                                state={states['azure.graph.client_id']} />
-                            <Input
-                                id="azure.graph.client_secret"
-                                name="azure.graph.client_secret"
-                                label="Client Secret"
-                                type="text"
-                                placeholder="(Not displayed)"
-                                defaultValue=""
-                                onChange={onType}
-                                onBlur={onChange}
-                                state={states['azure.graph.client_secret']} />
-                        </div>
-                    </div>
-                    {
-                        (settings['azure.graph.client_id'] !== "" && settings['azure.graph.client_secret'] !== "")
-                            ? (
-                                <>
-                                    <div className="flex flex-col">
-                                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
-                                            <p className="font-semibold">Azure Authentication</p>
-                                        </div>
-                                        <div className="px-4 pt-4">
-                                            <div className="pt-2 pb-4">
-                                                <p>A User must be in a member of an Azure Mapped Group to authenticate with WebApps.</p>
-                                            </div>
-                                            <Switch
-                                                id="azure.graph.login_enabled"
-                                                name="azure.graph.login_enabled"
-                                                label="Enable Azure Authentication"
-                                                checked={(settings['azure.graph.login_enabled'] === 'true')}
-                                                onChange={onChange}
-                                                state={states['azure.graph.login_enabled']}
-                                                className="w-full mb-6" />
-                                            <Switch
-                                                id="azure.graph.default_login"
-                                                name="azure.graph.default_login"
-                                                label="Use Azure Authentication by Default"
-                                                checked={(settings['azure.graph.default_login'] === 'true')}
-                                                onChange={onChange}
-                                                state={states['azure.graph.default_login']}
-                                                className="w-full mb-6" />
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
-                                            <p className="font-semibold">Map Azure Groups to WebApps Groups</p>
-                                        </div>
-                                        <div className="px-4 pt-4">
-                                            <div className="pt-2 pb-4">
-                                                <p>Members of each Azure Group will be assigned to the mapped WebApps Group.
-                                                    User accounts will only be automatically created for members of these Groups.</p>
-                                            </div>
-                                            {
-                                                Object(groups).map(function (group, i) {
-                                                    return (
-                                                        <div className="mb-6" key={i}>
-                                                            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={`${group.id}`}>{group.name}</label>
-                                                            <AzureGroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="w-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 mb-0 px-4 py-6">
-                                            <p className="font-semibold">Azure Synchronisation Status</p>
-                                        </div>
-                                        <div className="px-4 pt-4">
-                                            <Input
-                                                id="azure.graph.last_sync"
-                                                name="azure.graph.last_sync"
-                                                label="Last Synced"
-                                                type="text"
-                                                value={moment(settings['azure.graph.last_sync']).calendar()}
-                                                readOnly disabled
-                                                action={
-                                                    <Button style="ghost" color="gray" size="small" square
-                                                        className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
-                                                        onClick={syncAzureNow}>
-                                                        {syncBtnText}
-                                                    </Button>
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                </>
-                            )
-                            : null
-                    }
-                </div>
-            </div>
-        </>
+                                value={moment(settings['azure.graph.last_sync']).calendar()}
+                                readOnly disabled
+                                action={
+                                    <Button type="ghost" color="gray" size="small" square
+                                        className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
+                                        onClick={syncAzureNow}>
+                                        {syncBtnText}
+                                    </Button>
+                                }
+                            />
+                        </>
+                    )
+                    : null
+            }
+        </PageWrapper>
     )
 }
 

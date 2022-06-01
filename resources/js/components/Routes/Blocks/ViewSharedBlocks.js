@@ -8,7 +8,7 @@ import { Grid, Filter, NoBlocks } from './BlockViews';
 let lastUri = '';
 let load = 30;
 
-const ViewBlocks = props => {
+const ViewSharedBlocks = props => {
     const username = props.match.params.username;
     const ownBlocks = (username === undefined);
 
@@ -51,12 +51,12 @@ const ViewBlocks = props => {
             });
 
         // Get first set of Blocks
-        let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=0`
-            : `/api/blocks/user/${username}?limit=${load}&offset=0`
+        let uri = (ownBlocks) ? `/api/blocks/shared?limit=${load}&offset=0`
+            : `/api/blocks/shared/user/${username}?limit=${load}&offset=0`
         await APIClient(uri, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     if (json.data.message === "No blocks found.") {
                         setHasBlocks(false);
                         return;
@@ -118,17 +118,13 @@ const ViewBlocks = props => {
 
     const loadMore = async () => {
         let offset = (filter === null) ? blocks.length : 0;
-        let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`
-            : `/api/blocks/user/${username}?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`;
+        let uri = (ownBlocks) ? `/api/blocks/shared?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`
+            : `/api/blocks/shared/user/${username}?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`;
 
         if (lastUri !== uri) {
             lastUri = uri;
             await APIClient(uri, undefined, { signal: APIController.signal })
                 .then(json => {
-                    /* istanbul ignore else */
-                    if (json.data.message === "No blocks found.") {
-                        return;
-                    }
                     /* istanbul ignore else */
                     if (document) {
                         Object.keys(json.data.styles).map(function (i) {
@@ -260,6 +256,9 @@ const ViewBlocks = props => {
                     setBlocks(_blocks);
                     setCurBlock([]);
 
+                    delete modals.preview_blocks;
+                    setModals({ ...modals });
+
                     /* istanbul ignore else */
                     if (total === 1) {
                         setHasBlocks(false);
@@ -270,6 +269,7 @@ const ViewBlocks = props => {
                 }
             })
             .catch(error => {
+                console.log(error);
                 /* istanbul ignore else */
                 if (isMounted()) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });
@@ -343,4 +343,4 @@ const ViewBlocks = props => {
     )
 }
 
-export default ViewBlocks;
+export default ViewSharedBlocks;

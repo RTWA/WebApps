@@ -1,31 +1,42 @@
-import React from 'react';
-import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import React, { useState } from 'react';
+import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { WebAppsUX } from 'webapps-react';
 
 import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 import AuthenticationSettings from '../../../resources/js/components/Routes/Settings/AuthenticationSettings';
 
-const typeValue = (key, value) => {
-    mockData.settings[key] = value;
-}
-
-const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
-    }
-    mockData.settings[key] = value;
-}
-
 mockData.settings['azure.graph.client_id'] = '000';
 mockData.settings['azure.graph.client_secret'] = 'abc';
 
-describe('AuthenticationSettings Component', () => {
-    test('Can Render', () => {
-        render(<WebApps><AuthenticationSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} roles={mockData.groups} states={{}} /></WebApps>);
+const TestElement = () => {
+    const [settings, setSettings] = useState(mockData.settings);
 
-        expect(screen.getByText(/allow registration/i)).toBeDefined();
+    const typeValue = (key, value) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    const setValue = (key, value, ce) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    return (
+        <>
+            <AuthenticationSettings settings={settings} typeValue={typeValue} setValue={setValue} roles={mockData.groups} states={{}} />
+            <button onClick={() => setValue('azure.graph.client_id', '', false)}>Clear Client</button>
+        </>
+    )
+}
+
+describe('AuthenticationSettings Component', () => {
+    test('Can Render', async () => {
+        render(<WebAppsUX><TestElement /></WebAppsUX>);
+
+        await waitFor(() => expect(screen.getByText(/allow registration/i)).toBeDefined());
     });
 
     test('Can Disable Registrations', async () => {
@@ -60,7 +71,7 @@ describe('AuthenticationSettings Component', () => {
         await waitFor(() => expect(screen.getByText(/default user group on registration/i)).toBeDefined());
     });
 
-    test('Cant See And Toggle Azure Authentication Options', async () => {
+    test('Can See And Toggle Azure Authentication Options', async () => {
         expect(screen.getByText(/enable azure authentication/i)).toBeDefined();
         expect(screen.getByText(/use azure authentication by default/i)).toBeDefined();
 
@@ -83,5 +94,19 @@ describe('AuthenticationSettings Component', () => {
             fireEvent.click(screen.getByRole('checkbox', { name: /use azure authentication by default/i }));
         });
         await waitFor(() => expect(mockData.settings['azure.graph.default_login']).toEqual('false'));
+    });
+
+    test('Azure Authentication Options Are Not Available When Azure Is Not Configured', async () => {
+        expect(screen.getByText(/enable azure authentication/i)).toBeDefined();
+        expect(screen.getByText(/use azure authentication by default/i)).toBeDefined();        
+        expect(screen.getByRole('button', { name: /clear client/i })).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /clear client/i }));
+        });
+        await waitFor(() => expect(mockData.settings['azure.graph.client_id']).toEqual(''));
+
+        expect(screen.queryByText(/enable azure authentication/i)).toBeNull();
+        expect(screen.queryByText(/use azure authentication by default/i)).toBeNull();
     });
 });

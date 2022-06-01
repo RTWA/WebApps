@@ -1,32 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import Azure from '../../../../resources/js/components/Routes/Settings/Azure';
-
-const typeValue = (key, value) => {
-    mockData.settings[key] = value;
-}
-
-const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
-    }
-    mockData.settings[key] = value;
-}
 
 mockData.settings['azure.graph.tenant'] = '123';
 mockData.settings['azure.graph.client_id'] = '1234';
 mockData.settings['azure.graph.client_secret'] = '4321';
 
+const TestElement = () => {
+    const [settings, setSettings] = useState(mockData.settings);
+
+    const typeValue = (key, value) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    const setValue = (key, value, ce) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    return <Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={setValue} typeValue={typeValue} />
+}
+
 describe('Azure Component - Configured', () => {
     test('Renders Azure', async () => {
-        render(<WebApps><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={setValue} typeValue={typeValue} /></BrowserRouter></WebApps>);
+        render(<WebAppsUX><BrowserRouter><TestElement /></BrowserRouter></WebAppsUX>);
 
-        expect(screen.getByText(/azure app registration information/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/azure app registration information/i)).toBeDefined());
         expect(screen.getByText(/map azure groups to webapps groups/i)).toBeDefined();
         expect(screen.getByText(/azure synchronisation status/i)).toBeDefined();
 
@@ -34,7 +40,7 @@ describe('Azure Component - Configured', () => {
     });
 
     test('Can Enable Azure Authentication', async () => {
-        expect(screen.getByRole('checkbox', {  name: /enable azure authentication/i})).toBeDefined();
+        expect(screen.getByRole('checkbox', { name: /enable azure authentication/i })).toBeDefined();
 
         await act(async () => {
             fireEvent.click(screen.getByRole('checkbox', { name: /enable azure authentication/i }));
@@ -43,16 +49,16 @@ describe('Azure Component - Configured', () => {
     });
 
     test('Can Enable Azure Auto Login', async () => {
-        expect(screen.getByRole('checkbox', {  name: /use azure authentication by default/i})).toBeDefined();
+        expect(screen.getByRole('checkbox', { name: /use azure authentication by default/i })).toBeDefined();
 
         await act(async () => {
-            fireEvent.click(screen.getByRole('checkbox', {  name: /use azure authentication by default/i}));
+            fireEvent.click(screen.getByRole('checkbox', { name: /use azure authentication by default/i }));
         });
         await waitFor(() => expect(mockData.settings['azure.graph.default_login']).toEqual('true'));
     });
 
     test('Can Disable Azure Authentication', async () => {
-        expect(screen.getByRole('checkbox', {  name: /enable azure authentication/i})).toBeDefined();
+        expect(screen.getByRole('checkbox', { name: /enable azure authentication/i })).toBeDefined();
 
         await act(async () => {
             fireEvent.click(screen.getByRole('checkbox', { name: /enable azure authentication/i }));
@@ -61,10 +67,10 @@ describe('Azure Component - Configured', () => {
     });
 
     test('Can Disable Azure Auto Login', async () => {
-        expect(screen.getByRole('checkbox', {  name: /use azure authentication by default/i})).toBeDefined();
+        expect(screen.getByRole('checkbox', { name: /use azure authentication by default/i })).toBeDefined();
 
         await act(async () => {
-            fireEvent.click(screen.getByRole('checkbox', {  name: /use azure authentication by default/i}));
+            fireEvent.click(screen.getByRole('checkbox', { name: /use azure authentication by default/i }));
         });
         await waitFor(() => expect(mockData.settings['azure.graph.default_login']).toEqual('false'));
     });

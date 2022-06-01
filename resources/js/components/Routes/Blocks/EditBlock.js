@@ -1,14 +1,17 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { Route } from 'react-router-dom';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Route, useHistory } from 'react-router-dom';
 
-import ReactHtmlParser, { convertNodeToElement } from "react-html-parser";
+import parse from 'html-react-parser';
 
 import { Image, Repeater, Select, Switch, Text } from '../../Fields';
 import PropertiesFlyout from './Flyouts/PropertiesFlyout';
+import ShareBlock from './Flyouts/ShareBlock';
+import UseBlock from './UseBlock';
 import { OrphanedBlock } from './BlockViews';
-import { APIClient, Button, Icon, Loader, useToasts, withWebApps } from 'webapps-react';
 
-export const PropertiesContext = createContext({});
+import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext, ConfirmDeleteButton } from 'webapps-react';
+
+export const FlyoutContext = createContext({});
 
 const Fields = {
     image: Image,
@@ -20,45 +23,61 @@ const Fields = {
 
 let value = '';
 let index = 0;
-let mounted = false;
 let saving = false;
 
-const EditBlock = ({ UI, ...props }) => {
+const EditBlock = props => {
+    const [error, setError] = useState();
     const [block, setBlock] = useState(null);
     const [repeater, setRepeater] = useState(0);
-    const [properties, setProperties] = useState(false);
+    const [context, setContext] = useState(null);
+    const [isUseBlock, setIsUseBlock] = useState(false);
+    const [canShare, setCanShare] = useState(true);
+
     /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
+    const history = useHistory();
 
+    const { user, checkGroup } = useContext(AuthContext);
+    const { theme, useFlyouts } = useContext(WebAppsUXContext);
+    const { flyout, openFlyout, closeFlyout } = useFlyouts;
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
 
     const APIController = new AbortController();
+    const isMountedRef = useRef(true);
+    const isMounted = useCallback(() => isMountedRef.current, []);
 
     useEffect(() => {
-        mounted = true;
         loadBlockData();
 
         return () => {
             APIController.abort();
-            mounted = false
+            void (isMountedRef.current = false);
         };
     }, []);
 
-    useEffect((block) => {
+    useEffect(async () => {
         /* istanbul ignore next */
-        if (mounted && block !== undefined) {
-            if (block.scripts !== undefined) {
-                eval(block.scripts);
+        if (isMounted() && block) {
+            if (block.owner != user?.id) {
+                setCanShare(false);
+                await checkGroup('Administrators')
+                    .then(r => setCanShare(r));
             }
-            if (block.preview.repeater !== undefined) {
-                eval(block.preview.repeater);
+            // Don't do anything if testing
+            if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                if (block.scripts !== undefined) {
+                    eval(block.scripts);
+                }
+                if (block.preview.repeater !== undefined) {
+                    eval(block.preview.repeater);
+                }
             }
         }
     }, [block]);
 
     useEffect(() => {
-        if (mounted && block !== null) {
+        if (isMounted() && block !== null) {
             /* istanbul ignore else */
             if (block.preview.repeater !== undefined) {
                 eval(block.preview.repeater);
@@ -70,7 +89,7 @@ const EditBlock = ({ UI, ...props }) => {
         await APIClient(`/api/blocks/${id}?edit=true`, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (mounted) {
+                if (isMounted()) {
                     Object.keys(json.data.styles).map(function (i) {
                         if (!document.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document.createElement("style");
@@ -82,10 +101,10 @@ const EditBlock = ({ UI, ...props }) => {
                     setBlock(json.data.block);
                 }
             })
-            .catch(/* istanbul ignore next */ error => {
-                if (!error.status.isAbort) {
-                    // TODO: Handle errors
-                    console.error(error);
+            .catch(error => {
+                /* istanbul ignore else */
+                if (!error.status.isAbort && isMounted()) {
+                    setError(error.data.message);
                 }
             });
     }
@@ -94,8 +113,9 @@ const EditBlock = ({ UI, ...props }) => {
         e.preventDefault();
 
         /* istanbul ignore else */
-        if (mounted)
+        if (isMounted()) {
             saving = true;
+        }
 
         addToast(
             "Saving changes, please wait...",
@@ -104,10 +124,10 @@ const EditBlock = ({ UI, ...props }) => {
             (id) => toastId = id
         );
 
-        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block), _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
+        await APIClient(`/api/blocks/${id}`, { block: JSON.stringify(block) }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (mounted) {
+                if (isMounted()) {
                     saving = false;
 
                     updateToast(
@@ -118,8 +138,6 @@ const EditBlock = ({ UI, ...props }) => {
                             title: json.data.message
                         }
                     );
-                    /* istanbul ignore next */
-                    props.history?.push(`/blocks/view/${block.publicId}`);
                 }
             })
             .catch(() => {
@@ -134,18 +152,35 @@ const EditBlock = ({ UI, ...props }) => {
                 );
 
                 /* istanbul ignore else */
-                if (mounted)
+                if (isMounted())
                     saving = false;
             });
     }
 
+    const deleteBlock = async () => {
+        await APIClient(`/api/blocks/${block.publicId}`, undefined, { method: 'DELETE', signal: APIController.signal })
+            .then(json => {
+                /* istanbul ignore else */
+                if (isMounted()) {
+                    addToast(json.data.message, '', { appearance: 'success' });
+                    history.goBack();
+                }
+            })
+            .catch(error => {
+                /* istanbul ignore else */
+                if (isMounted()) {
+                    addToast('Unable to delete block.', '', { appearance: 'error' });
+                }
+            })
+    }
+
     const update = (field, value, ref, index) => {
-        if (ref !== undefined && mounted) {
+        if (ref !== undefined && isMounted()) {
             block.settings[ref][index][field] = value;
             setBlock({ ...block });
         } else
             /* istanbul ignore else */
-            if (mounted) {
+            if (isMounted()) {
                 block.settings[field] = value;
                 setBlock({ ...block });
             }
@@ -156,15 +191,38 @@ const EditBlock = ({ UI, ...props }) => {
         block[name] = e.target.value;
 
         /* istanbul ignore else */
-        if (mounted)
+        if (isMounted())
             setBlock({ ...block });
+    }
+
+    const toggleUseBlock = e => {
+        e.preventDefault();
+        closeFlyout();
+        setIsUseBlock(!isUseBlock);
     }
 
     const toggleProperties = e => {
         e.preventDefault();
+        closeFlyout();
         /* istanbul ignore else */
-        if (mounted)
-            setProperties(!properties);
+        if (context !== 'properties') {
+            setContext('properties');
+            openFlyout();
+        } else {
+            setContext(null);
+        }
+    }
+
+    const toggleShare = e => {
+        e.preventDefault();
+        closeFlyout();
+        /* istanbul ignore else */
+        if (context !== 'share') {
+            setContext('share');
+            openFlyout();
+        } else {
+            setContext(null);
+        }
     }
 
     const toggleRepeater = tab => {
@@ -181,30 +239,42 @@ const EditBlock = ({ UI, ...props }) => {
         let name = e.target.dataset.name;
         let _new = JSON.parse(JSON.stringify(block.new[name][0]));
         block.settings[name] = block.settings[name].concat(_new);
-        setBlock({ ...block });
-        setRepeater(block.settings[name].length - 1);
+        if (isMounted()) {
+            setBlock({ ...block });
+            setRepeater(block.settings[name].length - 1);
+        }
     }
 
     const removeRepeater = (field, i) => {
-        delete block.settings[field][i];
-        block.settings[field] = block.settings[field].filter(function () {
-            return true;
-        })
-        setBlock({ ...block });
+        if (isMounted()) {
+            delete block.settings[field][i];
+            block.settings[field] = block.settings[field].filter(function () {
+                return true;
+            })
+            setBlock({ ...block });
+        }
     }
 
     /* istanbul ignore next */
     const repeaterSortEnd = (collection, oldIndex, newIndex) => {
-        let oldObject = block.settings[collection][oldIndex];
-        let newObject = block.settings[collection][newIndex];
+        if (isMounted()) {
+            let oldObject = block.settings[collection][oldIndex];
+            let newObject = block.settings[collection][newIndex];
 
-        block.settings[collection][oldIndex] = newObject;
-        block.settings[collection][newIndex] = oldObject;
-        setBlock({ ...block });
+            block.settings[collection][oldIndex] = newObject;
+            block.settings[collection][newIndex] = oldObject;
+            setBlock({ ...block });
+        }
     }
 
-    const transform = (node, key) => {
+    let key = 0;
+    const transform = (node) => {
         let Get = get;
+        if (node.attribs) {
+            // console.log(node, `receives key`, key)
+            node.attribs.key = key;
+            key++;
+        }
         if (node.type === "tag" && 'data-val' in node.attribs) {
             let variable = node.attribs['data-val'];
             if (Get(variable) !== "") {
@@ -216,23 +286,26 @@ const EditBlock = ({ UI, ...props }) => {
                     type: "text"
                 }];
                 delete node.attribs['data-val'];
-                return convertNodeToElement(node, key, transform);
+                return node;
             }
             return null;
         }
         if (node.type === "tag") {
             Object.keys(node.attribs).map(function (attr) {
-                let template = node.attribs[attr];
-                let r = template.match(/{[^}]+}/g);
-                r && r.forEach((state) => {
-                    let regex = new RegExp(state, 'g');
-                    let stateItem = state.split(/{|}/g)[1];
-                    /* istanbul ignore else */
-                    if (stateItem !== undefined)
-                        template = template.replace('{' + stateItem + '}', Get(stateItem));
-                    node.attribs[attr] = template;
-                });
-                return convertNodeToElement(node, key, transform);
+                if (attr !== 'key') {
+                    let template = node.attribs[attr];
+                    let r = template.match(/{[^}]+}/g);
+                    r && r.forEach((state) => {
+                        let regex = new RegExp(state, 'g');
+                        let stateItem = state.split(/{|}/g)[1];
+                        /* istanbul ignore else */
+                        if (stateItem !== undefined) {
+                            template = template.replace('{' + stateItem + '}', Get(stateItem));
+                        }
+                        node.attribs[attr] = template;
+                    });
+                }
+                return node;
             })
         }
         if (node.type === "text") {
@@ -246,7 +319,7 @@ const EditBlock = ({ UI, ...props }) => {
                     template = template.replace(regex, Get(stateItem));
                 node.data = template;
             });
-            return convertNodeToElement(node, key, transform);
+            return node;
         }
     }
 
@@ -260,32 +333,39 @@ const EditBlock = ({ UI, ...props }) => {
         }
     }
 
-    const preview = (block, transform) => {
-        /* istanbul ignore next */
-        if (block.preview !== Object(block.preview)) {
-            value = block.settings || '';
-            return (ReactHtmlParser(block.preview, { transform: transform }));
-        }
-
-        const html = [];
-        html.push(ReactHtmlParser(block.preview.before));
-        Object.keys(block.options).map(function (field) {
-            if (block.options[field].type === "repeater") {
-                Object.keys(block.settings[field]).map(function (r, idx) {
-                    value = block.settings[field][r];
-                    index = idx + 1;
-                    html.push(ReactHtmlParser(block.preview[field].each, { transform: transform }));
-                });
-            } else {
-                value = block.settings[field] || '';
-                html.push(ReactHtmlParser(block.preview[field], { transform: transform }));
+    const preview = (block) => {
+        try {
+            /* istanbul ignore next */
+            if (block.preview !== Object(block.preview)) {
+                value = block.settings || '';
+                return (parse(block.preview, { replace: domNode => transform(domNode) }));
             }
-        });
-        html.push(ReactHtmlParser(block.preview.after));
-        return html;
+            const html = [];
+            if (block.preview.before) {
+                html.push(parse(block.preview.before, { replace: domNode => transform(domNode) }));
+            }
+            Object.keys(block.options).map(function (field) {
+                if (block.options[field].type === "repeater") {
+                    Object.keys(block.settings[field]).map(function (r, idx) {
+                        value = block.settings[field][r];
+                        index = idx + 1;
+                        html.push(parse(block.preview[field].each, { replace: domNode => transform(domNode) }));
+                    });
+                } else {
+                    value = block.settings[field] || '';
+                    html.push(parse(block.preview[field], { replace: transform }));
+                }
+            });
+            if (block.preview.after) {
+                html.push(parse(block.preview.after, { replace: domNode => transform(domNode) }));
+            }
+            return html;
+        } catch (error) { console.error(error); }
     }
 
-    // render
+    if (error) {
+        throw new Error(error);
+    }
 
     if (block === null) {
         return <Loader />
@@ -306,80 +386,132 @@ const EditBlock = ({ UI, ...props }) => {
     };
 
     return (
-        <div className="flex flex-wrap">
-            <div className="w-full mb-5">
-                <label htmlFor="block_title" className="sr-only">Block Title</label>
-                <input
-                    type="text"
-                    id="block_title"
-                    name="title"
-                    className="mt-1 block w-full rounded-md text-xl bg-gray-100 dark:bg-gray-800 border-transparent focus:border-gray-500 focus:bg-white dark:focus:bg-gray-300 focus:ring-0"
-                    onChange={updateBlockProperties}
-                    value={block.title}
-                    placeholder="Unnamed Block" />
-            </div>
-            <div className="flex flex-col flex-col-reverse gap-y-4 xl:flex-row w-full">
-                <div className="w-full xl:w-5/12 px-4">
-                    <div className={block.plugin.slug} id="block-preview">
-                        {preview(block, transform)}
-                    </div>
+        <AppPage>
+            <PageWrapper>
+                <div className="w-full">
+                    <Input
+                        id="block_title"
+                        name="title"
+                        type="text"
+                        label="Block Title"
+                        labelClassName="sr-only"
+                        inputClassName="bg-gray-100 dark:bg-gray-800"
+                        wrapperClassName="mb-4"
+                        onChange={updateBlockProperties}
+                        value={block.title}
+                        placeholder="Unnamed Block" />
                 </div>
-                <div className="w-full xl:w-7/12">
-                    <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${UI.theme}-600 dark:border-${UI.theme}-500 border-t-2`}>
-                        <div className="flex flex-col flex-col-reverse sm:flex-row border-b border-gray-200 dark:border-gray-700 text-lg">
-                            <div className="flex flex-row px-4 py-2">
-                                <span className="font-medium mr-2">Plugin:</span>
-                                <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
-                            </div>
-                            <div className="w-full border-t border-gray-200 sm:border-t-0 sm:w-auto sm:ml-auto">
-                                <Button onClick={toggleProperties} style="ghost" square className="w-full sm:w-auto">
-                                    Block Properties
+                <div className="w-full flex flex-col lg:flex-row justify-end mb-4 gap-2">
+                    {/* If you dont own the block you shouldnt be able to share or delete it. just edit/save/use */}
+                    {
+                        (canShare)
+                            ? (
+                                <Button type="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleShare}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                    </svg>
+                                    Share Block
                                 </Button>
-                            </div>
+                            ) : null
+                    }
+                    <Button type="link" color="gray" className="flex flex-row items-center gap-2 font-normal" onClick={toggleProperties}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Block Properties
+                    </Button>
+                    {
+                        (!isUseBlock)
+                            ? (
+                                <Button type="link" className="flex flex-row items-center gap-2 font-normal" onClick={toggleUseBlock}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
+                                    Use Block
+                                </Button>
+                            ) : (
+                                <Button type="link" className="flex flex-row items-center gap-2 font-normal" onClick={toggleUseBlock}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                    Edit Block
+                                </Button>
+                            )
+                    }
+                    <ConfirmDeleteButton type="link" text="Delete this Block" className="lg:hidden flex" onClick={deleteBlock} />
+                </div>
+                <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 lg:flex-row w-full">
+                    <div className={`${(flyout.opened) ? 'w-0 hidden' : 'w-full lg:w-5/12'}`}>
+                        <div className={`${block.plugin.slug} mt-6 xl:mt-0`} id="block-preview">
+                            {preview(block)}
                         </div>
-                        {
-                            Object.keys(options).map(function (field, i) {
-                                if (options[field].type === "custom") {
-                                    value = block.settings;
-                                    // TODO: Custom field types
-                                    return null
-                                }
-                                let F = Fields[options[field].type];
-                                return F ? (
-                                    <Route key={i}
-                                        render={props => (
-                                            <F name={field} index={i} field={options[field]}
-                                                data={settings} update={update} value={settings[field]}
-                                                repeater={_repeater} {...props} />
-                                        )} />)
-                                    : (null);
-                            })
-                        }
-                        <div className="border-t border-gray-200 dark:border-gray-700 w-full">
+                    </div>
+                    <div className={`${(flyout.opened) ? 'w-full' : 'w-full lg:w-7/12'}`}>
+                        <div className={`overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 border-${theme}-600 dark:border-${theme}-500 border-t-2`}>
+                            <div className="flex flex-col flex-col-reverse sm:flex-row border-b border-gray-200 dark:border-gray-700 text-lg">
+                                <div className="flex flex-row px-4 py-2">
+                                    <span className="font-medium mr-2">Plugin:</span>
+                                    <Icon icon={block.plugin.icon} className="h5 w-5 mt-0.5 mr-2" /> {block.plugin.name}
+                                </div>
+                            </div>
                             {
-                                (saving)
+                                (!isUseBlock)
                                     ? (
-                                        <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} style="ghost" square className="flex w-full sm:w-auto">
-                                            <Loader style="circle" className="h-4 w-4 mr-2 mt-1" /> Saving...
-                                        </Button>
-                                    )
-                                    : (
-                                        <Button onClick={saveBlockData} style="ghost" square className="w-full sm:w-auto">
-                                            Save Changes & View
-                                        </Button>
+                                        <>
+                                            {
+                                                Object.keys(options).map(function (field, i) {
+                                                    if (options[field].type === "custom") {
+                                                        value = block.settings;
+                                                        // TODO: Custom field types
+                                                        return null
+                                                    }
+                                                    let F = Fields[options[field].type];
+                                                    return F ? (
+                                                        <Route key={i}
+                                                            render={props => (
+                                                                <F name={field} index={i} field={options[field]}
+                                                                    data={settings} update={update} value={settings[field]}
+                                                                    repeater={_repeater} {...props} />
+                                                            )} />)
+                                                        : (null);
+                                                })
+                                            }
+                                            <div className="border-t border-gray-200 dark:border-gray-700 w-full">
+                                                {
+                                                    (saving)
+                                                        ? (
+                                                            <Button onClick={/* istanbul ignore next */ e => e.preventDefault()} type="ghost" square className="flex items-center gap-x-2 w-full sm:w-auto">
+                                                                <Loader type="circle" height="5" width="5" /> Saving...
+                                                            </Button>
+                                                        )
+                                                        : (
+                                                            <Button onClick={saveBlockData} type="ghost" square className="w-full sm:w-auto">
+                                                                Save Changes
+                                                            </Button>
+                                                        )
+                                                }
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="p-4">
+                                            <UseBlock block={block} />
+                                        </div>
                                     )
                             }
                         </div>
+                        <ConfirmDeleteButton type="link" text="Delete this Block" className="ml-auto mt-8 hidden lg:flex" onClick={deleteBlock} />
                     </div>
                 </div>
-            </div>
+            </PageWrapper>
 
-
-            <PropertiesContext.Provider value={{ properties, toggleProperties }}>
-                <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
-            </PropertiesContext.Provider>
-        </div>
+            <Flyout>
+                <FlyoutContext.Provider value={{ context, toggleProperties, toggleShare }}>
+                    <PropertiesFlyout block={block} setBlock={setBlock} update={updateBlockProperties} />
+                    <ShareBlock block={block} setBlock={setBlock} />
+                </FlyoutContext.Provider>
+            </Flyout>
+        </AppPage>
     )
 }
 
-export default withWebApps(EditBlock);
+export default EditBlock;

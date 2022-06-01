@@ -1,15 +1,14 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import UsersGroups from '../../../../resources/js/components/Routes/Settings/UsersGroups';
 
 describe('UsersGroups Component - Users', () => {
     test('Renders User list', async () => {
-        render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebApps>);
-        await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
+        render(<WebAppsUX><BrowserRouter><UsersGroups groups={mockData.groups} /></BrowserRouter></WebAppsUX>);
         await waitFor(() => screen.getByRole('button', { name: /show disabled users \(2\)/i }));
 
         expect(screen.getByRole('heading', { name: /users/i })).toBeDefined();
@@ -22,7 +21,7 @@ describe('UsersGroups Component - Users', () => {
         await act(async () => {
             fireEvent.click(screen.getByText(/test jest user/i));
         });
-        await waitFor(() => screen.getByRole('heading', { name: /test jest user \- properties/i }));
+        await waitFor(() => screen.getByRole('heading', { name: /test jest user/i }));
 
         expect(screen.getByRole('link', { name: /view this user's block/i, hidden: true })).toBeDefined();
     });
@@ -106,7 +105,7 @@ describe('UsersGroups Component - Users', () => {
     });
 
     test('Can Change A Users Group', async () => {
-        expect(screen.getByRole('heading', { name: /test jest user \- properties/i })).toBeDefined();
+        expect(screen.getByRole('heading', { name: /test jest user/i })).toBeDefined();
 
         await act(async () => {
             fireEvent.change(screen.getByRole('combobox', { name: /change security group/i, hidden: true }), { target: { value: mockData.groups[0].id } });
@@ -116,7 +115,7 @@ describe('UsersGroups Component - Users', () => {
     });
 
     test('Can Disable A User', async () => {
-        expect(screen.getByRole('heading', { name: /test jest user \- properties/i })).toBeDefined();
+        expect(screen.getByRole('heading', { name: /test jest user/i })).toBeDefined();
 
         expect(screen.getByRole('button', { name: /disable user account/i })).toBeDefined();
 

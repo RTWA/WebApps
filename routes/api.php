@@ -14,6 +14,7 @@ use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UIController;
+use League\CommonMark\Parser\Block\BlockContinue;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,13 +81,17 @@ Route::group(
 
         // Blocks
         Route::get('/blocks', [BlocksController::class, 'index']);
+        Route::get('/blocks/shared', [BlocksController::class, 'shared']);
         Route::get('/blocks/count', [BlocksController::class, 'count']);
         Route::get('/blocks/views', [BlocksController::class, 'views']);
         Route::get('/blocks/user/{username}', [BlocksController::class, 'index']);
+        Route::get('/blocks/shared/user/{username}', [BlocksController::class, 'shared']);
         Route::get('/blocks/{publicId}', [BlocksController::class, 'show']);
         Route::put('/blocks/{publicId}', [BlocksController::class, 'update']);
         Route::delete('/blocks/{publicId}', [BlocksController::class, 'delete']);
         Route::post('/blocks/{publicId}/chown', [BlocksController::class, 'chown']);
+        Route::post('/blocks/{publicId}/share', [BlocksController::class, 'setShare']);
+        Route::delete('/blocks/{publicId}/share', [BlocksController::class, 'removeShare']);
 
         // Plugins
         Route::get('/plugins', [PluginsController::class, 'all']);
