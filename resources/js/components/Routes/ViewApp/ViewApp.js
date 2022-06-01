@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 const ViewApp = props => {
-    const { routedata, staticContext, ...rest } = props;
+    const { routedata, staticContext, history, location, match, ...rest } = props;
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -15,7 +15,7 @@ const ViewApp = props => {
     }, []);
 
     return (
-        <div id="WebApps_AppContainer" {...rest} />
+        <div id="WebApps_AppContainer" className="h-full w-full" {...rest} />
     )
 }
 
