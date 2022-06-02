@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BlockSharedMail;
 use App\Models\Block;
 use App\Models\BlockViews;
 use App\Models\Media;
@@ -12,6 +13,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -222,7 +224,8 @@ class BlocksController extends Controller
             if ($block === null) {
                 abort(406, "View ($publicId) not found. Please check and try again.");
             }
-            if ($block->owner != Auth::user()->id
+            if (
+                $block->owner != Auth::user()->id
                 && !Auth::user()->hasRole('Administrators')
                 && !$blocksService->blockIsSharedWith($block, Auth::user()->id)
             ) {
@@ -264,8 +267,8 @@ class BlocksController extends Controller
 
         // Verify the logged in User is the Block owner, or an Admin
         if ((Auth::user()->id <> $blockData['owner']
-            && !Auth::user()->hasRole('Administrators')
-            && !(new BlocksService())->blockIsSharedWith(Block::find($blockData['id']), Auth::user()->id))
+                && !Auth::user()->hasRole('Administrators')
+                && !(new BlocksService())->blockIsSharedWith(Block::find($blockData['id']), Auth::user()->id))
             || !Auth::user()->hasPermissionTo('blocks.create')
         ) {
             abort(403, 'You do not have permission to edit this block.');
@@ -443,7 +446,7 @@ class BlocksController extends Controller
      */
     public function setShare(Request $request, $publicId)
     {
-        $block = Block::findByPublicId($publicId)->with('shares')->firstOrFail();
+        $block = Block::findByPublicId($publicId)->with('shares')->with('user')->firstOrFail();
 
         if (Auth::id() !== $block->owner) {
             abort(403, 'You do not have permission to share this Block.');
@@ -451,6 +454,12 @@ class BlocksController extends Controller
 
         $block->shares()->attach($request->input('user_id'));
         $block->refresh();
+
+        $user = User::find($request->input('user_id'));
+        if ($user->email) {
+            Mail::to($user->email)
+                ->send(new BlockSharedMail($user, $block));
+        }
 
         return response()->json(['shares' => $block->shares], 201);
     }
