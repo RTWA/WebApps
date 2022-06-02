@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Input, useToasts, WebAppsUXContext } from 'webapps-react';
+import { Input, Textarea, useToasts, WebAppsUXContext } from 'webapps-react';
 
 const UseBlock = props => {
     const { block } = props;
@@ -18,8 +18,13 @@ const UseBlock = props => {
         <>
             <label htmlFor="simple-text" className="text-gray-600 dark:text-gray-400 text-sm font-normal">Embed the Block in your web page</label>
             <CopyToClipboard text={textarea} onCopy={/* istanbul ignore next */ () => { addToast("Copied to clipboard!", '', { appearance: 'success' }) }}>
-                <textarea className={`bg-transparent border-2 border-gray-400 text-gray-900 outline-none text-sm rounded-lg block w-full p-2.5 focus:bg-gray-50 dark:focus:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-colors focus:ring-0 focus:border-${theme}-600 dark:focus:border-${theme}-500`}
-                    value={textarea} readOnly rows="4" id="simple-text" />
+                <Textarea
+                    id="simple-text"
+                    name="simple-text"
+                    wrapperClassName=""
+                    readOnly
+                    value={textarea}
+                />
             </CopyToClipboard>
             <div className="relative my-6 h-px bg-gray-600 dark:bg-gray-400">
                 <div className="absolute left-0 top-0 flex justify-center w-full -mt-2">

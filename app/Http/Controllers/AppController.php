@@ -21,13 +21,12 @@ class AppController extends Controller
 
     public function checkUpdates()
     {
-        Cache::forget('webapps_latest_release');
-        $latest = Cache::remember('webapps_latest_release', now()->addDays(7), function () {
+        $latest = Cache::remember('webapps_latest_release', now()->addDays(1), function () {
             return GitHub::repo()->releases()->latest('RTWA', 'WebApps');
         });
 
         $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
-        
+
         if (version_compare(
             str_replace("v", "", $latest['tag_name']),
             $this->readWebAppsJson()['app_version'],
@@ -36,9 +35,11 @@ class AppController extends Controller
             $updates['WebApps'] = [
                 'version' => $latest['tag_name'],
             ];
-            ApplicationSettings::set('core.available.updates', json_encode($updates));
+        } elseif (isset($updates['WebApps'])) {
+            unset($updates['WebApps']);
         }
-        
+        ApplicationSettings::set('core.available.updates', json_encode($updates));
+
 
         return response()->json([
             'available' => version_compare(

@@ -170,6 +170,8 @@ class PluginsService
             $_plugin->background_color = $plugin['background_color'];
             $_plugin->author = $plugin['author'];
             $_plugin->save();
+
+            $this->removeFromUpdateList($slug);
         }
 
         return true;
@@ -220,12 +222,29 @@ class PluginsService
         if (!isset($updates['plugins'])) {
             $updates['plugins'] = [];
         }
-        
+
         if (!in_array($slug, $updates['plugins'])) {
             $updates['plugins'][$slug] = [
                 'version' => $this->repoData[$slug]['latest']['version'],
                 'changelog' => $this->repoData[$slug]['latest']['changelog']
             ];
+            ApplicationSettings::set('core.available.updates', json_encode($updates));
+        }
+    }
+
+    /**
+     * Removes Plugin data to the Updates List
+     */
+    private function removeFromUpdateList($slug)
+    {
+        $updates = json_decode(ApplicationSettings::get('core.available.updates'), true);
+
+        if (!isset($updates['plugins'])) {
+            $updates['plugins'] = [];
+        }
+
+        if (in_array($slug, $updates['plugins'])) {
+            unset($updates['plugins'][$slug]);
             ApplicationSettings::set('core.available.updates', json_encode($updates));
         }
     }

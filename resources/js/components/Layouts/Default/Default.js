@@ -21,7 +21,7 @@ const Default = () => {
         <div className="flex md:flex-row flex-col h-full">
             <Sidebar />
             <AppError theme={theme}>
-                <div className="flex flex-col flex-auto w-full min-w-0 h-full relative overflow-hidden" id="app-content">
+                <div className="flex flex-col flex-auto w-full min-w-0 h-full overflow-hidden" id="app-content">
                     <Headerbar>
                         <button
                             className="cursor-pointer text-gray-600 dark:text-gray-400 text-xl leading-none bg-transparent outline-none"
