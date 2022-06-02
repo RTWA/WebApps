@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\MSGraph\CouldNotGetToken;
 use App\Models\MSGraphToken;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -26,7 +27,12 @@ class MSGraphController extends Controller
         // Check Azure Tenant ID is set
         $tenant = ApplicationSettings::get('azure.graph.tenant');
         if (!$tenant) {
-            abort(500, 'Azure Tenant ID is not set!');
+            throw CouldNotGetToken::serviceRespondedWithError(
+                '500',
+                'Azure Tenant ID is not set!',
+                '29',
+                __DIR__.DIRECTORY_SEPARATOR.'MSGraphController.php'
+            );
         }
 
         // Get any tokens that have at least 5 minutes left before they expire
@@ -38,7 +44,12 @@ class MSGraphController extends Controller
         $client_id = ApplicationSettings::get('azure.graph.client_id');
         $client_secret = Crypt::decryptString(ApplicationSettings::get('azure.graph.client_secret'));
         if (!$client_id || !$client_secret) {
-            abort(500, 'App Registration Information Missing!');
+            throw CouldNotGetToken::serviceRespondedWithError(
+                '500',
+                'App Registration Information Missing!',
+                '46',
+                __DIR__.DIRECTORY_SEPARATOR.'MSGraphController.php'
+            );
         }
 
         // Get a new token from Microsoft
@@ -67,7 +78,12 @@ class MSGraphController extends Controller
         $content = json_decode(curl_exec($curl), true);
         curl_close($curl);
         if (isset($content['error'])) {
-            abort(500, $content['error_description']);
+            throw CouldNotGetToken::serviceRespondedWithError(
+                '500',
+                $content['error_description'],
+                '80',
+                __DIR__.DIRECTORY_SEPARATOR.'MSGraphController.php'
+            );
         }
 
         $token = MSGraphToken::create([
