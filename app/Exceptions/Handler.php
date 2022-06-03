@@ -41,7 +41,7 @@ class Handler extends ExceptionHandler
 
     public function report(Throwable $exception)
     {
-        if (Schema::hasTable('error_log')) {
+        if (Schema::hasTable('error_log') && $exception->getMessage() <> 'Unauthenticated.') {
             ErrorLog::create([
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),
