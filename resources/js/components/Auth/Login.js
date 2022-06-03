@@ -92,8 +92,14 @@ const Login = props => {
         }
     };
 
+    const keyDown = e => {
+        if (e.keyCode === 13) {
+            handleLogin(e);
+        }
+    }
+
     return (
-        <form onSubmit={handleLogin} name="login">
+        <form onSubmit={handleLogin} name="login" onKeyDown={keyDown}>
             {
                 (state.alert) ? (
                     <div className="text-center font-medium bg-red-300 border border-red-700 text-red-700 w-full mb-4 rounded py-2"
