@@ -13,6 +13,10 @@ const Default = () => {
     const { theme, useNavigation } = useContext(WebAppsUXContext);
     const { navigation, toggleNavigation } = useNavigation;
 
+    if (localStorage.getItem('WA_Login')) {
+        localStorage.removeItem('WA_Login');
+    }
+
     if (theme === undefined || !navigation.menu) {
         return null
     }
