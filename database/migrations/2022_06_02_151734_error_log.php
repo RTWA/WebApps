@@ -17,7 +17,7 @@ class ErrorLog extends Migration
             $table->id();
             $table->string('file')->nullable();
             $table->string('line')->nullable();
-            $table->string('message')->nullable();
+            $table->text('message')->nullable();
             $table->text('trace')->nullable();
             $table->text('tags')->nullable();
             $table->timestamps();

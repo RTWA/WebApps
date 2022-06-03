@@ -1,9 +1,11 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { APIClient, ComponentError, ComponentErrorTrigger, PageWrapper, Scrollbar, useToasts, WebAppsUXContext } from 'webapps-react';
+import { APIClient, Button, ComponentError, ComponentErrorTrigger, Loader, PageWrapper, Scrollbar, useToasts, WebAppsUXContext } from 'webapps-react';
 import moment from 'moment';
 import classNames from 'classnames';
 
 let APIController = new AbortController;
+
+moment.locale(window.navigator.userLanguage || window.navigator.language);
 
 const SystemInfo = () => {
     const { addToast } = useToasts();
@@ -13,7 +15,8 @@ const SystemInfo = () => {
     const [productInfo, setProductInfo] = useState({});
     const [updateCheck, setUpdateCheck] = useState(null);
     const [showUpdateHistory, setShowUpdateHistory] = useState(false);
-    const [errorLog, setErrorLog] = useState();
+    const [systemTasks, setSystemTasks] = useState(null);
+    const [errorLog, setErrorLog] = useState(null);
     const [errorInfo, setErrorInfo] = useState();
     const [tab, setTab] = useState(0);
 
@@ -23,6 +26,7 @@ const SystemInfo = () => {
     useEffect(async () => {
         await loadProductInfo();
         await checkForUpdate();
+        await getSystemTasks();
         await getErrorLog();
 
         return () => {
@@ -83,6 +87,21 @@ const SystemInfo = () => {
             });
     }
 
+    const getSystemTasks = async () => {
+        await APIClient('/api/system-tasks', undefined, { signal: APIController.signal })
+            .then(json => {
+                if (isMounted()) {
+                    setSystemTasks(json.data.tasks);
+                }
+            })
+            .catch(error => {
+                if (!error.status?.isAbort) {
+                    errors.tasks = error.data.message;
+                    setErrors({ ...errors });
+                }
+            })
+    }
+
     const getErrorLog = async () => {
         await APIClient('/api/error-log', undefined, { signal: APIController.signal })
             .then(json => {
@@ -96,6 +115,22 @@ const SystemInfo = () => {
                     setErrors({ ...errors });
                 }
             });
+    }
+
+    const runTask = async command => {
+        await APIClient('/api/run-task', { command: command }, { signal: APIController.signal })
+            .then(json => {
+                if (isMounted()) {
+                    setSystemTasks(json.data.tasks);
+                    addToast('Task ran successfully!', '', { appearance: 'success' });
+                }
+            })
+            .catch(async error => {
+                if (!error.status?.isAbort) {
+                    addToast('Failed to run task', error.data.message, { appearance: 'error' });
+                    await getErrorLog();
+                }
+            })
     }
 
     const clearCache = async () => {
@@ -223,37 +258,191 @@ const SystemInfo = () => {
 
             <nav className="flex flex-col sm:flex-row border-b border-gray-300 dark:border-gray-600">
                 <button className={tabClass(0)} onClick={() => setTab(0)}>
+                    System Tasks
+                </button>
+                <button className={tabClass(1)} onClick={() => setTab(1)}>
                     Error Log
                 </button>
             </nav>
             <div className={paneClass(0)}>
                 <Scrollbar>
-                    <div className="grid grid-cols-5">
-                        <h6 className="text-left font-semibold">When?</h6>
-                        <h6 className="text-left font-semibold col-span-2">What?</h6>
-                        <h6 className="text-left font-semibold col-span-2">Where?</h6>
-                    </div>
+                    {
+                        (systemTasks)
+                            ? (
+                                <>
+                                    <h3 className="font-bold mb-3">Media Cleanup</h3>
+                                    <div className="grid grid-cols-5">
+                                        <h6 className="font-semibold">Items Deleted</h6>
+                                        <h6 className="font-semibold">Last Ran</h6>
+                                        <h6 className="font-semibold">Next Due</h6>
+                                        <h6 className="font-semibold">Schedule</h6>
+                                        <h6 className="font-semibold">&nbsp;</h6>
+                                    </div>
+                                    <div className="py-1 text-xs grid grid-cols-5">
+                                        <p className="pl-10">{systemTasks.cleanUpMedia.lastQty}</p>
+                                        <p>{moment(systemTasks.cleanUpMedia.lastRun).calendar()}</p>
+                                        <p>{
+                                            moment(systemTasks.cleanUpMedia.lastRun)
+                                                .add(systemTasks.cleanUpMedia.schedule[0], systemTasks.cleanUpMedia.schedule[1])
+                                                .calendar()
+                                        }</p>
+                                        <p>Every {systemTasks.cleanUpMedia.schedule[0]} {systemTasks.cleanUpMedia.schedule[1]}</p>
+                                        <Button
+                                            type="link"
+                                            padding={false}
+                                            onClick={() => runTask(systemTasks.cleanUpMedia.command)}
+                                        >
+                                            Run Now
+                                        </Button>
+                                    </div>
+
+                                    <h3 className="font-bold mt-6 mb-3">Microsoft Azure Integration</h3>
+                                    <div className="grid grid-cols-5">
+                                        <h6 className="font-semibold">Task Name</h6>
+                                        <h6 className="font-semibold">Last Ran</h6>
+                                        <h6 className="font-semibold">Next Due</h6>
+                                        <h6 className="font-semibold">Schedule</h6>
+                                        <h6 className="font-semibold">&nbsp;</h6>
+                                    </div>
+                                    <div className="py-1 text-xs grid grid-cols-5">
+                                        <p>Sync Users and Groups</p>
+                                        <p>{moment(systemTasks.azure.sync.lastRun).fromNow()}</p>
+                                        <p>{
+                                            moment(systemTasks.azure.sync.lastRun)
+                                                .add(systemTasks.azure.sync.schedule[0], systemTasks.azure.sync.schedule[1])
+                                                .fromNow()
+                                        }</p>
+                                        <p>Every {systemTasks.azure.sync.schedule[0]} {systemTasks.azure.sync.schedule[1]}</p>
+                                        <Button
+                                            type="link"
+                                            padding={false}
+                                            onClick={() => runTask(systemTasks.azure.sync.command)}
+                                        >
+                                            Run Now
+                                        </Button>
+
+                                        <p>Cleanup Access Tokens</p>
+                                        <p>{moment(systemTasks.azure.cleanup.lastRun).fromNow()}</p>
+                                        <p>{
+                                            moment(systemTasks.azure.cleanup.lastRun)
+                                                .add(systemTasks.azure.cleanup.schedule[0], systemTasks.azure.cleanup.schedule[1])
+                                                .fromNow()
+                                        }</p>
+                                        <p>Every {systemTasks.azure.cleanup.schedule[0]} {systemTasks.azure.cleanup.schedule[1]}</p>
+                                        <Button
+                                            type="link"
+                                            padding={false}
+                                            onClick={() => runTask(systemTasks.azure.cleanup.command)}
+                                        >
+                                            Run Now
+                                        </Button>
+                                    </div>
+                                    {
+                                        (systemTasks.appsTasks.length > 0)
+                                            ? (
+                                                <>
+                                                    <h3 className="font-bold mt-6 mb-3">Apps Tasks</h3>
+                                                    <div className="grid grid-cols-6">
+                                                        <h6 className="font-semibold">App</h6>
+                                                        <h6 className="font-semibold">Command</h6>
+                                                        <h6 className="font-semibold">Last Ran</h6>
+                                                        <h6 className="font-semibold">Next Due</h6>
+                                                        <h6 className="font-semibold">Schedule</h6>
+                                                        <h6 className="font-semibold">&nbsp;</h6>
+                                                    </div>
+                                                    <div className="py-1 text-xs">
+                                                        {
+                                                            systemTasks.appsTasks.map((task, i) => {
+                                                                let schedule = task.schedule.split(' ');
+                                                                return (
+                                                                    <div className="grid grid-cols-6" key={i}>
+                                                                        <p>{task.app}</p>
+                                                                        <p>{task.command.replace(`${task.app}:`, '')}</p>
+                                                                        <p>{moment(task.last_run).fromNow()}</p>
+                                                                        <p>{
+                                                                            moment(task.last_run)
+                                                                                .add(schedule[0][1], schedule[1])
+                                                                                .fromNow()
+                                                                        }</p>
+                                                                        <p>Every {schedule[0][1]} {schedule[1]}</p>
+                                                                        <Button
+                                                                            type="link"
+                                                                            padding={false}
+                                                                            onClick={() => runTask(task.command)}
+                                                                        >
+                                                                            Run Now
+                                                                        </Button>
+                                                                    </div>
+                                                                )
+                                                            })
+                                                        }
+                                                    </div>
+                                                </>
+                                            ) : null
+                                    }
+                                    <h3 className="font-bold mt-6 mb-3">Error Log Cleanup</h3>
+                                    <div className="grid grid-cols-4">
+                                        <h6 className="font-semibold">Last Ran</h6>
+                                        <h6 className="font-semibold">Next Due</h6>
+                                        <h6 className="font-semibold">Schedule</h6>
+                                        <h6 className="font-semibold">&nbsp;</h6>
+                                    </div>
+                                    <div className="py-1 text-xs grid grid-cols-4">
+                                        <p>{moment(systemTasks.cleanUpLog.lastRun).calendar()}</p>
+                                        <p>{
+                                            moment(systemTasks.cleanUpLog.lastRun)
+                                                .add(systemTasks.cleanUpLog.schedule[0], systemTasks.cleanUpLog.schedule[1])
+                                                .calendar()
+                                        }</p>
+                                        <p>Every {systemTasks.cleanUpLog.schedule[0]} {systemTasks.cleanUpLog.schedule[1]}</p>
+                                        <Button
+                                            type="link"
+                                            padding={false}
+                                            onClick={() => runTask(systemTasks.cleanUpLog.command)}
+                                        >
+                                            Run Now
+                                        </Button>
+                                    </div>
+                                </>
+                            ) : <Loader type="circle" height="12" width="12" />
+                    }
+                </Scrollbar>
+            </div>
+            <div className={paneClass(1)}>
+                <Scrollbar>
                     {
                         (errorLog)
-                            ? errorLog.map((error, i) => {
-                                return (
-                                    <div
-                                        className="py-1 text-xs grid grid-cols-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-                                        key={i}
-                                        onClick={() => { (errorInfo === i) ? setErrorInfo() : setErrorInfo(i) }}
-                                    >
-                                        <p>{moment(error.created_at).calendar()}</p>
-                                        <p className="col-span-2">{error.message}</p>
-                                        <p className="col-span-2">{error.file}:{error.line}</p>
-                                        {
-                                            (errorInfo === i)
-                                                ? <div className="col-span-5"><pre>{error.trace}</pre></div>
-                                                : null
-                                        }
+                            ? (
+                                <>
+                                    <div className="grid grid-cols-5">
+                                        <h6 className="text-left font-semibold">When?</h6>
+                                        <h6 className="text-left font-semibold col-span-2">What?</h6>
+                                        <h6 className="text-left font-semibold col-span-2">Where?</h6>
                                     </div>
-                                )
-                            })
-                            : null
+                                    {
+                                        (errorLog)
+                                            ? errorLog.map((error, i) => {
+                                                return (
+                                                    <div
+                                                        className="py-1 text-xs grid grid-cols-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                        key={i}
+                                                        onClick={() => { (errorInfo === i) ? setErrorInfo() : setErrorInfo(i) }}
+                                                    >
+                                                        <p>{moment(error.created_at).calendar()}</p>
+                                                        <p className="col-span-2">{error.message}</p>
+                                                        <p className="col-span-2">{error.file}:{error.line}</p>
+                                                        {
+                                                            (errorInfo === i)
+                                                                ? <div className="col-span-5"><pre>{error.trace}</pre></div>
+                                                                : null
+                                                        }
+                                                    </div>
+                                                )
+                                            })
+                                            : null
+                                    }
+                                </>
+                            ) : <Loader type="circle" height="12" width="12" />
                     }
                 </Scrollbar>
             </div>
