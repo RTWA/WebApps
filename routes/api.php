@@ -48,6 +48,7 @@ Route::group(
         Route::get('/update-info', [AppController::class, 'getUpdateInfo']);
         Route::get('/update-check', [AppController::class, 'checkUpdates']);
         Route::get('/clear-cache', [AppController::class, 'clearCache']);
+        Route::get('/error-log', [AppController::class, 'getErrorLog']);
 
         // Security Settings
         Route::get('/groups', [SecurityController::class, 'groups']);

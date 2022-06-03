@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { APIClient, ComponentError, ComponentErrorTrigger, PageWrapper, useToasts, WebAppsUXContext } from 'webapps-react';
+import { APIClient, ComponentError, ComponentErrorTrigger, PageWrapper, Scrollbar, useToasts, WebAppsUXContext } from 'webapps-react';
 import moment from 'moment';
+import classNames from 'classnames';
 
 let APIController = new AbortController;
 
@@ -12,6 +13,9 @@ const SystemInfo = () => {
     const [productInfo, setProductInfo] = useState({});
     const [updateCheck, setUpdateCheck] = useState(null);
     const [showUpdateHistory, setShowUpdateHistory] = useState(false);
+    const [errorLog, setErrorLog] = useState();
+    const [errorInfo, setErrorInfo] = useState();
+    const [tab, setTab] = useState(0);
 
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
@@ -19,6 +23,7 @@ const SystemInfo = () => {
     useEffect(async () => {
         await loadProductInfo();
         await checkForUpdate();
+        await getErrorLog();
 
         return () => {
             void (isMountedRef.current = false);
@@ -78,6 +83,21 @@ const SystemInfo = () => {
             });
     }
 
+    const getErrorLog = async () => {
+        await APIClient('/api/error-log', undefined, { signal: APIController.signal })
+            .then(json => {
+                if (isMounted()) {
+                    setErrorLog(json.data.logs);
+                }
+            })
+            .catch(error => {
+                if (!error.status?.isAbort) {
+                    errors.ironic = error.data.message;
+                    setErrors({ ...errors });
+                }
+            });
+    }
+
     const clearCache = async () => {
         await APIClient('/api/clear-cache', undefined, { signal: APIController.signal })
             .then(json => {
@@ -101,6 +121,26 @@ const SystemInfo = () => {
     const toggleUpdateHistory = () => {
         setShowUpdateHistory(!showUpdateHistory);
     }
+
+    const tabClass = id => classNames(
+        'text-gray-600',
+        'dark:text-gray-200',
+        'py-4',
+        'px-6',
+        'hover:text-gray-800',
+        'dark:hover:text-white',
+        'focus:outline-none',
+        (tab === id) ? 'border-b-2' : '',
+        (tab === id) ? 'font-medium' : '',
+        (tab === id) ? `border-${theme}-500` : ''
+    )
+
+    const paneClass = id => classNames(
+        'p-5',
+        'w-full',
+        'overflow-x-hidden',
+        (tab === id) ? 'block' : 'hidden'
+    )
 
     return (
         <PageWrapper>
@@ -179,6 +219,43 @@ const SystemInfo = () => {
                             </table>
                     }
                 </ComponentError>
+            </div>
+
+            <nav className="flex flex-col sm:flex-row border-b border-gray-300 dark:border-gray-600">
+                <button className={tabClass(0)} onClick={() => setTab(0)}>
+                    Error Log
+                </button>
+            </nav>
+            <div className={paneClass(0)}>
+                <Scrollbar>
+                    <div className="grid grid-cols-5">
+                        <h6 className="text-left font-semibold">When?</h6>
+                        <h6 className="text-left font-semibold col-span-2">What?</h6>
+                        <h6 className="text-left font-semibold col-span-2">Where?</h6>
+                    </div>
+                    {
+                        (errorLog)
+                            ? errorLog.map((error, i) => {
+                                return (
+                                    <div
+                                        className="py-1 text-xs grid grid-cols-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        key={i}
+                                        onClick={() => { (errorInfo === i) ? setErrorInfo() : setErrorInfo(i) }}
+                                    >
+                                        <p>{moment(error.created_at).calendar()}</p>
+                                        <p className="col-span-2">{error.message}</p>
+                                        <p className="col-span-2">{error.file}:{error.line}</p>
+                                        {
+                                            (errorInfo === i)
+                                                ? <div className="col-span-5"><pre>{error.trace}</pre></div>
+                                                : null
+                                        }
+                                    </div>
+                                )
+                            })
+                            : null
+                    }
+                </Scrollbar>
             </div>
         </PageWrapper>
     );

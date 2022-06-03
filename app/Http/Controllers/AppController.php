@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ErrorLog;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use Illuminate\Support\Facades\Cache;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 
 class AppController extends Controller
 {
+    public function getErrorLog()
+    {
+        return response()->json([
+            'logs' => ErrorLog::all()
+        ], 200);
+    }
+
     public function getProductNameAndVersion()
     {
         return response()->json($this->readWebAppsJson(), 200);
