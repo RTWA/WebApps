@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('apps:schedule')->everyMinute();
         $schedule->command('azure:sync')->everyThirtyMinutes();
+        $schedule->command('cleanup:errorLog')->daily();
         $schedule->command('cleanup:msgraph')->hourly();
         $schedule->command('webapps:cleanup-media')->weekly();
     }
