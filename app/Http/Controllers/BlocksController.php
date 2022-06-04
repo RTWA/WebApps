@@ -224,8 +224,7 @@ class BlocksController extends Controller
             if ($block === null) {
                 abort(406, "View ($publicId) not found. Please check and try again.");
             }
-            if (
-                $block->owner != Auth::user()->id
+            if ($block->owner != Auth::user()->id
                 && !Auth::user()->hasRole('Administrators')
                 && !$blocksService->blockIsSharedWith($block, Auth::user()->id)
             ) {
