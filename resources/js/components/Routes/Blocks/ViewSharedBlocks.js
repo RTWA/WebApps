@@ -310,14 +310,9 @@ const ViewSharedBlocks = props => {
         return (
             <PageWrapper>
                 <NoBlocks>
-                    {
-                        (ownBlocks) ?
-                            (<h4>You have not created any blocks yet.<br />
-                                <Button type="link" to="/blocks/new">Why not create one now?</Button>
-                            </h4>)
-                            : (<h4>This user has not created any blocks yet.</h4>)
-                    }
-
+                    <h4>No Blocks have been shared with you yet.<br />
+                        <Button type="link" to="/blocks/new">Why not create your own?</Button>
+                    </h4>
                 </NoBlocks>
             </PageWrapper>
         )
