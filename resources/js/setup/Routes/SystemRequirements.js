@@ -62,7 +62,7 @@ const SystemRequirements = ({ color, routedata }) => {
     }
 
     if (!requirements || !phpSupportInfo || !permissions) {
-        return <Loader />;
+        return <div className="h-full"><Loader color="gray" /></div>
     }
 
     return (

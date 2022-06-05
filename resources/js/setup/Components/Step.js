@@ -17,7 +17,6 @@ const Step = ({ route, icon, success, color }) => {
         if (route) {
             if (location.pathname === route.path) {
                 setActive(true);
-                console.log(`${route.path} is active!`)
             } else {
                 setActive(false);
             }

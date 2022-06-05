@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { APIClient, Loader } from 'webapps-react';
 
+import { withTheme } from '../Context';
 import Card from '../Components/Card';
 
-const SetupComplete = ({ color, routedate, setSuccess }) => {
+const SetupComplete = ({ color, routedata, setSuccess }) => {
     const {
         title,
         subtitle
@@ -14,7 +15,7 @@ const SetupComplete = ({ color, routedate, setSuccess }) => {
     const APIController = new AbortController();
 
     useEffect(async () => {
-        props.setSuccess([true, true, true, true, false]);
+        setSuccess([true, true, true, true, false]);
         await APIClient('/api/install/complete', undefined, { signal: APIController.signal })
             .then(json => {
                 setMessage(json.data.message);
@@ -53,7 +54,7 @@ const SetupComplete = ({ color, routedate, setSuccess }) => {
                 <div className="flex flex-row py-4 text-center">
                     <div className="py-3 pb-8 text-green-500 text-center w-full">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-64 mx-auto">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <p className="text-center">Installation Completed!</p>
                     </div>
