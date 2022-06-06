@@ -62,6 +62,7 @@ const ViewBlocks = props => {
                         return;
                     }
                     Object.keys(json.data.styles).map(function (i) {
+                        /* istanbul ignore next */
                         if (!document?.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document?.createElement("style");
                             style.setAttribute("ref", i);
@@ -110,6 +111,7 @@ const ViewBlocks = props => {
         setTotal(30);
         setHasMore(true);
 
+        /* istanbul ignore else */
         if (blocks.length === 0 && isMounted()) {
             await loadMore();
             setIsFiltering(false);
@@ -141,6 +143,7 @@ const ViewBlocks = props => {
                         });
                     }
                     Object.keys(json.data.blocks).map(function (i) { blocks.push(json.data.blocks[i]); });
+                    /* istanbul ignore else */
                     if (isMounted()) {
                         setTotal(json.data.total);
                         setBlocks([...blocks]);
@@ -260,7 +263,7 @@ const ViewBlocks = props => {
                     setBlocks(_blocks);
                     setCurBlock([]);
 
-                    /* istanbul ignore else */
+                    /* istanbul ignore next */
                     if (total === 1) {
                         setHasBlocks(false);
                     }
