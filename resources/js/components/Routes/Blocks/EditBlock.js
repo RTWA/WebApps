@@ -91,6 +91,7 @@ const EditBlock = props => {
                 /* istanbul ignore else */
                 if (isMounted()) {
                     Object.keys(json.data.styles).map(function (i) {
+                        /* istanbul ignore else */
                         if (!document.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document.createElement("style");
                             style.setAttribute("ref", i);
@@ -239,6 +240,7 @@ const EditBlock = props => {
         let name = e.target.dataset.name;
         let _new = JSON.parse(JSON.stringify(block.new[name][0]));
         block.settings[name] = block.settings[name].concat(_new);
+        /* istanbul ignore else */
         if (isMounted()) {
             setBlock({ ...block });
             setRepeater(block.settings[name].length - 1);
@@ -246,6 +248,7 @@ const EditBlock = props => {
     }
 
     const removeRepeater = (field, i) => {
+        /* istanbul ignore else */
         if (isMounted()) {
             delete block.settings[field][i];
             block.settings[field] = block.settings[field].filter(function () {
@@ -334,33 +337,33 @@ const EditBlock = props => {
     }
 
     const preview = (block) => {
-        try {
-            /* istanbul ignore next */
-            if (block.preview !== Object(block.preview)) {
-                value = block.settings || '';
-                return (parse(block.preview, { replace: domNode => transform(domNode) }));
+        /* istanbul ignore next */
+        if (block.preview !== Object(block.preview)) {
+            value = block.settings || '';
+            return (parse(block.preview, { replace: domNode => transform(domNode) }));
+        }
+        const html = [];
+        /* istanbul ignore else */
+        if (block.preview.before) {
+            html.push(parse(block.preview.before, { replace: domNode => transform(domNode) }));
+        }
+        Object.keys(block.options).map(function (field) {
+            if (block.options[field].type === "repeater") {
+                Object.keys(block.settings[field]).map(function (r, idx) {
+                    value = block.settings[field][r];
+                    index = idx + 1;
+                    html.push(parse(block.preview[field].each, { replace: domNode => transform(domNode) }));
+                });
+            } else {
+                value = block.settings[field] || '';
+                html.push(parse(block.preview[field], { replace: transform }));
             }
-            const html = [];
-            if (block.preview.before) {
-                html.push(parse(block.preview.before, { replace: domNode => transform(domNode) }));
-            }
-            Object.keys(block.options).map(function (field) {
-                if (block.options[field].type === "repeater") {
-                    Object.keys(block.settings[field]).map(function (r, idx) {
-                        value = block.settings[field][r];
-                        index = idx + 1;
-                        html.push(parse(block.preview[field].each, { replace: domNode => transform(domNode) }));
-                    });
-                } else {
-                    value = block.settings[field] || '';
-                    html.push(parse(block.preview[field], { replace: transform }));
-                }
-            });
-            if (block.preview.after) {
-                html.push(parse(block.preview.after, { replace: domNode => transform(domNode) }));
-            }
-            return html;
-        } catch (error) { console.error(error); }
+        });
+        /* istanbul ignore else */
+        if (block.preview.after) {
+            html.push(parse(block.preview.after, { replace: domNode => transform(domNode) }));
+        }
+        return html;
     }
 
     if (error) {
@@ -438,7 +441,7 @@ const EditBlock = props => {
                                 </Button>
                             )
                     }
-                    <ConfirmDeleteButton type="link" text="Delete this Block" className="lg:hidden flex" onClick={deleteBlock} />
+                    <ConfirmDeleteButton type="link" text="Delete Block" className="lg:hidden flex" onClick={deleteBlock} />
                 </div>
                 <div className="flex flex-col flex-col-reverse gap-y-4 gap-x-6 lg:flex-row w-full">
                     <div className={`${(flyout.opened) ? 'w-0 hidden' : 'w-full lg:w-5/12'}`}>

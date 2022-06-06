@@ -3,6 +3,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Auth, WebAppsUX } from 'webapps-react';
 
+import { rest } from 'msw';
+import { server } from '../../../../resources/js/__mocks__/server';
+
 import { users } from '../../../../resources/js/__mocks__/mockData';
 import EditBlock from '../../../../resources/js/components/Routes/Blocks/EditBlock';
 
@@ -228,5 +231,49 @@ describe('EditBlock Component', () => {
         await waitFor(() => screen.getByRole('button', { name: /saving\.\.\./i }));
         await waitFor(() => screen.getByText(/an error occurred whilst saving the block\./i));
         expect(screen.getByText(/an error occurred whilst saving the block\./i)).toBeDefined();
+    });
+
+    test('Can change to UseBlock view', async () => {
+        expect(screen.getByRole('button', { name: /use block/i })).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /use block/i }))
+        });
+        await waitFor(() => expect(screen.getByRole('button', { name: /edit block/i })).toBeDefined());
+
+        expect(screen.getByText(/embed the block in your web page/i)).toBeDefined();
+    });
+
+    test('Can Delete The Block', async () => {
+        expect(screen.getByRole('button', { name: /delete this block/i })).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /delete this block/i }))
+        });
+        await waitFor(() => screen.getByRole('button', { name: /delete \- are you sure\?/i }));
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /delete \- are you sure\?/i }))
+        });
+        await waitFor(() => expect(screen.getByText(/deleted\!/i)).toBeDefined());
+    });
+
+    test('Cannot Delete The Block Due To An Error', async () => {
+        server.use(
+            rest.delete('/api/blocks/:id', (req, res, ctx) => {
+                return res(
+                    ctx.status(500)
+                )
+            })
+        )
+        expect(screen.getByRole('button', { name: /delete this block/i })).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /delete this block/i }))
+        });
+        await waitFor(() => screen.getByRole('button', { name: /delete \- are you sure\?/i }));
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /delete \- are you sure\?/i }))
+        });
+        await waitFor(() => expect(screen.getByText(/unable to delete block./i)).toBeDefined());
     });
 });

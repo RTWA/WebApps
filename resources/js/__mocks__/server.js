@@ -454,12 +454,14 @@ const handlers = [
                             }
                         },
                         "preview": {
+                            "before": "<p>Before Text</p>",
                             "message": "<h1 data-val=\"value\" />",
                             "slides": {
                                 "each": "<div class=\"slider-item\" id=\"slide{index-1}\"><img class=\"w-full\" src=\"{value.imageUrl.src}\" alt=\"{value.caption}\" /><div class=\"absolute bottom-5 left-0 right-0 text-center\"><p class=\"inline-block font-semibold text-sm text-white p-2 bg-gray-800 bg-opacity-60 rounded\" data-val=\"value.caption\"></p></div></div>"
                             },
                             "none": "",
                             "custom": "<div />",
+                            "after": "<p>After Text</p>",
                             "repeater": "var slides = document.getElementsByClassName('slider-item');var i;for (i = 0; i < slides.length; i++) { slides[i].classList.remove('show'); } var slide = document.getElementById('slide'+repeater); if (slide) { slide.classList.add('show'); }"
                         },
                         "new": {
