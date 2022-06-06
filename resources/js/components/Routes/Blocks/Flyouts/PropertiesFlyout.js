@@ -74,6 +74,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
     }, [chown]);
 
     const chownSelect = user => {
+        /* istanbul ignore else */
         if (isMounted()) {
             setNewOwner(user);
         }
