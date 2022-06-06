@@ -92,6 +92,7 @@ const Login = props => {
         }
     };
 
+    /* istanbul ignore next */
     const keyDown = e => {
         if (e.keyCode === 13) {
             handleLogin(e);
