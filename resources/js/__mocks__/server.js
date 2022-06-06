@@ -631,6 +631,23 @@ const handlers = [
         )
     }),
 
+    rest.post('/api/group/mapping', (req, res, ctx) => {
+        if (req.body.azure_group_id === '000') {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: 'Failed to save'
+                })
+            )
+        }
+        return res(
+            ctx.status(200),
+            ctx.json({
+                success: true
+            })
+        )
+    }),
+
     rest.get('https://graph.microsoft.com/v1.0/groups', (req, res, ctx) => {
         return res(
             ctx.status(200),
@@ -648,15 +665,6 @@ const handlers = [
                         displayName: "Group 1"
                     }
                 ]
-            })
-        )
-    }),
-
-    rest.post('/api/group/mapping', (req, res, ctx) => {
-        return res(
-            ctx.status(200),
-            ctx.json({
-                success: true
             })
         )
     }),

@@ -21,7 +21,7 @@ const Azure = ({ UI, ...props }) => {
 
     const [graphApp, setGraphApp] = useState({});
     const [accessToken, setAccessToken] = useState(null);
-    const [groupData, setGroupData] = useState([]);
+    const [groupData, setGroupData] = useState({});
     const [syncBtnText, setSyncBtnText] = useState('Sync Now');
 
     const APIController = new AbortController();
@@ -103,7 +103,7 @@ const Azure = ({ UI, ...props }) => {
 
     const setGroupMapping = async group => {
         groupData[group].state = 'saving';
-        setGroupData([...groupData]);
+        setGroupData({...groupData});
 
         await APIClient('/api/group/mapping', {
             group_id: group,
@@ -114,28 +114,29 @@ const Azure = ({ UI, ...props }) => {
                 /* istanbul ignore else */
                 if (json.data.success) {
                     groupData[group].state = 'saved';
-                    setGroupData([...groupData]);
+                    setGroupData({...groupData});
 
                     setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
-                            setGroupData([...groupData]);
+                            setGroupData({...groupData});
                         }
                     }, 2500);
                 }
             })
-            .catch(/* istanbul ignore next */ error => {
+            .catch(error => {
+                /* istanbul ignore else */
                 if (!error.status.isAbort) {
                     groupData[group].state = 'error';
                     groupData[group].error = error.data.message;
-                    setGroupData([...groupData]);
+                    setGroupData({...groupData});
 
                     let timer = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
-                            setGroupData([...groupData]);
+                            setGroupData({...groupData});
                             timer = null;
                         }
                     }, 2500);
@@ -276,14 +277,14 @@ const Azure = ({ UI, ...props }) => {
                                 Members of each Azure Group will be assigned to the mapped WebApps Group.
                                 User accounts will only be automatically created for members of these Groups.
                             </p>
-                            <ComponentError retry={() => {
+                            <ComponentError retry={/* istanbul ignore next */() => {
                                 errors.groupData = null;
                                 setErrors({ ...errors });
                                 getGroupMaps()
                             }} title="Failed to load data!">
                                 {
                                     (typeof errors.groupData === 'string')
-                                        ? <ComponentErrorTrigger error={errors.groupData} />
+                                        ? /* istanbul ignore next */<ComponentErrorTrigger error={errors.groupData} />
                                         : Object(groups).map(function (group, i) {
                                             return (
                                                 <div className="mb-6" key={i}>

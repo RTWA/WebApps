@@ -75,22 +75,33 @@ describe('Azure Component - Configured', () => {
         await waitFor(() => expect(mockData.settings['azure.graph.default_login']).toEqual('false'));
     });
 
-    // FIXME: This is not correctly testing a result
-    // test('Can Add A Group Mapping', async () => {
-    //     expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined();
+    test('Cannot Add A Group Mapping Due to An Error', async () => {
+        expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined();
+        await act(async () => {
+            fireEvent.change(screen.getByRole('textbox', { name: /administrators/i }), { target: { value: '000' } });
+            await screen.getByRole('textbox', { name: /administrators/i }).value === '000';
+        });
+        await waitFor(() => expect(screen.getByText(/example/i)).toBeDefined());
 
-    //     await waitFor(async () => {
-    //         expect(screen.getByRole('textbox', { name: /administrators/i }).children).toHaveLength(3);
-    //     });
+        await act(async () => {
+            fireEvent.click(screen.getByText(/example/i));
+        });
+        await waitFor(() => expect(screen.getByText(/failed to save/i)).toBeDefined());
+    });
 
-    //     expect(screen.getByRole('textbox', { name: /administrators/i }).children).toHaveLength(3);
+    test('Can Add A Group Mapping', async () => {
+        expect(screen.getByRole('textbox', { name: /administrators/i })).toBeDefined();
+        await act(async () => {
+            fireEvent.change(screen.getByRole('textbox', { name: /administrators/i }), { target: { value: '001' } });
+            await screen.getByRole('textbox', { name: /administrators/i }).value === '001';
+        });
+        await waitFor(() => expect(screen.getByText(/group 1/i)).toBeDefined());
 
-    //     await act(async () => {
-    //         fireEvent.change(screen.getByRole('textbox', { name: /administrators/i }), { target: { value: '001' } });
-    //         await screen.getByRole('textbox', { name: /administrators/i }).value === '001';
-    //     });
-    //     await waitFor(() => expect(screen.getByRole('textbox', { name: /administrators/i }).children).toHaveLength(3));
-    // });
+        await act(async () => {
+            fireEvent.click(screen.getByText(/group 1/i));
+        });
+        await waitFor(() => expect(screen.getByRole('textbox', { name: /administrators/i }).value === 'Group 1'));
+    });
 
     test('Can Request A Manual Azure Sync', async () => {
         expect(screen.getByRole('button', { name: /sync now/i })).toBeDefined();
