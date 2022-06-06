@@ -485,6 +485,7 @@ const handlers = [
                         "number_of_blocks": 0,
                         "title": "Test Block\'s Title",
                         "notes": "",
+                        "shares": []
                     },
                 })
             )
@@ -535,6 +536,43 @@ const handlers = [
             ctx.status(200),
             ctx.json({
                 message: 'Deleted!'
+            })
+        )
+    }),
+
+    rest.post('/api/blocks/:id/share', (req, res, ctx) => {
+        if (req.body.user_id == mockData.users[4].id) {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: 'Unable to add share',
+                })
+            )
+        }
+        return res(
+            ctx.status(201),
+            ctx.json({
+                shares: [
+                    mockData.users[1],
+                    mockData.users[4]
+                ]
+            })
+        )
+    }),
+
+    rest.delete('/api/blocks/:id/share', (req, res, ctx) => {
+        if (req.body.user_id == mockData.users[4].id) {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: 'Unable to remove share',
+                })
+            )
+        }
+        return res(
+            ctx.status(200),
+            ctx.json({
+                shares: []
             })
         )
     }),
