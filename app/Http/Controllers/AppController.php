@@ -43,9 +43,11 @@ class AppController extends Controller
             $this->readWebAppsJson()['app_version'],
             '>'
         ) && !isset($updates['WebApps'])) {
+            // @codeCoverageIgnoreStart
             $updates['WebApps'] = [
                 'version' => $latest['tag_name'],
             ];
+            // @codeCoverageIgnoreEnd
         } elseif (isset($updates['WebApps'])) {
             unset($updates['WebApps']);
         }
@@ -115,7 +117,9 @@ class AppController extends Controller
         return Cache::rememberForever('product.info', function () {
             $product = json_decode(file_get_contents(storage_path('webapps/core/webapps.json')), true);
             $history = (file_exists(storage_path('webapps/installed.json')))
+                // @codeCoverageIgnoreStart
                 ? json_decode(file_get_contents(storage_path('webapps/installed.json')), true)
+                // @codeCoverageIgnoreEnd
                 : [];
             unset($history['product']);
             unset($history['version']);
