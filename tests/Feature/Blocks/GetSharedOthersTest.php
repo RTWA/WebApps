@@ -48,44 +48,6 @@ class GetSharedOthersTest extends TestCase
         parent::tearDown();
     }
 
-    // public function testUserCannotGetAnotherUsersBlockDataWithoutPermissionUsingAValidPublicId()
-    // {
-    //     $this->seed();
-
-    //     User::find(10)->assignRole('Standard Users');
-    //     Role::findByName('Standard Users')->givePermissionTo(Permission::where('name', 'blocks.create')->first());
-
-    //     Sanctum::actingAs(
-    //         User::find(10),
-    //         ['*']
-    //     );
-
-    //     $plugin = Plugin::create([
-    //         'name' => 'test_plugin',
-    //         'slug' => 'Sample',
-    //         'icon' => '',
-    //         'version' => 'PHPUnitTestLatest',
-    //         'author' => 'PHPUnit',
-    //         'state' => 1
-    //     ]);
-    //     $block = Block::create([
-    //         'owner' => 5,
-    //         'plugin' => $plugin->id,
-    //         'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
-    //         'publicId' => 'PHPUnitTest',
-    //         'title' => 'PHP Unit Test Block',
-    //         'notes' => 'This block was created for testing',
-    //     ]);
-    //     $block->shares()->assign(1);
-
-    //     $response = $this->getJson('/api/blocks/PHPUnitTest?edit=true');
-
-    //     $response->assertStatus(403);
-    //     $response->assertJsonFragment([
-    //         'message' => "You do not have permission to edit this block."
-    //     ]);
-    // }
-
     public function testUserCanGetAnotherUsersSharedBlocksWithPermission()
     {
         $this->seed();
