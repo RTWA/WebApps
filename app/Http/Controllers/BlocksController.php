@@ -188,7 +188,7 @@ class BlocksController extends Controller
             return response()->json([
                 'blocks' => $blocks,
                 'styles' => $styles,
-                'total' => $blocksService->getTotal($filter, $user)
+                'total' => $blocksService->getSharedTotal($filter, $user->id)
             ], 200);
         }
     }

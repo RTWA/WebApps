@@ -173,6 +173,26 @@ class BlocksService
     }
 
     /**
+     * Get the total number of available Shared blocks based upon filter
+     */
+    public function getSharedTotal($filter, $user_id)
+    {
+        if (is_numeric($filter)) {
+            return Block::whereHas('shares', function (Builder $query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })->where('plugin', $filter)->get()->count();
+        } else {
+            return Block::whereHas('shares', function (Builder $query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })->where('title', 'like', '%' . $filter . '%')
+                ->orWhere('notes', 'like', '%' . $filter . '%')
+                ->orWhere('settings', 'like', '%:"%' . $filter . '%"%')
+                ->get()
+                ->count();
+        }
+    }
+
+    /**
      * Return the object for a Block that is not available
      */
     public function notAvailable($block)
