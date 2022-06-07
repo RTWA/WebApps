@@ -352,6 +352,7 @@ class BlocksController extends Controller
         $images = [];
         $repeater_images = [];
 
+        // @codeCoverageIgnoreStart
         foreach ($plugin->options as $name => $option) {
             if (strtolower($option['type']) === 'repeater') {
                 // Repeater
@@ -374,6 +375,7 @@ class BlocksController extends Controller
                 }
             }
         }
+        // @codeCoverageIgnoreEnd
 
         $block->delete();
 
@@ -447,7 +449,7 @@ class BlocksController extends Controller
     {
         $block = Block::findByPublicId($publicId)->with('shares')->with('user')->firstOrFail();
 
-        if (Auth::id() !== $block->owner) {
+        if (Auth::id() != $block->owner) {
             abort(403, 'You do not have permission to share this Block.');
         }
 
@@ -470,7 +472,7 @@ class BlocksController extends Controller
     {
         $block = Block::findByPublicId($publicId)->with('shares')->firstOrFail();
 
-        if (Auth::id() !== $block->owner) {
+        if (Auth::id() != $block->owner) {
             abort(403, 'You do not have permission to remove shares for this Block');
         }
 
@@ -482,6 +484,7 @@ class BlocksController extends Controller
 
     /**
      * Get a list of Media that is used by Blocks
+     * @codeCoverageIgnore
      */
     public function getBlockMedia()
     {

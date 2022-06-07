@@ -166,7 +166,7 @@ class GetOwnTest extends TestCase
         ]);
     }
 
-    public function testUserCanGetOwnBlocksSortedByPopularity()
+    public function testUserCanGetOwnBlocksSortedByPopularityASC()
     {
         $this->seed();
 
@@ -232,6 +232,75 @@ class GetOwnTest extends TestCase
         );
         $this->assertTrue(
             $response->decodeResponseJson()['blocks'][1]['views'] == 1
+        );
+    }
+
+    public function testUserCanGetOwnBlocksSortedByPopularityDESC()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            User::find(1),
+            ['*']
+        );
+
+        $plugin = Plugin::create([
+            'name' => 'test_plugin',
+            'slug' => 'Sample',
+            'icon' => '',
+            'version' => 'PHPUnitTestLatest',
+            'author' => 'PHPUnit',
+            'state' => 1
+        ]);
+        $block1 = Block::create([
+            'owner' => 1,
+            'plugin' => $plugin->id,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
+            'publicId' => 'PHPUnitTest',
+            'title' => 'PHP Unit Test Block',
+            'notes' => 'This block was created for testing',
+            'views' => 10
+        ]);
+        $block2 = Block::create([
+            'owner' => 1,
+            'plugin' => $plugin->id,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test 2']),
+            'publicId' => 'PHPUnitTest2',
+            'title' => 'PHP Unit Test Block2',
+            'notes' => 'This block was created for testing a second block',
+            'views' => 10
+        ]);
+        BlockViews::create([
+            'block_id' => $block1->id,
+            'time' => now()->subMinutes(10)
+        ]);
+        BlockViews::create([
+            'block_id' => $block1->id,
+            'time' => now()->subMinutes(12)
+        ]);
+        BlockViews::create([
+            'block_id' => $block2->id,
+            'time' => now()->subMinutes(11)
+        ]);
+
+        $sort = json_encode(['by' => 'Popularity', 'order' => 'DESC']);
+        $response = $this->getJson('/api/blocks?limit=2&offset=0&filter=&sort=' . $sort);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'total' => 2
+        ]);
+        $this->assertTrue(
+            $response->decodeResponseJson()['blocks'][0]['id'] == $block2->id
+        );
+        $this->assertTrue(
+            $response->decodeResponseJson()['blocks'][0]['views'] == 1
+        );
+        $this->assertTrue(
+            $response->decodeResponseJson()['blocks'][1]['id'] == $block1->id
+        );
+        $this->assertTrue(
+            $response->decodeResponseJson()['blocks'][1]['views'] == 2
         );
     }
 
