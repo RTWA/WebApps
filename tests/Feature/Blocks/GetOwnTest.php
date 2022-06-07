@@ -166,6 +166,57 @@ class GetOwnTest extends TestCase
         ]);
     }
 
+    public function testUserCanGetOwnBlocksSortedByCreatedDESC()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            User::find(1),
+            ['*']
+        );
+
+        $plugin = Plugin::create([
+            'name' => 'test_plugin',
+            'slug' => 'Sample',
+            'icon' => '',
+            'version' => 'PHPUnitTestLatest',
+            'author' => 'PHPUnit',
+            'state' => 1
+        ]);
+        $block1 = Block::create([
+            'owner' => 1,
+            'plugin' => $plugin->id,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test']),
+            'publicId' => 'PHPUnitTest',
+            'title' => 'PHP Unit Test Block',
+            'notes' => 'This block was created for testing',
+            'created_at' => '1990-01-01 00:00:00',
+        ]);
+        $block2 = Block::create([
+            'owner' => 1,
+            'plugin' => $plugin->id,
+            'settings' => json_encode(['message' => 'PHPUnit Sample Plugin Test 2']),
+            'publicId' => 'PHPUnitTest2',
+            'title' => 'PHP Unit Test Block2',
+            'notes' => 'This block was created for testing a second block',
+            'created_at' => '2020-01-01 00:00:00',
+        ]);
+
+        $sort = json_encode(['by' => 'Created', 'order' => 'DESC']);
+        $response = $this->getJson('/api/blocks?limit=2&offset=0&filter=&sort=' . $sort);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'total' => 2
+        ]);
+        $this->assertTrue(
+            $response->decodeResponseJson()['blocks'][0]['id'] == $block1->id
+        );
+        $this->assertTrue(
+            $response->decodeResponseJson()['blocks'][1]['id'] == $block2->id
+        );
+    }
+
     public function testUserCanGetOwnBlocksSortedByPopularityASC()
     {
         $this->seed();
