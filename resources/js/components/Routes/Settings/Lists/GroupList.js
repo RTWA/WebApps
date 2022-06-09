@@ -1,5 +1,5 @@
 import React from 'react';
-import UserAvatar from 'react-user-avatar';
+import { UserAvatar } from 'webapps-react';
 
 const GroupList = props => {
     const {

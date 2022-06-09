@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import UserAvatar from 'react-user-avatar';
+import { UserAvatar } from 'webapps-react';
 import ReactTooltip from 'react-tooltip';
 
 const UserList = props => {
