@@ -61,10 +61,14 @@ class WebAppsCleanupMedia extends Command
             }
 
             if (in_array($media['URL'], array_column($blockMedia, 'src'))) {
+                // @codeCoverageIgnoreStart
                 continue;
+                // @codeCoverageIgnoreEnd
             }
             if (in_array($media['id'], array_column($blockMedia, 'media_id'))) {
+                // @codeCoverageIgnoreStart
                 continue;
+                // @codeCoverageIgnoreEnd
             }
 
             $unusedMedia[] = $media;
