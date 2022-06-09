@@ -60,13 +60,12 @@
         "react-router-dom": "^5.3.0",
         "react-test-renderer": "^17.0.2",
         "react-tooltip": "^4.2.18",
-        "react-user-avatar": "^1.10.0",
         "simple-react-validator": "^1.6.1",
         "tailwindcss": "^3.0.23",
         "tiny-invariant": "^1.2.0",
         "url": "^0.11.0",
         "values.js": "^2.0.0",
-        "webapps-react": "^2.0.2",
+        "webapps-react": "^2.0.4",
         "whatwg-fetch": "^3.6.2"
     }
 }
