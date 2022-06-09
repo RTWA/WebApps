@@ -1,8 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import UserAvatar from 'react-user-avatar';
 import { FlyoutContext } from '../EditBlock';
-import { APIClient, FlyoutContent, FlyoutFooter, FlyoutHeader, Input, UserSuggest, useToasts } from 'webapps-react';
+import { APIClient, FlyoutContent, FlyoutFooter, FlyoutHeader, Input, UserAvatar, UserSuggest, useToasts } from 'webapps-react';
 
 const ShareBlock = ({ block, setBlock }) => {
     const [users, setUsers] = useState([]);

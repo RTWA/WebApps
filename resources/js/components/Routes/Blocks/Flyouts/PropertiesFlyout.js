@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import UserAvatar from 'react-user-avatar';
 import {
     APIClient,
     Button,
     FlyoutContent,
     FlyoutHeader,
     Input,
+    UserAvatar,
     UserSuggest,
     useToasts,
     withAuth,
