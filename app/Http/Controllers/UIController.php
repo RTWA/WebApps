@@ -155,12 +155,14 @@ class UIController extends Controller
                 $count = $count + count($updates['plugins']);
             }
 
-            $nav[count($nav)-1]['badge'] =  [
-                'color' => ApplicationSettings::get('core.ui.theme'),
-                'text' => $count,
-                'pill' => true,
-                'className' => 'ml-auto',
-            ];
+            if ($count <> 0) {
+                $nav[count($nav) - 1]['badge'] =  [
+                    'color' => ApplicationSettings::get('core.ui.theme'),
+                    'text' => $count,
+                    'pill' => true,
+                    'className' => 'ml-auto',
+                ];
+            }
         }
 
         return response()->json([
