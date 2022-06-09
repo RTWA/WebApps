@@ -24,9 +24,9 @@ class RolePermissionsSeeder extends Seeder
             }
         }
 
-        if (!DB::table('roles')->where('id', 1)->first()) {
+        if (!DB::table('roles')->where('name', 'Administrators')->first()) {
             DB::table('roles')->insert([
-                'id' => 1,
+                // 'id' => 1,
                 'name' => 'Administrators',
                 'guard_name' => 'web'
             ]);
@@ -39,9 +39,10 @@ class RolePermissionsSeeder extends Seeder
             ]);
         }
 
+        $admin = DB::table('roles')->where('name', 'Administrators')->first();
         if (!DB::table('model_has_roles')->where('model_id', 1)->first()) {
             DB::table('model_has_roles')->insert([
-                'role_id' => 1,
+                'role_id' => $admin->id,
                 'model_type' => 'App\Models\User',
                 'model_id' => 1
             ]);
