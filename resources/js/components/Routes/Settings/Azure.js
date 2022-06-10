@@ -30,6 +30,7 @@ const Azure = ({ UI, ...props }) => {
     useEffect(() => {
         _mounted = true;
         getTenantId();
+        getGroupMaps();
 
         return () => {
             APIController.abort();
@@ -46,13 +47,6 @@ const Azure = ({ UI, ...props }) => {
             RequestAccessToken();
         }
     }, [graphApp]);
-
-    useEffect(() => {
-        if (accessToken) {
-            getGroupMaps();
-            // getAzGroups();
-        }
-    }, [accessToken]);
 
     const getTenantId = async () => {
         if (settings['azure.graph.tenant'] !== '' && settings['azure.graph.tenant'] !== undefined) {
@@ -103,7 +97,7 @@ const Azure = ({ UI, ...props }) => {
 
     const setGroupMapping = async group => {
         groupData[group].state = 'saving';
-        setGroupData({...groupData});
+        setGroupData({ ...groupData });
 
         await APIClient('/api/group/mapping', {
             group_id: group,
@@ -114,13 +108,13 @@ const Azure = ({ UI, ...props }) => {
                 /* istanbul ignore else */
                 if (json.data.success) {
                     groupData[group].state = 'saved';
-                    setGroupData({...groupData});
+                    setGroupData({ ...groupData });
 
                     setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
-                            setGroupData({...groupData});
+                            setGroupData({ ...groupData });
                         }
                     }, 2500);
                 }
@@ -130,13 +124,56 @@ const Azure = ({ UI, ...props }) => {
                 if (!error.status.isAbort) {
                     groupData[group].state = 'error';
                     groupData[group].error = error.data.message;
-                    setGroupData({...groupData});
+                    setGroupData({ ...groupData });
 
                     let timer = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             groupData[group].state = '';
-                            setGroupData({...groupData});
+                            setGroupData({ ...groupData });
+                            timer = null;
+                        }
+                    }, 2500);
+                }
+            });
+    }
+
+    const clearGroupMapping = async group => {
+        groupData[group].state = 'saving';
+        setGroupData({ ...groupData });
+
+        await APIClient('/api/group/mapping', {
+            group_id: group,
+        }, { method: 'DELETE', signal: APIController.signal })
+            .then(json => {
+                /* istanbul ignore else */
+                if (json.data.success) {
+                    groupData[group].state = 'saved';
+                    groupData[group].value = '';
+                    delete groupData[group].selected;
+                    setGroupData({ ...groupData });
+
+                    setTimeout(/* istanbul ignore next */() => {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                            groupData[group].state = '';
+                            setGroupData({ ...groupData });
+                        }
+                    }, 2500);
+                }
+            })
+            .catch(error => {
+                /* istanbul ignore else */
+                if (!error.status.isAbort) {
+                    groupData[group].state = 'error';
+                    groupData[group].error = error.data.message;
+                    setGroupData({ ...groupData });
+
+                    let timer = setTimeout(/* istanbul ignore next */() => {
+                        // Don't do anything if testing
+                        if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
+                            groupData[group].state = '';
+                            setGroupData({ ...groupData });
                             timer = null;
                         }
                     }, 2500);
@@ -284,12 +321,29 @@ const Azure = ({ UI, ...props }) => {
                             }} title="Failed to load data!">
                                 {
                                     (typeof errors.groupData === 'string')
-                                        ? /* istanbul ignore next */<ComponentErrorTrigger error={errors.groupData} />
+                                        ? /* istanbul ignore next */ <ComponentErrorTrigger error={errors.groupData} />
                                         : Object(groups).map(function (group, i) {
                                             return (
                                                 <div className="mb-6" key={i}>
                                                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor={`${group.id}`}>{group.name}</label>
-                                                    <AzureGroupSearch id={group.id} name={group.id} groupData={groupData} setData={setGroupData} saveChange={setGroupMapping} accessToken={accessToken} />
+                                                    <AzureGroupSearch
+                                                        id={group.id}
+                                                        name={group.id}
+                                                        groupData={groupData}
+                                                        setData={setGroupData}
+                                                        saveChange={setGroupMapping}
+                                                        accessToken={accessToken}
+                                                        action={
+                                                            (groupData[group.id]?.selected)
+                                                                ? (
+                                                                    <Button type="ghost" color="red" size="small" square
+                                                                        className="uppercase mr-1 w-full sm:w-auto sm:rounded-md"
+                                                                        onClick={() => clearGroupMapping(group.id)}>
+                                                                        Clear
+                                                                    </Button>
+                                                                ) : null
+                                                        }
+                                                    />
                                                 </div>
                                             )
                                         })

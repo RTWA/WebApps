@@ -59,6 +59,7 @@ Route::group(
         Route::delete('/group', [SecurityController::class, 'deleteGroup']);
         Route::get('/group/mappings', [SecurityController::class, 'getGroupMappings']);
         Route::post('/group/mapping', [SecurityController::class, 'setGroupMapping']);
+        Route::delete('/group/mapping', [SecurityController::class, 'clearGroupMapping']);
         Route::post('/group/check', [SecurityController::class, 'checkUserGroup']);
         Route::get('/permissions', [SecurityController::class, 'permissions']);
         Route::post('/permissions', [SecurityController::class, 'changePermission']);
