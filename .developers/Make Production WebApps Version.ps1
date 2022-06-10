@@ -53,7 +53,7 @@ if (Test-Path .\vendor\autoload.php) {
 Write-Host "Minimising scripts..." -ForegroundColor White
 Write-Host "(this may take some time)" -ForegroundColor DarkMagenta
 Write-Host ""
-npm run i --silent | Out-Null
+npm i --silent | Out-Null
 npm run production --silent | Out-Null
 Write-Host "Scripts minimised!" -ForegroundColor Green
 Write-Host ""
