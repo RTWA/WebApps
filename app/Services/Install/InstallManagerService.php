@@ -85,7 +85,7 @@ class InstallManagerService
         $settings = config('installer.create_settings');
 
         foreach ($settings as $setting) {
-            if (ApplicationSettings::has($setting['key'])) {
+            if (!ApplicationSettings::has($setting['key'])) {
                 ApplicationSettings::set($setting['key'], $setting['value']);
             }
         }
