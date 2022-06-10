@@ -51,7 +51,7 @@ Write-Host ""
 Write-Host "Minimising scripts..." -ForegroundColor White
 Write-Host "(this may take some time)" -ForegroundColor DarkMagenta
 Write-Host ""
-npm run i --silent | Out-Null
+npm run i --omit=dev --silent | Out-Null
 npm run production --silent | Out-Null
 Write-Host "Scripts minimised!" -ForegroundColor Green
 Write-Host ""
@@ -121,16 +121,6 @@ php artisan key:generate | Out-Null
 composer install --optimize-autoloader --no-dev -q | Out-Null
 cd "$($originalPath)/../"
 Write-Host "Optimised packages installed!" -ForegroundColor Green
-Write-Host ""
-Write-Host ""
-
-# Publish livewire assets
-Write-Host "Publishing Livewire Assets..." -ForegroundColor White
-Write-Host ""
-cd $path
-php artisan livewire:publish --assets
-cd "$($originalPath)/../"
-Write-Host "Livewire Assets published!" -ForegroundColor Green
 Write-Host ""
 Write-Host ""
 
