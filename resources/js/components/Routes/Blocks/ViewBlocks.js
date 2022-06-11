@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { confirmAlert } from 'react-confirm-alert';
 
-import { APIClient, Button, ConfirmDeleteModal, Loader, PageWrapper, useToasts } from 'webapps-react';
+import { AlertModal, APIClient, Button, Loader, PageWrapper, useToasts } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
@@ -237,7 +237,7 @@ const ViewBlocks = props => {
         confirmAlert({
             customUI: ({ onClose }) => {
                 return (
-                    <ConfirmDeleteModal
+                    <AlertModal
                         onConfirm={() => { deleteBlock(_block); onClose(); }}
                         onCancel={onClose}
                         message={"Are you sure you wish to delete this block?\nThis action cannot be undone"} />
