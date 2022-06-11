@@ -9,7 +9,8 @@ import ShareBlock from './Flyouts/ShareBlock';
 import UseBlock from './UseBlock';
 import { OrphanedBlock } from './BlockViews';
 
-import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext, ConfirmDeleteButton } from 'webapps-react';
+import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext, ConfirmDeleteButton, AlertModal } from 'webapps-react';
+import { confirmAlert } from 'react-confirm-alert';
 
 export const FlyoutContext = createContext({});
 
@@ -139,6 +140,10 @@ const EditBlock = props => {
                             title: json.data.message
                         }
                     );
+
+                    if (window.location.pathname === `/blocks/edit/${block.plugin.slug}`) {
+                        history.push(`/blocks/edit/${block.publicId}`);
+                    }
                 }
             })
             .catch(() => {
@@ -217,6 +222,26 @@ const EditBlock = props => {
     const toggleShare = e => {
         e.preventDefault();
         closeFlyout();
+
+        if (window.location.pathname === `/blocks/edit/${block.plugin.slug}`) {
+            confirmAlert({
+                customUI: ({ onClose }) => {
+                    return (
+                        <AlertModal
+                            type="info"
+                            onConfirm={async e => { await saveBlockData(e); onClose(); toggleShare(e); }}
+                            onCancel={onClose}
+                            title="Save First!"
+                            message={"You should save the Block before you share it!"}
+                            confirmText="Save Now"
+                            cancelText="Cancel"
+                        />
+                    );
+                }
+            });
+            return;
+        }
+
         /* istanbul ignore else */
         if (context !== 'share') {
             setContext('share');
