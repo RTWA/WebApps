@@ -182,7 +182,7 @@ const UserFlyout = props => {
                                         onChange={update}
                                         state={states.newPassword.state}
                                         error={states.newPassword.error}
-                                        className="w-full" />
+                                    />
                                 </div>
                                 <div className="mt-2 flex flex-col">
                                     <label className="w-full font-medium text-sm" htmlFor="confirmedPassword">Confirm Password:</label>
@@ -193,7 +193,7 @@ const UserFlyout = props => {
                                         onChange={update}
                                         state={states.confirmedPassword.state}
                                         error={states.confirmedPassword.error}
-                                        className="w-full" />
+                                    />
                                 </div>
                                 <div className="flex items-center justify-end text-right mt-2">
                                     <Button square color="orange" size="small" className="uppercase tracking-widest" onClick={changePassword}>Change Password</Button>
