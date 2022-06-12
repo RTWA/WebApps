@@ -204,6 +204,26 @@ const EditBlock = props => {
     const toggleUseBlock = e => {
         e.preventDefault();
         closeFlyout();
+
+        if (window.location.pathname === `/blocks/edit/${block.plugin.slug}`) {
+            confirmAlert({
+                customUI: ({ onClose }) => {
+                    return (
+                        <AlertModal
+                            type="info"
+                            onConfirm={async e => { await saveBlockData(e); onClose(); toggleUseBlock(e); }}
+                            onCancel={onClose}
+                            title="Save First!"
+                            message={"You should save the Block before you use it!"}
+                            confirmText="Save Now"
+                            cancelText="Cancel"
+                        />
+                    );
+                }
+            });
+            return;
+        }
+
         setIsUseBlock(!isUseBlock);
     }
 
