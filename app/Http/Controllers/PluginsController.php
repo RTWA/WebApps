@@ -127,7 +127,8 @@ class PluginsController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Plugin updated",
-            'plugin' => $plugin->toArray()
+            'plugin' => $plugin->toArray(),
+            'active' => Plugin::where('state', '=', 1)->get(),
         ], 200);
     }
 }
