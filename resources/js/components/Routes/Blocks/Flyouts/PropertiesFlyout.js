@@ -5,6 +5,7 @@ import {
     FlyoutContent,
     FlyoutHeader,
     Input,
+    Textarea,
     UserAvatar,
     UserSuggest,
     useToasts,
@@ -138,7 +139,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
                     type="text"
                     value={block.title || ''}
                     onChange={update} />
-                <Input
+                <Textarea
                     id="notes"
                     name="notes"
                     label="Block Notes:"
