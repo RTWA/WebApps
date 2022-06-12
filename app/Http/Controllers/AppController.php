@@ -15,7 +15,7 @@ class AppController extends Controller
     public function getErrorLog()
     {
         return response()->json([
-            'logs' => ErrorLog::all()
+            'logs' => ErrorLog::orderBy('created_at', 'desc')->get()
         ], 200);
     }
 
