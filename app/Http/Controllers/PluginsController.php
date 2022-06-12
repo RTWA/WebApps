@@ -60,6 +60,7 @@ class PluginsController extends Controller
             'success' => true,
             'message' => 'Plugin downloaded',
             'plugins' => (new PluginsService())->getLocal(),
+            'active' => Plugin::where('state', '=', 1)->get(),
             'online' => (new PluginsService())->getOnline()
         ]);
     }
