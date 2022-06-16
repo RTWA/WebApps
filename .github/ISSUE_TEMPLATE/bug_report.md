@@ -34,4 +34,4 @@ If applicable, add screenshots to help explain your problem.
  - [e.g. Sample]
 
 **Additional information**
-Add any other informationabout the problem here.
+Add any other information about the problem here.
