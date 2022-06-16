@@ -36,22 +36,24 @@ if ($_appArray[$_appArray.Length - 1] -eq "") {
     $appDir = $_appArray[$_appArray.Length - 1]
 }
 
-Write-Host "Performing Cleanup..." -ForegroundColor White
-Write-Host ""
-php artisan webapps:uninstall -E -F -q
-php artisan config:clear -q
-php artisan cache:clear -q
-php artisan route:clear -q
-php artisan view:clear -q
-Write-Host "Cleanup complete!" -ForegroundColor Green
-Write-Host ""
-Write-Host ""
+if (Test-Path .\vendor\autoload.php) {
+    Write-Host "Performing Cleanup..." -ForegroundColor White
+    Write-Host ""
+    php artisan webapps:uninstall -E -F -q
+    php artisan config:clear -q
+    php artisan cache:clear -q
+    php artisan route:clear -q
+    php artisan view:clear -q
+    Write-Host "Cleanup complete!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host ""
+}
 
 # Run Laravel Mix in Production mode
 Write-Host "Minimising scripts..." -ForegroundColor White
 Write-Host "(this may take some time)" -ForegroundColor DarkMagenta
 Write-Host ""
-npm run i --silent | Out-Null
+npm i --silent | Out-Null
 npm run production --silent | Out-Null
 Write-Host "Scripts minimised!" -ForegroundColor Green
 Write-Host ""
@@ -86,10 +88,14 @@ Get-ChildItem -Path $path\storage\framework\testing -Exclude .gitignore | Remove
 Get-ChildItem -Path $path\storage\logs -Exclude .gitignore | Remove-Item -Recurse -Force
 
 # Tidy public directory
-Get-ChildItem -Path $path\public\js\apps | Remove-Item -Recurse -Force
+if (Test-Path $path\public\js\apps) {
+    Get-ChildItem -Path $path\public\js\apps | Remove-Item -Recurse -Force
+}
 
 # Delete installed.json, if present (shouldn't be as webapps:uninstall was called)
-if (Test-Path $path\storage\webapps\installed.json) { Remove-Item $path\storage\webapps\installed.json -Force -Recurse }
+if (Test-Path $path\storage\webapps\installed.json) {
+    Remove-Item $path\storage\webapps\installed.json -Force -Recurse
+}
 
 # Ensure the default is to not allow empty DB password!
 (Get-Content -path $path\config\installer.php -Raw) -replace "'allowEmptyPassword' => true,","'allowEmptyPassword' => false," | Set-Content -Path $path\config\installer.php | Out-Null
@@ -121,16 +127,6 @@ php artisan key:generate | Out-Null
 composer install --optimize-autoloader --no-dev -q | Out-Null
 cd "$($originalPath)/../"
 Write-Host "Optimised packages installed!" -ForegroundColor Green
-Write-Host ""
-Write-Host ""
-
-# Publish livewire assets
-Write-Host "Publishing Livewire Assets..." -ForegroundColor White
-Write-Host ""
-cd $path
-php artisan livewire:publish --assets
-cd "$($originalPath)/../"
-Write-Host "Livewire Assets published!" -ForegroundColor Green
 Write-Host ""
 Write-Host ""
 

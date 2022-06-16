@@ -17,7 +17,7 @@
     </script>
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
+<body class="bg-gray-200 dark:bg-gray-900 min-h-screen overflow-y-auto">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="WebApps_Setup"></div>
 

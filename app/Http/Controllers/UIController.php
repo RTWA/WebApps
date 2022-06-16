@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\App;
 use Illuminate\Support\Facades\Auth;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
+use RobTrehy\LaravelUserPreferences\UserPreferences;
 
 class UIController extends Controller
 {
@@ -40,6 +41,15 @@ class UIController extends Controller
                         </svg>',
             ];
 
+            $nav[] = [
+                '_tag' => 'NavItem',
+                'name' => 'Shared Blocks',
+                'to' => '/blocks/shared',
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>'
+            ];
+
             if ($user->hasPermissionTo('blocks.create')) {
                 $nav[] = [
                     '_tag' => 'NavItem',
@@ -71,7 +81,7 @@ class UIController extends Controller
         ];
 
         $userChildren = [];
-        if (ApplicationSettings::get('core.ui.dark_mode') === 'user') {
+        if (ApplicationSettings::get('core.ui.dark_mode') === 'user' || ApplicationSettings::get('core.sidebar.color_mode', 'user') === 'user') {
             $userChildren[] = [
                 '_tag' => 'NavChild',
                 'name' => 'Preferences',
@@ -145,18 +155,23 @@ class UIController extends Controller
                 $count = $count + count($updates['plugins']);
             }
 
-            $nav[count($nav)-1]['badge'] =  [
-                'color' => ApplicationSettings::get('core.ui.theme').'-400',
-                'text' => $count,
-                'pill' => true,
-                'className' => 'ml-auto mr-1 text-white dark:text-gray-800',
-            ];
+            if ($count <> 0) {
+                $nav[count($nav) - 1]['badge'] =  [
+                    'color' => ApplicationSettings::get('core.ui.theme'),
+                    'text' => $count,
+                    'pill' => true,
+                    'className' => 'ml-auto',
+                ];
+            }
         }
 
         return response()->json([
             'success' => true,
             'navigation' => $nav,
             'routes' => $routes,
+            'sidebar' => [
+                'color_mode' => $this->getSidebarColorMode()
+            ],
             'envPermissions' => $this->checkEnvPermissions()
         ], 200);
     }
@@ -187,12 +202,6 @@ class UIController extends Controller
                     'component' => 'ViewBlocks',
                 );
             }
-            $routes[] = array(
-                'path'      => '/blocks/view/:id',
-                'name'      => 'View Block',
-                'exact'     => true,
-                'component' => 'ViewBlock',
-            );
             if ($user->hasPermissionTo('blocks.create')) {
                 $routes[] = array(
                     'path'      => '/blocks/new',
@@ -207,6 +216,12 @@ class UIController extends Controller
                     'component' => 'EditBlock',
                 );
             }
+            $routes[] = [
+                'path' => '/blocks/shared',
+                'name' => 'Shared Blocks',
+                'exact' => true,
+                'component' => 'ViewSharedBlocks',
+            ];
         }
 
         if ($user->hasPermissionTo('apps.use')) {
@@ -281,5 +296,17 @@ class UIController extends Controller
             }
         }
         return false;
+    }
+
+    /**
+     * Get the color mode for the Sidebar
+     */
+    private function getSidebarColorMode()
+    {
+        if (ApplicationSettings::get('core.sidebar.color_mode', 'user') === 'user') {
+            return UserPreferences::has('sidebar.color_mode') ? UserPreferences::get('sidebar.color_mode') : 'light';
+        }
+
+        return ApplicationSettings::get('core.sidebar.color_mode', 'user');
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import Azure from '../../../../resources/js/components/Routes/Settings/Azure';
@@ -13,10 +13,10 @@ const mockFunction = (e) => {
 mockData.settings["azure.graph.tenant"] = '';
 
 describe('Azure Component - Not Configured', () => {
-    test('Renders Azure', () => {
-        render(<WebApps><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={mockFunction} typeValue={mockFunction} /></BrowserRouter></WebApps>);
+    test('Renders Azure', async () => {
+        render(<WebAppsUX><BrowserRouter><Azure settings={mockData.settings} states={{}} groups={mockData.groups} setValue={mockFunction} typeValue={mockFunction} /></BrowserRouter></WebAppsUX>);
 
-        expect(screen.getByRole('heading', { name: /microsoft azure integration/i })).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/microsoft azure integration/i)).toBeDefined());
         expect(screen.getByText(/please follow the guidance found in the/i)).toBeDefined();
         expect(screen.getByText(/to create your app registration in azure, then provide the required information below\./i)).toBeDefined();
     });

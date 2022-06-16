@@ -14,6 +14,7 @@ use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UIController;
+use League\CommonMark\Parser\Block\BlockContinue;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,9 @@ Route::group(
         Route::get('/update-info', [AppController::class, 'getUpdateInfo']);
         Route::get('/update-check', [AppController::class, 'checkUpdates']);
         Route::get('/clear-cache', [AppController::class, 'clearCache']);
+        Route::get('/error-log', [AppController::class, 'getErrorLog']);
+        Route::get('/system-tasks', [AppController::class, 'getSystemTasks']);
+        Route::post('/run-task', [AppController::class, 'runTask']);
 
         // Security Settings
         Route::get('/groups', [SecurityController::class, 'groups']);
@@ -55,6 +59,7 @@ Route::group(
         Route::delete('/group', [SecurityController::class, 'deleteGroup']);
         Route::get('/group/mappings', [SecurityController::class, 'getGroupMappings']);
         Route::post('/group/mapping', [SecurityController::class, 'setGroupMapping']);
+        Route::delete('/group/mapping', [SecurityController::class, 'clearGroupMapping']);
         Route::post('/group/check', [SecurityController::class, 'checkUserGroup']);
         Route::get('/permissions', [SecurityController::class, 'permissions']);
         Route::post('/permissions', [SecurityController::class, 'changePermission']);
@@ -80,13 +85,17 @@ Route::group(
 
         // Blocks
         Route::get('/blocks', [BlocksController::class, 'index']);
+        Route::get('/blocks/shared', [BlocksController::class, 'shared']);
         Route::get('/blocks/count', [BlocksController::class, 'count']);
         Route::get('/blocks/views', [BlocksController::class, 'views']);
         Route::get('/blocks/user/{username}', [BlocksController::class, 'index']);
+        Route::get('/blocks/shared/user/{username}', [BlocksController::class, 'shared']);
         Route::get('/blocks/{publicId}', [BlocksController::class, 'show']);
         Route::put('/blocks/{publicId}', [BlocksController::class, 'update']);
         Route::delete('/blocks/{publicId}', [BlocksController::class, 'delete']);
         Route::post('/blocks/{publicId}/chown', [BlocksController::class, 'chown']);
+        Route::post('/blocks/{publicId}/share', [BlocksController::class, 'setShare']);
+        Route::delete('/blocks/{publicId}/share', [BlocksController::class, 'removeShare']);
 
         // Plugins
         Route::get('/plugins', [PluginsController::class, 'all']);

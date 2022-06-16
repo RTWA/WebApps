@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import ContentLoader from "react-content-loader"
-import { APIClient, Button, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Button, PageWrapper, Flyout, useToasts, withWebAppsUX, Loader } from 'webapps-react';
 import { CreateGroupFlyout, CreateUserFlyout, GroupFlyout, UserFlyout } from './Flyouts';
 import { GroupList, UserList } from './Lists';
 
@@ -10,11 +9,14 @@ export const FlyoutsContext = createContext({});
 let _mounted = false;
 let old_name = '';
 
-const UsersGroups = ({ UI, ...props }) => {
+const UsersGroups = props => {
     const {
+        useFlyouts,
         groups,
         setGroups,
     } = props;
+
+    const { closeFlyout, openFlyout } = useFlyouts;
 
     const { addToast } = useToasts();
 
@@ -22,10 +24,10 @@ const UsersGroups = ({ UI, ...props }) => {
     const [disabled, setDisabled] = useState(null);
     const [showDisabled, setShowDisabled] = useState(0);
     const [user, setUser] = useState([]);
-    const [userModal, setUserModal] = useState(false);
+    const [userFlyout, setUserFlyout] = useState(false);
 
     const [selectedGroup, setSelectedGroup] = useState([]);
-    const [groupModal, setGroupModal] = useState(false);
+    const [groupFlyout, setGroupFlyout] = useState(false);
 
     const [createUserFlyout, setCreateUserFlyout] = useState(false);
     const [createGroupFlyout, setCreateGroupFlyout] = useState(false);
@@ -104,42 +106,64 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const pushUser = user => {
-        let _users = [];
-        users.map(function (_user) { _users.push(_user) });
-        _users.push(user);
-        setUsers(_users);
+        /* istanbul ignore next */
+        if (user.roles.length !== 0) {
+            user._CurrentGroup = user.roles[0].name;
+            user._CurrentGroupId = user.roles[0].id;
+        } else {
+            user._CurrentGroupId = 0;
+        }
+        setUsers([...users, user]);
     }
 
     const pushGroup = group => {
         let _groups = [];
         groups.map(function (_group) { _groups.push(_group) });
         _groups.push(group);
+
+        _groups.sort(/* istanbul ignore next */ (a, b) => (a.letter > b.letter) ? 1 : -1)
         setGroups(_groups);
     }
 
     const selectUser = user => {
         setUser(user);
-        toggleUserModal();
+        openUserFlyout();
     }
     const selectGroup = group => {
         setSelectedGroup(group);
-        toggleGroupModal();
+        openGroupFlyout();
     }
 
-    const toggleCreateUserFlyout = () => {
-        setCreateUserFlyout(!createUserFlyout);
+    const closeAllFlyouts = () => {
+        setCreateUserFlyout(false);
+        setCreateGroupFlyout(false);
+        setUserFlyout(false);
+        setGroupFlyout(false);
+        closeFlyout();
     }
 
-    const toggleCreateGroupFlyout = () => {
-        setCreateGroupFlyout(!createGroupFlyout);
+    const openCreateUserFlyout = () => {
+        closeAllFlyouts();
+        openFlyout();
+        setCreateUserFlyout(true);
     }
 
-    const toggleUserModal = () => {
-        setUserModal(!userModal);
+    const openCreateGroupFlyout = () => {
+        closeAllFlyouts();
+        openFlyout();
+        setCreateGroupFlyout(true);
     }
 
-    const toggleGroupModal = () => {
-        setGroupModal(!groupModal);
+    const openUserFlyout = () => {
+        closeAllFlyouts();
+        openFlyout();
+        setUserFlyout(true);
+    }
+
+    const openGroupFlyout = () => {
+        closeAllFlyouts();
+        openFlyout();
+        setGroupFlyout(true);
     }
 
     const toggleShowDisabled = e => {
@@ -352,7 +376,7 @@ const UsersGroups = ({ UI, ...props }) => {
                 if (_mounted) {
                     setDisabled(_disabled);
                     setUser([]);
-                    toggleUserModal();
+                    closeAllFlyouts();
                 }
             })
             .catch(/* istanbul ignore next */ error => {
@@ -363,7 +387,7 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const deleteGroup = async () => {
-        await APIClient('/api/group', { name: selectGroup.name, _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
+        await APIClient('/api/group', { name: selectedGroup.name, _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
                 if (_mounted) {
@@ -377,7 +401,7 @@ const UsersGroups = ({ UI, ...props }) => {
 
                     setGroups(_groups);
                     setSelectedGroup([]);
-                    toggleGroupModal();
+                    closeAllFlyouts();
                 }
             })
             .catch(/* istanbul ignore next */ error => {
@@ -389,51 +413,48 @@ const UsersGroups = ({ UI, ...props }) => {
     }
 
     const tabClass = id => classNames(
-        'text-gray-600',
-        'dark:text-gray-400',
-        'ml-6',
-        'inline-block',
         'cursor-pointer',
-        (tab === id) ? 'text-2xl font-bold' : 'text-lg mt-1',
+        (tab === id) ? 'text-2xl' : 'text-lg mt-1 font-normal',
     )
 
     const paneClass = id => classNames(
-        'py-2',
+        'pt-2',
+        '-mx-6',
+        'md:-px-8',
+        'lg:-mx-12',
         (tab === id) ? 'block' : 'hidden'
     )
 
     let obj = (showDisabled) ? disabled : users;
 
+    if (!users) {
+        return <Loader />
+    }
+
     return (
         <>
-            <Button to="/settings" style="link" className="flex flex-auto -mt-8 -ml-4 text-sm uppercase">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                </svg>
-                Back to settings
-            </Button>
-            <div className="w-full py-4" id="usersgroups">
+            <PageWrapper title={
+                <div className="flex flex-row gap-6">
+                    <h6 className={tabClass(0)} onClick={() => setTab(0)}>Users</h6>
+                    <h6 className={tabClass(1)} onClick={() => setTab(1)}>Groups</h6>
+                </div>
+            }>
                 <div className="flex flex-col flex-col-reverse xl:flex-row">
-                    <div className="flex flex-row">
-                        <h6 className={tabClass(0)} onClick={() => setTab(0)}>Users</h6>
-                        <h6 className={tabClass(1)} onClick={() => setTab(1)}>Groups</h6>
-                    </div>
-
                     {
                         (tab === 0) ?
                             (
                                 <div className="flex-1 text-right">
-                                    <Button onClick={toggleShowDisabled} style="link">{
+                                    <Button onClick={toggleShowDisabled} type="link">{
                                         (showDisabled) ? 'Show Enabled Users' : `Show Disabled Users ${(disabled === null) ? '' : `(${disabled.length})`}`
                                     }</Button>
-                                    <Button onClick={toggleCreateUserFlyout} square>
+                                    <Button onClick={openCreateUserFlyout} square>
                                         Add New User
                                     </Button>
                                 </div>
                             ) :
                             (
                                 <div className="flex-1 text-right">
-                                    <Button onClick={toggleCreateGroupFlyout} square>
+                                    <Button onClick={openCreateGroupFlyout} square>
                                         Add New Group
                                     </Button>
                                 </div>
@@ -442,56 +463,29 @@ const UsersGroups = ({ UI, ...props }) => {
                 </div>
 
                 <div className={paneClass(0)}>
-                    {
-                        (users === null && disabled === null) ?
-                            (
-                                <div className="w-full">
-                                    <div className="bg-white dark:bg-gray-800 rounded mb-1 cursor-wait text-center py-2 pl-4" data-testid="user-loader">
-                                        {
-                                            (showDisabled) ?
-                                                /* istanbul ignore next */
-                                                'You have no disabled users.'
-                                                : (
-                                                    <ContentLoader
-                                                        speed={2}
-                                                        width="100%"
-                                                        height={48}
-                                                        foregroundColor="#FFF"
-                                                    >
-                                                        <rect x="70" y="8" rx="3" ry="3" width="110" height="8" />
-                                                        <rect x="280" y="18" rx="3" ry="3" width="400" height="8" />
-                                                        <rect x="70" y="30" rx="3" ry="3" width="80" height="6" />
-                                                        <circle cx="24" cy="24" r="24" />
-                                                    </ContentLoader>
-                                                )
-                                        }
-                                    </div>
-                                </div>
-                            ) : <UserList users={obj} selectUser={selectUser} disabled={showDisabled} />
-                    }
+                    <UserList users={obj} selectUser={selectUser} disabled={showDisabled} />
                 </div>
                 <div className={paneClass(1)}>
                     <GroupList groups={groups} selectGroup={selectGroup} />
                 </div>
-            </div>
+            </PageWrapper>
 
-            <FlyoutsContext.Provider value={{
-                userModal,
-                groupModal,
-                createUserFlyout,
-                createGroupFlyout,
-                toggleUserModal,
-                toggleGroupModal,
-                toggleCreateUserFlyout,
-                toggleCreateGroupFlyout
-            }}>
-                <UserFlyout user={user} setGroup={setGroup} disable={disable} deleteUser={deleteUser} enable={enable} groups={groups} />
-                <GroupFlyout group={selectedGroup} deleteGroup={deleteGroup} renameGroup={renameGroup} saveRenameGroup={saveRenameGroup} />
-                <CreateUserFlyout groups={groups} pushUser={pushUser} />
-                <CreateGroupFlyout pushGroup={pushGroup} />
-            </FlyoutsContext.Provider>
+            <Flyout>
+                <FlyoutsContext.Provider value={{
+                    userFlyout,
+                    groupFlyout,
+                    createUserFlyout,
+                    createGroupFlyout,
+                    closeAllFlyouts,
+                }}>
+                    <UserFlyout user={user} setGroup={setGroup} disable={disable} deleteUser={deleteUser} enable={enable} groups={groups} />
+                    <GroupFlyout group={selectedGroup} deleteGroup={deleteGroup} renameGroup={renameGroup} saveRenameGroup={saveRenameGroup} />
+                    <CreateUserFlyout groups={groups} pushUser={pushUser} />
+                    <CreateGroupFlyout pushGroup={pushGroup} />
+                </FlyoutsContext.Provider>
+            </Flyout>
         </>
     )
 }
 
-export default withWebApps(UsersGroups);
+export default withWebAppsUX(UsersGroups);

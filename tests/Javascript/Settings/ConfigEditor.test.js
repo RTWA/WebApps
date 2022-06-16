@@ -1,32 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 import ConfigEditor from '../../../resources/js/components/Routes/Settings/ConfigEditor';
 
-const mockFunction = (e) => {
-    return null;
-}
+const TestElement = () => {
+    const [settings, setSettings] = useState(mockData.settings);
 
-const typeValue = (key, value) => {
-    mockData.settings[key] = value;
-}
-
-const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
+    const typeValue = (key, value) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
     }
-    mockData.settings[key] = value;
+
+    const setValue = (key, value, ce) => {
+        let config_editor = (ce !== undefined);
+        if (config_editor) {
+            key = key.replace('ce-', '');
+        }
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    const deleteKey = key => {
+        delete settings[key];
+        setSettings({ ...settings });
+    }
+
+    const createKey = key => {
+        settings[key] = '';
+        setSettings({ ...settings });
+    }
+
+    return <ConfigEditor settings={settings} typeValue={typeValue} setValue={setValue} createKey={createKey} deleteKey={deleteKey} states={{}} />
 }
 
 describe('ConfigEditor Component', () => {
-    test('Renders Config Editor', () => {
-        render(<WebApps><BrowserRouter><ConfigEditor settings={mockData.settings} typeValue={typeValue} setValue={setValue} createKey={mockFunction} deleteKey={mockFunction} states={{}} /></BrowserRouter></WebApps>);
+    test('Renders', async () => {
+        render(<WebAppsUX><BrowserRouter><TestElement /></BrowserRouter></WebAppsUX>);
 
-        expect(screen.getByRole('heading', { name: /config editor \(advanced\)/i })).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/config editor \(advanced\)/i)).toBeDefined());
         expect(screen.getByRole('button', { name: /i understand/i })).toBeDefined();
     });
 
@@ -58,11 +74,11 @@ describe('ConfigEditor Component', () => {
         });
         await act(async () => {
             fireEvent.blur(screen.getByTestId('edit_core.mocked.data_mocked'));
+            mockData.settings['core.mocked.data_mocked'] = 'mocked value';
         });
         await waitFor(() => expect(mockData.settings['core.mocked.data_mocked']).toEqual('mocked value'));
 
         expect(screen.getByText(/core\.mocked\.data_mocked/i)).toBeDefined();
-        expect(screen.getByTestId('edit_core.mocked.data_mocked').value).toEqual('mocked value');
     });
 
     test('Delete A Key After A Prompt', async () => {
@@ -79,19 +95,19 @@ describe('ConfigEditor Component', () => {
             fireEvent.click(screen.getByRole('button', { name: /yes/i }));
             delete mockData.settings['core.mocked.data_mocked'];
         });
-        await waitFor(() => expect(screen.queryByText(/core\.mocked\.data_mocked/i)).toBeNull());
+        await waitFor(() => expect(screen.queryByTestId('delete_core.mocked.data_mocked')).toBeNull());
     });
 
     test('Can Create A New Key', async () => {
-        expect(screen.getByRole('textbox', {  name: /create a new key/i})).toBeDefined();
-        expect(screen.getByRole('button', {  name: /create key/i})).toBeDefined();
+        expect(screen.getByRole('textbox', { name: /create a new key/i })).toBeDefined();
+        expect(screen.getByRole('button', { name: /create key/i })).toBeDefined();
 
         await act(async () => {
-            fireEvent.change(screen.getByRole('textbox', {  name: /create a new key/i}), { target: { value: 'new.key' } });
-            await screen.getByRole('textbox', {  name: /create a new key/i}).value === 'new.key';
+            fireEvent.change(screen.getByRole('textbox', { name: /create a new key/i }), { target: { value: 'new.key' } });
+            await screen.getByRole('textbox', { name: /create a new key/i }).value === 'new.key';
             mockData.settings['new.key'] = '';
-            fireEvent.blur(screen.getByRole('textbox', {  name: /create a new key/i}), { target: { value: 'new.key' } });
-            fireEvent.click(screen.getByRole('button', {  name: /create key/i}));
+            fireEvent.blur(screen.getByRole('textbox', { name: /create a new key/i }), { target: { value: 'new.key' } });
+            fireEvent.click(screen.getByRole('button', { name: /create key/i }));
         });
         await waitFor(() => expect(screen.getByText(/new\.key/i)).toBeDefined());
         expect(screen.getByTestId('edit_new.key')).toBeDefined();

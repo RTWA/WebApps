@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Models\ErrorLog;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Schema;
 use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
@@ -40,6 +41,15 @@ class Handler extends ExceptionHandler
 
     public function report(Throwable $exception)
     {
+        if (Schema::hasTable('error_log') && $exception->getMessage() <> 'Unauthenticated.') {
+            ErrorLog::create([
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'message' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+        }
+
         if (file_exists(storage_path('webapps/installed.json')) && Schema::hasTable('settings')) {
             if (app()->environment('production') &&
                 app()->bound('sentry') &&

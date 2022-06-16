@@ -7,6 +7,7 @@ use App\Http\Controllers\MediaController;
 use App\Models\Media;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 
 class WebAppsCleanupMedia extends Command
 {
@@ -60,10 +61,14 @@ class WebAppsCleanupMedia extends Command
             }
 
             if (in_array($media['URL'], array_column($blockMedia, 'src'))) {
+                // @codeCoverageIgnoreStart
                 continue;
+                // @codeCoverageIgnoreEnd
             }
             if (in_array($media['id'], array_column($blockMedia, 'media_id'))) {
+                // @codeCoverageIgnoreStart
                 continue;
+                // @codeCoverageIgnoreEnd
             }
 
             $unusedMedia[] = $media;
@@ -88,6 +93,9 @@ class WebAppsCleanupMedia extends Command
                 Storage::disk('public')->delete($media['filename']);
             }
         }
+
+        ApplicationSettings::set('tasks.cleanUpMedia.lastRun', new \DateTime());
+        ApplicationSettings::set('tasks.cleanUpMedia.lastQty', $matches);
 
         return 0;
     }

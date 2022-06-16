@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import { server } from '../../../resources/js/__mocks__/server';
 
@@ -12,10 +12,9 @@ const mockFunction = jest.fn((e) => {
 });
 
 describe('Image Field Component', () => {
-    test('Can Render Image', () => {
-        render(<WebApps><Image name="test" value={{}} update={mockFunction} /></WebApps>);
-
-        expect(screen.getByRole('link', { name: /enter url/i })).toBeDefined();
+    test('Can Render', async () => {
+        render(<WebAppsUX><Image name="test" value={{}} update={mockFunction} /></WebAppsUX>);
+        await waitFor(() => expect(screen.getByRole('link', { name: /enter url/i })).toBeDefined());
     });
 
     test('Can Set By Entering A URL', async () => {
@@ -71,16 +70,4 @@ describe('Image Field Component', () => {
             expect(screen.getByText(/failed to upload image\./i)).toBeDefined()
         );
     });
-
-    // TODO: This used to pass fine?
-    // test('Cannot Set By Uploading An Image With No Image Selected', async () => {
-    //     expect(screen.getByLabelText(/upload an image/i)).toBeDefined();
-
-    //     await act(async () => {
-    //         fireEvent.change(screen.getByLabelText(/upload an image/i));
-    //     });
-    //     await waitFor(() =>
-    //         expect(screen.getByText(/no image selected!/i)).toBeDefined()
-    //     );
-    // });
 });

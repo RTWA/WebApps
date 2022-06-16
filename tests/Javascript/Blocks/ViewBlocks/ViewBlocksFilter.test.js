@@ -1,16 +1,15 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import ViewBlocks from '../../../../resources/js/components/Routes/Blocks/ViewBlocks';
 
 describe('ViewBlocks Component - Filter', () => {
     test('Can Filter By Plugin', async () => {
-        render(<WebApps><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebApps>);
+        render(<WebAppsUX><BrowserRouter><ViewBlocks match={{ params: { username: undefined } }} /></BrowserRouter></WebAppsUX>);
         await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
-
-        expect(screen.getByText(/test block/i)).toBeDefined();
+        await waitFor(() => screen.getByText(/test block/i));
         expect(screen.getByRole('combobox', { name: /filter by plugin/i })).toBeDefined();
 
         await act(async () => {

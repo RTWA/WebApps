@@ -86,6 +86,26 @@ return [
             'value' => 'internal'
         ],
         [
+            'key' => 'azure.graph.tenant',
+            'value' => ''
+        ],
+        [
+            'key'   => 'blocks.button.location',
+            'value' => 'hidden',
+        ],
+        [
+            'key'   => 'blocks.button.icon',
+            'value' => 'cube',
+        ],
+        [
+            'key'   => 'blocks.button.action',
+            'value' => 'edit',
+        ],
+        [
+            'key'   => 'core.sidebar.color_mode',
+            'value' => 'user',
+        ],
+        [
             'key' => 'core.cms.display_link',
             'value' => 'false',
         ],

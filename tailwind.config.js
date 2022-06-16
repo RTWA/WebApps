@@ -26,6 +26,7 @@ module.exports = {
     { pattern: /.*right-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     { pattern: /.*bottom-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     { pattern: /.*left-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
+    { pattern: /.*inset-/, variants: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     { pattern: /.*UserAvatar/ },
     { pattern: /.*max-/ },
     { pattern: /.*opacity-/, variants: ['hover', 'focus', 'dark',  'dark:hover', 'dark:focus'] },
@@ -36,7 +37,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'gray': colors.neutral,
+        // 'gray': colors.neutral,
         'light-blue': colors.sky,
         'orange': colors.amber,
       },

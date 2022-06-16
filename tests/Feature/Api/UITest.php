@@ -58,7 +58,13 @@ class UITest extends TestCase
         ApplicationSettings::set('core.cms.display_link', "true");
         ApplicationSettings::set('core.cms.text', 'Return to CMS');
         ApplicationSettings::set('core.cms.url', '#');
+        ApplicationSettings::set('core.ui.theme', 'indigo');
         ApplicationSettings::set('core.ui.dark_mode', 'user');
+        ApplicationSettings::set('core.available.updates', json_encode([
+            'WebApps' => ['version' => '1.0.0'],
+            'apps' => ['DemoApp' => ['version' => '1.0.0']],
+            'plugins' => ['Sample' => ['version' => '1.0.0']],
+        ]));
 
         $response = $this->getJson('/api/navigation');
 
@@ -67,5 +73,20 @@ class UITest extends TestCase
         $response->assertJsonFragment(['name' => 'Return to CMS']);
         $response->assertJsonFragment(['name' => $user->name]);
         $response->assertJsonFragment(['name' => "WebApps Settings", 'to' => "/settings"]);
+    }
+
+    public function testApiNavigationResponseWithDarkSidebar()
+    {
+        $this->seed();
+
+        Sanctum::actingAs(
+            $user = User::find(1),
+            ['*']
+        );
+
+        ApplicationSettings::set('core.sidebar.color_mode', 'dark');
+        
+        $response = $this->getJson('/api/navigation');
+        $response->assertSuccessful();
     }
 }

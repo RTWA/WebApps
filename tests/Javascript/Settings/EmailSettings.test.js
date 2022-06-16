@@ -1,29 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { WebAppsUX } from 'webapps-react';
 
 import '../../../resources/js/__mocks__/mockMedia';
 import * as mockData from '../../../resources/js/__mocks__/mockData';
 import EmailSettings from '../../../resources/js/components/Routes/Settings/EmailSettings';
 
-const typeValue = (key, value) => {
-    mockData.settings[key] = value;
-}
+const TestElement = () => {
+    const [settings, setSettings] = useState(mockData.settings);
 
-const setValue = (key, value, ce) => {
-    let config_editor = (ce !== undefined);
-    if (config_editor) {
-        key = key.replace('ce-', '');
+    const typeValue = (key, value) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
     }
-    mockData.settings[key] = value;
+
+    const setValue = (key, value, ce) => {
+        mockData.settings[key] = value;
+        settings[key] = value;
+        setSettings({ ...settings });
+    }
+
+    return (
+        <>
+            <EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} />
+            <button onClick={() => setValue('azure.graph.tenant', '', false)}>Clear Tenant</button>
+        </>
+    )
 }
 
 describe('EmailSettings Component', () => {
-    test('Renders with SMTP', () => {
-        render(<WebApps><EmailSettings settings={mockData.settings} typeValue={typeValue} setValue={setValue} states={{}} /></WebApps>);
+    test('Renders with SMTP', async () => {
+        render(<WebAppsUX><TestElement /></WebAppsUX>);
 
         expect(mockData.settings['mail.driver']).toEqual('smtp');
-        expect(screen.getByText(/smtp server host/i)).toBeDefined();
+        await waitFor(() => expect(screen.getByText(/smtp server host/i)).toBeDefined());
         expect(screen.getByText(/smtp server port/i)).toBeDefined();
         expect(screen.getByText(/smtp server encryption/i)).toBeDefined();
         expect(screen.getByText(/smtp from email address/i)).toBeDefined();
@@ -75,7 +86,7 @@ describe('EmailSettings Component', () => {
         await waitFor(() => expect(screen.getByText(/test email sent/i)).toBeDefined());
     });
 
-    test('Can Change To Mail Driver', async () => {
+    test('Can Change Mail Driver', async () => {
         expect(mockData.settings['mail.driver']).toEqual('smtp');
         expect(screen.getByRole('checkbox', { name: /send with microsoft azure/i })).toBeDefined();
 
@@ -83,7 +94,7 @@ describe('EmailSettings Component', () => {
             fireEvent.click(screen.getByRole('checkbox', { name: /send with microsoft azure/i }));
         });
         await waitFor(() => expect(mockData.settings['mail.driver']).toEqual('msgraph'));
-        
+
         expect(screen.getByText(/please enter a valid organisational email address/i)).toBeDefined();
         expect(screen.getByText(/from email address/i)).toBeDefined();
         expect(screen.getByRole('checkbox', { name: /send with smtp/i })).toBeDefined();
@@ -92,5 +103,18 @@ describe('EmailSettings Component', () => {
             fireEvent.click(screen.getByRole('checkbox', { name: /send with smtp/i }));
         });
         await waitFor(() => expect(mockData.settings['mail.driver']).toEqual('smtp'));
+    });
+
+    test('Cannot Select Azure Mail Driver When Not Configured', async () => {
+        expect(mockData.settings['mail.driver']).toEqual('smtp');
+        expect(screen.getByRole('checkbox', { name: /send with microsoft azure/i })).toBeDefined();
+        expect(screen.getByRole('button', { name: /clear tenant/i })).toBeDefined();
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /clear tenant/i }));
+        });
+        await waitFor(() => expect(mockData.settings['azure.graph.tenant']).toEqual(''));
+
+        expect(screen.queryByRole('checkbox', { name: /send with microsoft azure/i })).toBeNull();
     });
 });

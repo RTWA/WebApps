@@ -53,14 +53,14 @@ class UserSeeder extends Seeder
             ]);
         } else {
             DB::table('users')->insert([
-                'id' => 1,
+                // 'id' => 1,
                 'name' => 'WebApps Administrator',
                 'username' => 'administrator',
                 'email' => 'administrator@webapps.local',
                 'password' => Hash::make('password'),
                 'active' => true
             ]);
-            $user = User::find(1);
+            $user = User::where('username', 'administrator')->first();
             $user->assignRole('Administrators');
 
             $users = User::factory()

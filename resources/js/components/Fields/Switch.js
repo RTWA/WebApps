@@ -14,9 +14,12 @@ const Switch = props => {
 
     const onChange = e => {
         setState('saving');
-        let _name = e.target.name;
-        let _value = (props.value === "true") ? "false" : "true";
-        update(_name, _value, props.for, index);
+        update(
+            e.target.name,
+            (value === "true") ? "false" : "true",
+            props.for,
+            index
+        );
         setState('');
     }
 

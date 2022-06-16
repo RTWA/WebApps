@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { act, fireEvent, render, screen, waitForElementToBeRemoved, waitFor } from '@testing-library/react';
-import { WebApps } from 'webapps-react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { WebAppsUX } from 'webapps-react';
 
 import * as mockData from '../../../../resources/js/__mocks__/mockData';
 import UsersGroups from '../../../../resources/js/components/Routes/Settings/UsersGroups';
@@ -12,10 +12,8 @@ const mockFunction = jest.fn((e) => {
 
 describe('UserGroups Component - Add New Group', () => {
     test('Can View Groups List', async () => {
-        render(<WebApps><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebApps>);
-        await waitForElementToBeRemoved(() => screen.getByTestId('user-loader'));
-
-        expect(screen.getByRole('heading', { name: /groups/i })).toBeDefined();
+        render(<WebAppsUX><BrowserRouter><UsersGroups groups={mockData.groups} setGroups={mockFunction} /></BrowserRouter></WebAppsUX>);
+        await waitFor(() => screen.getByRole('heading', { name: /groups/i }));
 
         await act(async () => {
             fireEvent.click(screen.getByRole('heading', { name: /groups/i }));
@@ -28,9 +26,7 @@ describe('UserGroups Component - Add New Group', () => {
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /add new group/i }));
         });
-        await waitFor(() =>
-            screen.getByRole('heading', { name: /add new group/i })
-        );
+        await waitFor(() => screen.getByText(/groups name/i));
         expect(screen.getByText(/groups name/i)).toBeDefined();
     });
 
@@ -61,6 +57,7 @@ describe('UserGroups Component - Add New Group', () => {
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /create group/i }));
         });
-        await waitFor(() => expect(screen.getByText(/group created successfully/i)).toBeDefined());
+        await waitFor(() => screen.getByText(/group created successfully/i));
+        expect(screen.getByText(/group created successfully/i)).toBeDefined();
     });
 });

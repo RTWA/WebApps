@@ -182,6 +182,7 @@ const settings = {
     "core.mocked.data_mocked": "true",
     "core.ui.theme": 'indigo',
     "core.ui.dark_mode": "user",
+    "core.sidebar.color_mode": "user",
     "core.ui.branding": "[\"#EEF2FF\", \"#E0E7FF\", \"#C7D2FE\", \"#A5B4FC\", \"#818CF8\", \"#6366F1\", \"#4F46E5\", \"#4338CA\", \"#3730A3\", \"#312E81\"]",
     "core.cms.display_link": 'true',
     "core.cms.url": "",
@@ -201,7 +202,10 @@ const navigation = {
     ],
     routes: [
         { path: "/test", name: "Test", component: "Dashboard" }
-    ]
+    ],
+    sidebar: {
+        color_mode: 'dark',
+    }
 };
 
 const apps = [
@@ -214,12 +218,12 @@ const plugins = [
 ];
 
 const blocks = [
-    { 
+    {
         id: 1,
         owner: 9999,
         plugin: plugins[0],
-        settings: { 
-            message: "1234" 
+        settings: {
+            message: "1234"
         },
         publicId: "testBlock",
         title: "Test Block",
@@ -230,8 +234,8 @@ const blocks = [
         scripts: "",
         edit: false,
         output: "<div class=\"Sample\"><h1>1234<\/h1><\/div>",
-        options: { 
-            message: { 
+        options: {
+            message: {
                 type: "text",
                 label: "Enter the sample message",
                 maxlength: 255,
@@ -242,12 +246,12 @@ const blocks = [
         preview: "<h1 data-val=\"value.message\" \/>",
         number_of_blocks: 1
     },
-    { 
+    {
         id: 2,
         owner: 9999,
         plugin: plugins[0],
-        settings: { 
-            message: "4321" 
+        settings: {
+            message: "4321"
         },
         publicId: "Test-Block-2",
         notes: "Jesting",
@@ -257,8 +261,8 @@ const blocks = [
         scripts: "",
         edit: false,
         output: "<div class=\"Sample\"><h1>4321<\/h1><\/div>",
-        options: { 
-            message: { 
+        options: {
+            message: {
                 type: "text",
                 label: "Enter the sample message",
                 maxlength: 255,

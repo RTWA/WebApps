@@ -1,6 +1,5 @@
 import React from 'react';
-import UserAvatar from 'react-user-avatar';
-import ContentLoader from "react-content-loader"
+import { UserAvatar } from 'webapps-react';
 
 const GroupList = props => {
     const {
@@ -8,41 +7,22 @@ const GroupList = props => {
         selectGroup
     } = props;
 
-    // render
     return (
-        <div className="w-full">
+        <div className="w-full dark:text-white divide-y dark:divide-gray-800 border-t border-b dark:border-gray-800">
             {
-                (groups.length === 0) ?
-                    (
-                        <div className="bg-white dark:bg-gray-800 rounded mb-1 cursor-wait text-center py-2 pl-4" data-testid="group-loader">
-                            <ContentLoader
-                                speed={2}
-                                width="100%"
-                                height={48}
-                                foregroundColor="#FFF"
-                            >
-                                <rect x="70" y="8" rx="3" ry="3" width="110" height="8" />
-                                <rect x="280" y="18" rx="3" ry="3" width="400" height="8" />
-                                <rect x="70" y="30" rx="3" ry="3" width="80" height="6" />
-                                <circle cx="24" cy="24" r="24" />
-                            </ContentLoader>
+                groups?.map(function (group, i) {
+                    return (
+                        <div key={i} className="grid grid-cols-2 sm:grid-cols-3 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer" onClick={() => selectGroup(group)}>
+                            <div className="col-span-2 pl-4 flex flex-row items-center">
+                                <div className="flex-grow-0 pr-5">
+                                    <UserAvatar size="48" name={group.name} src={`/group/${group.name}/photo`} />
+                                </div>
+                                <h6 className="py-3">{group.name}</h6>
+                            </div>
+                            <div className="hidden sm:block py-5">{group.users_count} Members</div>
                         </div>
                     )
-                    : (
-                        groups.map(function (group, i) {
-                            return (
-                                <div key={i} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 bg-white dark:bg-gray-800 rounded mb-1" onClick={() => selectGroup(group)} style={{ cursor: 'pointer' }}>
-                                    <div className="py-2 pl-4 flex flex-row">
-                                        <div className="flex-grow-0 pr-5">
-                                            <UserAvatar size="48" name={group.name} src={`/group/${group.name}/photo`} />
-                                        </div>
-                                        <h6 className="py-3">{group.name}</h6>
-                                    </div>
-                                    <div className="hidden sm:block py-5">{group.users_count} Members</div>
-                                </div>
-                            )
-                        })
-                    )
+                })
             }
         </div>
     )

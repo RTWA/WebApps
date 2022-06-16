@@ -4,10 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\App;
 use App\Models\AppsScheduler;
+use App\Models\Media;
 use App\Services\AppsService;
 use App\Services\Install\InstallManagerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ConsoleTest extends TestCase
@@ -128,5 +131,35 @@ class ConsoleTest extends TestCase
         if (file_exists(App::path() . 'DemoApp/manifest.json')) {
             (new AppsService())->rrmdir(App::path() . 'DemoApp');
         }
+    }
+
+    public function testCanRunWebappsCleanupMediaTask()
+    {
+        $this->seed();
+
+        Storage::fake('public');
+        Storage::disk('public')->put('fakeImage1.jpg', UploadedFile::fake()->image('fakeImage1.jpg'));
+
+        $file = UploadedFile::fake()->image('fakeImage2.jpg');
+        $storedFile2 = Storage::disk('public')->put('fakeImage2.jpg', $file);
+
+        Media::create([
+            'filename' => $storedFile2,
+            'original_filename' => $file->getClientOriginalName(),
+            'mime' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'user_id' => 1
+        ]);
+
+
+        $this->artisan('webapps:cleanup-media')
+            ->expectsOutput($storedFile2 . ' is unused...Deleting!')
+            ->assertExitCode(0);
+    }
+
+    public function testCanRunCleanupErrorLogTask()
+    {
+        $this->artisan('cleanup:errorLog')
+            ->assertExitCode(0);
     }
 }

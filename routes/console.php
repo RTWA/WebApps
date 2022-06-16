@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use RobTrehy\LaravelApplicationSettings\ApplicationSettings;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,5 +17,6 @@ use Illuminate\Support\Facades\DB;
 
 Artisan::command('cleanup:msgraph', function () {
     DB::table('msgraph_tokens')->where('expires', '<', time())->delete();
+    ApplicationSettings::Set('azure.graph.cleanup', new \DateTime());
     $this->info('MS Graph API tokens cleared successfully');
 });

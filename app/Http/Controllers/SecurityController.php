@@ -152,6 +152,18 @@ class SecurityController extends Controller
     }
 
     /**
+     * Clears an Azure group mapping
+     */
+    public function clearGroupMapping(Request $request)
+    {
+        GroupToAzureGroup::where('role_id', $request->input('group_id'))
+            ->first()
+            ->delete();
+
+        return response()->json(['success' => true], 200);
+    }
+
+    /**
      * Retreive a list of available Permissions
      */
     public function permissions()

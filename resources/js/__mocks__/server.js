@@ -43,6 +43,17 @@ const handlers = [
     }),
 
     rest.post('/api/user', (req, res, ctx) => {
+        if (req.body.username === '' && req.body.name === '') {
+            return res(
+                ctx.status(422),
+                ctx.json({
+                    message: "The given data was invalid.",
+                    errors: {
+                        name: ["The name field is required."]
+                    }
+                })
+            )
+        }
         if (req.body.username === mockData.User.username) {
             return res(
                 ctx.status(422),
@@ -67,7 +78,9 @@ const handlers = [
                         name: req.body.name,
                         username: req.body.username,
                         email: req.body.email,
-                        active: true
+                        active: true,
+                        azure_id: null,
+                        roles: []
                     }
                 })
             )
@@ -222,6 +235,15 @@ const handlers = [
         )
     }),
 
+    rest.post('/api/group/check', (req, res, ctx) => {
+        return res(
+            ctx.status(200),
+            ctx.json({
+                in_group: true
+            })
+        )
+    }),
+
     rest.post('/api/permissions', (req, res, ctx) => {
         if (req.body.perm == '10000') {
             return res(
@@ -235,6 +257,15 @@ const handlers = [
                 })
             )
         }
+    }),
+
+    rest.post('/api/permission/check', (req, res, ctx) => {
+        return res(
+            ctx.status(200),
+            ctx.json({
+                has_permission: true
+            })
+        )
     }),
 
     rest.get('/api/apps', (req, res, ctx) => {
@@ -423,11 +454,14 @@ const handlers = [
                             }
                         },
                         "preview": {
+                            "before": "<p>Before Text</p>",
                             "message": "<h1 data-val=\"value\" />",
                             "slides": {
                                 "each": "<div class=\"slider-item\" id=\"slide{index-1}\"><img class=\"w-full\" src=\"{value.imageUrl.src}\" alt=\"{value.caption}\" /><div class=\"absolute bottom-5 left-0 right-0 text-center\"><p class=\"inline-block font-semibold text-sm text-white p-2 bg-gray-800 bg-opacity-60 rounded\" data-val=\"value.caption\"></p></div></div>"
                             },
+                            "none": "",
                             "custom": "<div />",
+                            "after": "<p>After Text</p>",
                             "repeater": "var slides = document.getElementsByClassName('slider-item');var i;for (i = 0; i < slides.length; i++) { slides[i].classList.remove('show'); } var slide = document.getElementById('slide'+repeater); if (slide) { slide.classList.add('show'); }"
                         },
                         "new": {
@@ -451,6 +485,7 @@ const handlers = [
                         "number_of_blocks": 0,
                         "title": "Test Block\'s Title",
                         "notes": "",
+                        "shares": []
                     },
                 })
             )
@@ -491,7 +526,7 @@ const handlers = [
     }),
 
     rest.delete('/api/blocks/:id', (req, res, ctx) => {
-        if (req.params.id === 'test-block-2') {
+        if (req.params.id === 'Test-Block-2') {
             return res(
                 ctx.status(500)
             )
@@ -501,6 +536,43 @@ const handlers = [
             ctx.status(200),
             ctx.json({
                 message: 'Deleted!'
+            })
+        )
+    }),
+
+    rest.post('/api/blocks/:id/share', (req, res, ctx) => {
+        if (req.body.user_id == mockData.users[4].id) {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: 'Unable to add share',
+                })
+            )
+        }
+        return res(
+            ctx.status(201),
+            ctx.json({
+                shares: [
+                    mockData.users[1],
+                    mockData.users[4]
+                ]
+            })
+        )
+    }),
+
+    rest.delete('/api/blocks/:id/share', (req, res, ctx) => {
+        if (req.body.user_id == mockData.users[4].id) {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: 'Unable to remove share',
+                })
+            )
+        }
+        return res(
+            ctx.status(200),
+            ctx.json({
+                shares: []
             })
         )
     }),
@@ -599,6 +671,23 @@ const handlers = [
         )
     }),
 
+    rest.post('/api/group/mapping', (req, res, ctx) => {
+        if (req.body.azure_group_id === '000') {
+            return res(
+                ctx.status(500),
+                ctx.json({
+                    message: 'Failed to save'
+                })
+            )
+        }
+        return res(
+            ctx.status(200),
+            ctx.json({
+                success: true
+            })
+        )
+    }),
+
     rest.get('https://graph.microsoft.com/v1.0/groups', (req, res, ctx) => {
         return res(
             ctx.status(200),
@@ -616,15 +705,6 @@ const handlers = [
                         displayName: "Group 1"
                     }
                 ]
-            })
-        )
-    }),
-
-    rest.post('/api/group/mapping', (req, res, ctx) => {
-        return res(
-            ctx.status(200),
-            ctx.json({
-                success: true
             })
         )
     }),

@@ -1,15 +1,19 @@
 import React from 'react';
+import { PageWrapper } from 'webapps-react';
+
 import { BlockCount, BlockViews, PopularBlocks, RecentBlocks } from '../../../widgets';
 
 const Dashboard = () => {
     return (
-        <div className="w-full flex flex-wrap gap-3">
-            <BlockCount />
-            <BlockViews />
-            <div className="w-full lg:h-24"></div>
-            <RecentBlocks />
-            <PopularBlocks />
-        </div>
+        <PageWrapper>
+            <div className="w-full flex flex-wrap gap-3">
+                <BlockCount />
+                <BlockViews />
+                <div className="w-full lg:h-24"></div>
+                <RecentBlocks />
+                <PopularBlocks />
+            </div>
+        </PageWrapper>
     )
 }
 

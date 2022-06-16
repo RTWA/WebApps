@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { APIClient, Switch, useToasts, withWebApps } from 'webapps-react';
+import { APIClient, Switch, PageWrapper, useToasts, WebAppsUXContext, Loader } from 'webapps-react';
 
 let _mounted = false;
 
-const AccessPermissions = ({ loadNavigation, ...props }) => {
+const AccessPermissions = props => {
     const {
         groups,
         permissions,
@@ -12,10 +12,12 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
     } = props;
 
     const { addToast } = useToasts();
+    const { theme, useNavigation } = useContext(WebAppsUXContext);
+    const { loadNavigation } = useNavigation;
 
     const [tab, setTab] = useState(0);
     const [states, setStates] = useState({});
-    
+
     const APIController = new AbortController();
     let timers = [null, null];
 
@@ -24,9 +26,11 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
 
         return () => {
             APIController.abort();
+            /* istanbul ignore next */
             if (timers[0]) {
                 clearTimeout(timers[0]);
             }
+            /* istanbul ignore next */
             if (timers[1]) {
                 clearTimeout(timers[1]);
             }
@@ -44,7 +48,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     states[check_id] = 'saved';
                     setStates({ ...states });
 
-                    timers[0] = setTimeout(/* istanbul ignore next */ function () {
+                    timers[0] = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
@@ -65,7 +69,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     states[check_id] = 'error';
                     setStates({ ...states });
 
-                    timers[0] = setTimeout(/* istanbul ignore next */ function () {
+                    timers[0] = setTimeout(/* istanbul ignore next */() => {
                         // Don't do anything if testing
                         if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                             states[check_id] = '';
@@ -146,7 +150,7 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
         'focus:outline-none',
         (tab === id) ? 'border-b-2' : '',
         (tab === id) ? 'font-medium' : '',
-        (tab === id) ? 'border-gray-500' : ''
+        (tab === id) ? `border-${theme}-500` : ''
     )
 
     const paneClass = id => classNames(
@@ -154,9 +158,14 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
         (tab === id) ? 'block' : 'hidden'
     )
 
+    /* istanbul ignore next */
+    if (permissions.length === 0) {
+        return <Loader />
+    }
+
     return (
-        <>
-            <nav className="flex flex-col sm:flex-row border-b border-gray-200 dark:border-gray-600">
+        <PageWrapper title="Permission Settings">
+            <nav className="flex flex-col sm:flex-row border-b border-gray-300 dark:border-gray-600">
                 {
                     Object.keys(permissions).map(function (g, i) {
                         let permission = permissions[g];
@@ -213,8 +222,8 @@ const AccessPermissions = ({ loadNavigation, ...props }) => {
                     )
                 })
             }
-        </>
+        </PageWrapper>
     )
 };
 
-export default withWebApps(AccessPermissions);
+export default AccessPermissions;

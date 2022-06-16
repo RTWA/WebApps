@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { confirmAlert } from 'react-confirm-alert';
 
-import { APIClient, Button, ConfirmDeleteModal, Loader, useToasts, withWebApps } from 'webapps-react';
+import { AlertModal, APIClient, Button, Loader, PageWrapper, useToasts } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
 
 let lastUri = '';
 let load = 30;
 
-const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
+const ViewBlocks = props => {
     const username = props.match.params.username;
     const ownBlocks = (username === undefined);
 
@@ -19,7 +19,12 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     const [curBlock, setCurBlock] = useState([]);
     const [plugins, setPlugins] = useState([]);
     const [filter, setFilter] = useState(null);
+    const [isFiltering, setIsFiltering] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [sort, setSort] = useState({
+        by: 'Created',
+        order: 'ASC',
+    })
 
     const { addToast, updateToast } = useToasts();
     let toastId = 0;
@@ -34,12 +39,12 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         await APIClient('/api/plugins/active', undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     setPlugins(json.data.plugins);
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                if (!error.status?.isAbort && isMounted) {
+                if (!error.status?.isAbort && isMounted()) {
                     // TODO: Handle errors
                     console.error(error);
                 }
@@ -57,6 +62,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                         return;
                     }
                     Object.keys(json.data.styles).map(function (i) {
+                        /* istanbul ignore next */
                         if (!document?.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document?.createElement("style");
                             style.setAttribute("ref", i);
@@ -73,7 +79,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 }
             })
             .catch(/* istanbul ignore next */ error => {
-                if (!error.status?.isAbort && isMounted) {
+                if (!error.status?.isAbort && isMounted()) {
                     // TODO: Handle errors
                     console.error(error);
                 }
@@ -85,39 +91,46 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         }
     }, []);
 
-    useEffect(() => {
+    useEffect(async () => {
         /* istanbul ignore else */
-        if (blocks !== undefined && isMounted) {
+        if (blocks !== undefined && isMounted()) {
             if ((blocks.length + load) >= (total + load - 1)) {
                 setHasMore(false);
             }
         }
+        if (isFiltering && isMounted() && blocks.length === 0) {
+            await loadMore();
+            setIsFiltering(false);
+        }
     }, [blocks]);
 
-    useEffect(() => {
-        /* istanbul ignore else */
-        if (filter !== null && blocks.length === 0 && isMounted) {
-            loadMore();
-        }
-    }, [filter, blocks]);
+    useEffect(async () => {
+        setIsFiltering(true);
+        setTmpBlocks(blocks);
+        setBlocks([]);
+        setTotal(30);
+        setHasMore(true);
 
-    useEffect(() => {
         /* istanbul ignore else */
-        if (modals.preview_blocks !== undefined && isMounted) {
-            modals.preview_blocks.block = curBlock;
-            setModals({ ...modals });
+        if (blocks.length === 0 && isMounted()) {
+            await loadMore();
+            setIsFiltering(false);
         }
-    }, [curBlock]);
+    }, [sort]);
 
     const loadMore = async () => {
         let offset = (filter === null) ? blocks.length : 0;
-        let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=${offset}&filter=${filter}`
-            : `/api/blocks/user/${username}?limit=${load}&offset=${offset}&filter=${filter}`;
+        let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`
+            : `/api/blocks/user/${username}?limit=${load}&offset=${offset}&filter=${filter}&sort=${JSON.stringify(sort)}`;
 
         if (lastUri !== uri) {
             lastUri = uri;
             await APIClient(uri, undefined, { signal: APIController.signal })
                 .then(json => {
+                    /* istanbul ignore else */
+                    if (json.data.message === "No blocks found.") {
+                        return;
+                    }
                     /* istanbul ignore else */
                     if (document) {
                         Object.keys(json.data.styles).map(function (i) {
@@ -130,13 +143,14 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                         });
                     }
                     Object.keys(json.data.blocks).map(function (i) { blocks.push(json.data.blocks[i]); });
-                    if (isMounted) {
+                    /* istanbul ignore else */
+                    if (isMounted()) {
                         setTotal(json.data.total);
                         setBlocks([...blocks]);
                     }
                 })
                 .catch(/* istanbul ignore next */ error => {
-                    if (!error.status?.isAbort && isMounted) {
+                    if (!error.status?.isAbort && isMounted()) {
                         // TODO: Handle errors
                         console.error(error);
                     }
@@ -150,10 +164,12 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             if (_block.publicId === b.publicId) {
                 _block.rename = true;
                 blocks[i] = _block;
+            } else {
+                b.rename = false;
             }
         });
         /* istanbul ignore else */
-        if (isMounted) {
+        if (isMounted()) {
             setBlocks(blocks);
             setCurBlock(_block);
         }
@@ -161,7 +177,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
 
     const renameBlock = e => {
         /* istanbul ignore else */
-        if (isMounted) {
+        if (isMounted()) {
             curBlock.title = e.target.value;
             setCurBlock({ ...curBlock });
         }
@@ -186,10 +202,10 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             }
         });
 
-        await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock), _method: 'PUT' }, { method: 'PUT', signal: APIController.signal })
+        await APIClient(`/api/blocks/${tmpBlock.publicId}`, { block: JSON.stringify(tmpBlock) }, { method: 'PUT', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     updateToast(
                         toastId,
                         {
@@ -204,7 +220,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
             })
             .catch(error => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     updateToast(
                         toastId,
                         {
@@ -221,7 +237,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
         confirmAlert({
             customUI: ({ onClose }) => {
                 return (
-                    <ConfirmDeleteModal
+                    <AlertModal
                         onConfirm={() => { deleteBlock(_block); onClose(); }}
                         onCancel={onClose}
                         message={"Are you sure you wish to delete this block?\nThis action cannot be undone"} />
@@ -231,10 +247,10 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
     }
 
     const deleteBlock = async _block => {
-        await APIClient(`/api/blocks/${_block.publicId}`, { _method: 'DELETE' }, { method: 'DELETE', signal: APIController.signal })
+        await APIClient(`/api/blocks/${_block.publicId}`, undefined, { method: 'DELETE', signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     Object(blocks).map(function (b, i) {
                         /* istanbul ignore else */
                         if (b === _block)
@@ -247,10 +263,7 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                     setBlocks(_blocks);
                     setCurBlock([]);
 
-                    delete modals.preview_blocks;
-                    setModals({ ...modals });
-
-                    /* istanbul ignore else */
+                    /* istanbul ignore next */
                     if (total === 1) {
                         setHasBlocks(false);
                     }
@@ -260,29 +273,16 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 }
             })
             .catch(error => {
-                console.log(error);
                 /* istanbul ignore else */
-                if (isMounted) {
+                if (isMounted()) {
                     addToast('Unable to delete block.', '', { appearance: 'error' });
                 }
             })
     }
 
-    const previewBlock = _block => {
-        /* istanbul ignore else */
-        if (isMounted) {
-            setCurBlock(_block);
-            modals.preview_blocks = {
-                show: true,
-                block: _block,
-                delete: deleteBlock
-            }
-            setModals({ ...modals });
-        }
-    }
-
     const blockFilter = e => {
         if (e.target.value !== filter) {
+            setIsFiltering(true);
             if (e.target.value !== '' && filter === null) {
                 setTmpBlocks(blocks);
                 setBlocks([]);
@@ -300,42 +300,50 @@ const ViewBlocks = ({ UI, modals, setModals, ...props }) => {
                 setHasMore(true);
                 setTmpBlocks([]);
                 setFilter(null);
+                setIsFiltering(false);
             }
         }
     }
 
-    if (blocks.length === 0 && filter === null && hasBlocks) {
+    if (blocks.length === 0 && filter === null && !isFiltering && hasBlocks) {
         return <Loader />
     }
 
     if (!hasBlocks)
         return (
-            <NoBlocks>
-                {
-                    (ownBlocks) ?
-                        (<h4>You have not created any blocks yet.<br />
-                            <Button style="link" to="/blocks/new">Why not create one now?</Button>
-                        </h4>)
-                        : (<h4>This user has not created any blocks yet.</h4>)
-                }
+            <PageWrapper>
+                <NoBlocks>
+                    {
+                        (ownBlocks) ?
+                            (<h4>You have not created any blocks yet.<br />
+                                <Button type="link" to="/blocks/new">Why not create one now?</Button>
+                            </h4>)
+                            : (<h4>This user has not created any blocks yet.</h4>)
+                    }
 
-            </NoBlocks>
+                </NoBlocks>
+            </PageWrapper>
         )
 
     return (
-        <>
-            <Filter plugins={plugins} blockFilter={blockFilter} />
-            <Grid
-                blocks={blocks}
-                rename={rename}
-                renameBlock={renameBlock}
-                contextDelete={contextDelete}
-                saveName={saveName}
-                previewBlock={previewBlock}
-                loadMore={loadMore}
-                hasMore={hasMore} />
-        </>
+        <PageWrapper>
+            <Filter plugins={plugins} sort={sort} setSort={setSort} blockFilter={blockFilter} />
+            {
+                (!isFiltering)
+                    ? (
+                        <Grid
+                            blocks={blocks}
+                            curBlock={curBlock}
+                            rename={rename}
+                            renameBlock={renameBlock}
+                            contextDelete={contextDelete}
+                            saveName={saveName}
+                            loadMore={loadMore}
+                            hasMore={hasMore} />
+                    ) : <Loader type="circle" height="12" width="12" />
+            }
+        </PageWrapper>
     )
 }
 
-export default withWebApps(ViewBlocks);
+export default ViewBlocks;

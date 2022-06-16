@@ -212,7 +212,7 @@ const DatabaseSetup = ({color, routedata, setSuccess}) => {
                         (sampling) ?
                             (
                                 <button onClick={() => { return null; }} className={`mb-5 flex flex-row items-center gap-2 px-2 py-2 rounded-md border border-${color}-600 dark:border-${color}-400 text-${color}-600 dark:text-${color}-400 font-medium hover:bg-${color}-600 dark:hover:bg-${color}-400 hover:text-white dark:hover:text-white`}>
-                                    <Loader style="circle" className="w-6 h-6" />
+                                    <Loader type="circle" height="6" width="6" color={color} />
                                     Please Wait...
                                 </button>
                             ) :

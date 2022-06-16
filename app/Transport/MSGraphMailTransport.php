@@ -37,7 +37,7 @@ class MSGraphMailTransport extends Transport
         $this->http = $client ?? new Client();
 
         if (ApplicationSettings::get('mail.msgraph.from_address', '') === '') {
-            throw CouldNotSendMail::fromAddressIsNotValid();
+            throw CouldNotSendMail::fromAddressIsNotValid(__DIR__, '39');
         }
     }
 
@@ -70,13 +70,14 @@ class MSGraphMailTransport extends Transport
                 $response = json_decode((string) $e->getResponse()->getBody());
             }
             throw CouldNotSendMail::serviceRespondedWithError(
+                $e,
                 $response->error->code ?? 'Unknown',
                 $response->error->message ?? 'Unknown Error'
             );
         } catch (ConnectException $e) {
-            throw CouldNotReachService::networkError();
+            throw CouldNotReachService::networkError($e);
         } catch (Throwable $e) {
-            throw CouldNotReachService::unknownError();
+            throw CouldNotReachService::unknownError($e);
         }
     }
 
