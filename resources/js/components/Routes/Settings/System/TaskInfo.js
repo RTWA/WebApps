@@ -46,7 +46,7 @@ const TaskInfo = () => {
             })
             .catch(async error => {
                 if (!error.status?.isAbort) {
-                    addToast('Failed to run task', error.data.message, { appearance: 'error' });
+                    addToast('Failed to run task', error.data?.message, { appearance: 'error' });
                     await getErrorLog();
                 }
             })
