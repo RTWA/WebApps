@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Update;
 
 use App\Http\Controllers\Controller;
+use App\Models\App as ModelsApp;
 use App\Services\Install\InstallManagerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -106,6 +107,7 @@ class UpdateController extends Controller
         // Update any Caches
         if (App::environment() !== 'testing') {
             // @codeCoverageIgnoreStart
+            Artisan::call('config:cache', []);
             Artisan::call('view:cache', []);
             Artisan::call('storage:link', []);
             // @codeCoverageIgnoreEnd
