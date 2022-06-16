@@ -40,7 +40,7 @@ const TaskInfo = () => {
         await APIClient('/api/run-task', { command: command }, { signal: APIController.signal })
             .then(json => {
                 if (isMounted()) {
-                    setSystemTasks(json.data.tasks);
+                    setTasks(json.data.tasks);
                     addToast('Task ran successfully!', '', { appearance: 'success' });
                 }
             })
