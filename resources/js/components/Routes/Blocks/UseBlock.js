@@ -12,7 +12,7 @@ const UseBlock = props => {
     const URL = `${location.protocol}//${location.hostname}${(location.port ? `:${location.port}` : '')}`;
     const link = `${URL}/embed/${block.publicId}`;
     const textarea = `<!-- TO MAKE CHANGES TO THIS BLOCK, PLEASE RETURN TO ${URL}/blocks/edit/${block.publicId} -->\r\n` +
-        `<iframe src="${link}" style="width=100%;height:100%;border:0;overflow:hidden;" scrolling="no"></iframe>`;
+        `<iframe src="${link}" style="width:100%;height:100%;border:0;overflow:hidden;" scrolling="no"></iframe>`;
 
     return (
         <>
