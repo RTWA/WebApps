@@ -106,7 +106,6 @@ class UpdateController extends Controller
         // Update any Caches
         if (App::environment() !== 'testing') {
             // @codeCoverageIgnoreStart
-            Artisan::call('config:cache', []);
             Artisan::call('view:cache', []);
             Artisan::call('storage:link', []);
             // @codeCoverageIgnoreEnd
