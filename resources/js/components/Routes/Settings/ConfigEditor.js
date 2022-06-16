@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { confirmAlert } from 'react-confirm-alert';
-import { Button, ConfirmDeleteModal, Input, Loader, PageWrapper, withWebApps } from 'webapps-react';
+import { Button, AlertModal, Input, Loader, PageWrapper, withWebApps } from 'webapps-react';
 
 const ConfigEditor = ({ UI, ...props }) => {
     const {
@@ -42,7 +42,7 @@ const ConfigEditor = ({ UI, ...props }) => {
         confirmAlert({
             customUI: ({ onClose }) => {
                 return (
-                    <ConfirmDeleteModal
+                    <AlertModal
                         onConfirm={() => { deleteKey(key); onClose(); }}
                         onCancel={onClose}
                         message={"Are you sure you wish to delete this config key?\nThis action cannot be undone"} />
