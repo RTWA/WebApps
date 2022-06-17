@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Redirect, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import {
     AppError,
@@ -51,7 +51,7 @@ const Default = () => {
                                     ) : (null);
                                 })
                             }
-                            <Redirect from="/" to="/dashboard" exact />
+                            <Route path="/" render={() => <Navigate to="/dashboard" replace />} />
                         </Routes>
                     </div>
                 </div>
