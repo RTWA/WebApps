@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Route, useNavigate } from 'react-router-dom';
+import { Route, useNavigate, useParams } from 'react-router-dom';
 
 import parse from 'html-react-parser';
 
@@ -11,7 +11,6 @@ import { OrphanedBlock } from './BlockViews';
 
 import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext, ConfirmDeleteButton, AlertModal } from 'webapps-react';
 import { confirmAlert } from 'react-confirm-alert';
-import { useParams } from 'react-router-dom';
 
 export const FlyoutContext = createContext({});
 
