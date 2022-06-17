@@ -11,6 +11,7 @@ import { OrphanedBlock } from './BlockViews';
 
 import { APIClient, AppPage, Button, Flyout, Icon, Input, Loader, PageWrapper, useToasts, AuthContext, WebAppsUXContext, ConfirmDeleteButton, AlertModal } from 'webapps-react';
 import { confirmAlert } from 'react-confirm-alert';
+import { useParams } from 'react-router-dom';
 
 export const FlyoutContext = createContext({});
 
@@ -35,7 +36,8 @@ const EditBlock = props => {
     const [canShare, setCanShare] = useState(true);
 
     /* istanbul ignore next */
-    const [id, setId] = useState(props.id || props.match.params.id);
+    let params = useParams();
+    const [id, setId] = useState(props.id || params.id);
     const navigate = useNavigate();
 
     const { user, checkGroup } = useContext(AuthContext);

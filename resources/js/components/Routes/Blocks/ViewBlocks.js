@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { confirmAlert } from 'react-confirm-alert';
+import { useParams } from 'react-router-dom';
 
 import { AlertModal, APIClient, Button, Loader, PageWrapper, useToasts } from 'webapps-react';
 import { Grid, Filter, NoBlocks } from './BlockViews';
@@ -9,7 +10,7 @@ let lastUri = '';
 let load = 30;
 
 const ViewBlocks = props => {
-    const username = props.match.params.username;
+    const { username } = useParams();
     const ownBlocks = (username === undefined);
 
     const [total, setTotal] = useState(30);
