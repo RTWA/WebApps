@@ -1,23 +1,53 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useRoutes } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import {
     AppError,
     Headerbar,
+    Loader,
     Sidebar,
     WebAppsUXContext
 } from 'webapps-react';
 import * as RouteComponents from '../../Routes';
 
+const AppRoutes = ({ routes }) => {
+    let element = useRoutes(routes);
+    return element;
+}
+
 const Default = () => {
     const { theme, useNavigation } = useContext(WebAppsUXContext);
     const { navigation, toggleNavigation } = useNavigation;
+    const [routes, setRoutes] = useState([]);
+
     const location = useLocation();
 
     if (localStorage.getItem('WA_Login')) {
         localStorage.removeItem('WA_Login');
     }
+
+    useEffect(() => {
+        let _routes = [];
+        navigation.routes?.map((route, idx) => {
+            let C = RouteComponents[route.element];
+            if (C !== undefined) {
+                let el = {
+                    path: route.path,
+                    name: route.name,
+                    element: <C routedata={route} key={idx} />
+                };
+                _routes.push(el);
+            }
+        });
+        _routes.push({
+            name: 'Redirect',
+            path: '/',
+            element: <Navigate to="/dashboard" replace />
+        });
+        setRoutes(_routes);
+    }, [navigation]);
 
     if (theme === undefined || !navigation.menu) {
         return null
@@ -40,21 +70,11 @@ const Default = () => {
                         </button>
                     </Headerbar>
                     <div className="flex flex-col flex-auto overflow-hidden">
-                        <Routes>
-                            {
-                                navigation.routes?.map((route, idx) => {
-                                    let C = RouteComponents[route.component];
-                                    return route.component ? (
-                                        <Route key={idx} path={route.path} name={route.name}
-                                            element={props => (
-                                                (C !== undefined) ? <C routedata={route} {...props} />
-                                                    : <div>Error: Component '{route.component}' not found!</div>
-                                            )} />
-                                    ) : (null);
-                                })
-                            }
-                            <Route path="/" element={() => <Navigate to="/dashboard" replace />} />
-                        </Routes>
+                        {
+                            (routes.length !== 0)
+                                ? <AppRoutes routes={routes} />
+                                : <Loader />
+                        }
                     </div>
                 </div>
             </AppError>
