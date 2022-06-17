@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Route, useHistory } from 'react-router-dom';
+import { Route, useNavigate } from 'react-router-dom';
 
 import parse from 'html-react-parser';
 
@@ -36,7 +36,7 @@ const EditBlock = props => {
 
     /* istanbul ignore next */
     const [id, setId] = useState(props.id || props.match.params.id);
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const { user, checkGroup } = useContext(AuthContext);
     const { theme, useFlyouts } = useContext(WebAppsUXContext);
@@ -146,7 +146,7 @@ const EditBlock = props => {
                     );
 
                     if (window.location.pathname === `/blocks/edit/${block.plugin.slug}`) {
-                        history.push(`/blocks/edit/${block.publicId}`);
+                        navigate(`/blocks/edit/${block.publicId}`);
                     }
                 }
             })
@@ -173,7 +173,7 @@ const EditBlock = props => {
                 /* istanbul ignore else */
                 if (isMounted()) {
                     addToast(json.data.message, '', { appearance: 'success' });
-                    history.goBack();
+                    navigate(-1);
                 }
             })
             .catch(error => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { APIClient, Loader } from 'webapps-react';
 
 import { withTheme } from '../Context';
@@ -11,7 +11,7 @@ const AdministratorUser = ({ color, ...props }) => {
         subtitle
     } = props.routedata
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [exists, setExists] = useState(false);
     const [fields, setFields] = useState(null);
@@ -59,8 +59,7 @@ const AdministratorUser = ({ color, ...props }) => {
     const completeSetup = async () => {
         await APIClient('/api/install/administrator', fields, { signal: APIController.signal })
             .then(json => {
-                let path = `/install/complete`;
-                history.push(path);
+                navigate('/install/complete');
             })
             .catch(error => {
                 if (error.response.status === 422) {

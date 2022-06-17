@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { APIClient, Loader } from 'webapps-react';
 
 import { withTheme } from '../Context';
@@ -11,7 +11,7 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
         subtitle
     } = props.routedata
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [settings, setSettings] = useState(null);
     const [errors, setErrors] = useState(null);
@@ -88,8 +88,7 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
     const saveSettings = async () => {
         await APIClient('/api/install/application', settings, { signal: APIController.signal })
             .then(json => {
-                let path = `/install/administrator`;
-                history.push(path);
+                navigate('/install/administrator');
             })
             .catch(error => {
                 if (error.response.status === 422) {

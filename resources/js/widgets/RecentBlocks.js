@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Moment from 'react-moment';
 import { APIClient, Button, Loader } from 'webapps-react';
 
@@ -13,8 +13,8 @@ const RecentBlocks = () => {
 
     const APIController = new AbortController();
 
-    const history = useHistory();
-    const handleClick = (block) => history.push(`/blocks/edit/${block.publicId}`);
+    const navigate = useNavigate();
+    const handleClick = (block) => navigate(`/blocks/edit/${block.publicId}`);
 
     useEffect(() => {
         loadRecent();

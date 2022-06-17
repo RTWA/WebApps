@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Switch, useNavigate } from 'react-router-dom';
 
 import {
     APIClient,
@@ -40,7 +40,7 @@ const Settings = props => {
     const { loadNavigation } = useNavigation;
 
     const { addToast } = useToasts();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const APIController = new AbortController();
     let timer = null;
@@ -81,7 +81,7 @@ const Settings = props => {
                             {
                                 appearance: 'info',
                                 autoDismissTimeout: 5000,
-                                action: () => history.push('/settings/appsplugins'),
+                                action: () => navigate('/settings/appsplugins'),
                                 actionLabel: "Go to Apps & Plugins",
                                 secondaryAction: 'dismiss',
                                 secondaryActionLabel: 'Close'
@@ -95,7 +95,7 @@ const Settings = props => {
                             {
                                 appearance: 'info',
                                 autoDismissTimeout: 5000,
-                                action: () => history.push('/settings/appsplugins'),
+                                action: () => navigate('/settings/appsplugins'),
                                 actionLabel: "Go to Apps & Plugins",
                                 secondaryAction: 'dismiss',
                                 secondaryActionLabel: 'Close'
