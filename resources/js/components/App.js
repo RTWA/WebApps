@@ -1,27 +1,16 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import { Default } from './Layouts';
+import { MainApp } from './Layouts';
 import { Login, Logout } from './Auth';
 
-import { AuthContext, WebAppsUX, WebApps } from 'webapps-react';
-import { AuthenticatedRoute, UnauthenticatedRoute } from './Routes';
-
-const App = ()=> {
-    const { signIn } = useContext(AuthContext);
-
+const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <UnauthenticatedRoute exact path="/login" name="Login Page"
-                    component={props => <Login loginUser={signIn} {...props} />} />
-                <Route exact path="/logout" name="Logout" component={Logout} />
-
-                <WebAppsUX>
-                    <WebApps>
-                        <AuthenticatedRoute path="/" name="Home" component={Default} />
-                    </WebApps>
-                </WebAppsUX>
+                <Route path="/login" name="Login Page" element={<Login />} />
+                <Route path="/logout" name="Logout" element={<Logout />} />
+                <Route path="/*" name="WebApps" element={<MainApp />} />
             </Routes>
         </BrowserRouter>
     );

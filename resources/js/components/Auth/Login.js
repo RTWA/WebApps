@@ -1,8 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import SimpleReactValidator from 'simple-react-validator';
-import { Button, Loader, Input } from 'webapps-react';
+import { Button, Loader, Input, AuthContext } from 'webapps-react';
 
 const Login = props => {
+    const { authenticated, signIn } = useContext(AuthContext);
+    if (authenticated) {
+        let redirect = (localStorage.getItem('WA_Login')) ? localStorage.getItem('WA_Login') : '/';
+        window.location.replace(redirect)
+    }
+
     const theme = document.getElementsByTagName('body')[0].getAttribute('data-theme');
     let timer = null;
 
@@ -48,7 +54,7 @@ const Login = props => {
             state.alert = '';
             setState({ ...state });
 
-            await props.loginUser(state.username, state.password)
+            await signIn(state.username, state.password)
                 .catch(error => {
                     /* istanbul ignore else */
                     if (error.status.code === 422) {

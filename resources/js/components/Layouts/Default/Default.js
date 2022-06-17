@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import {
@@ -12,6 +13,7 @@ import * as RouteComponents from '../../Routes';
 const Default = () => {
     const { theme, useNavigation } = useContext(WebAppsUXContext);
     const { navigation, toggleNavigation } = useNavigation;
+    const location = useLocation();
 
     if (localStorage.getItem('WA_Login')) {
         localStorage.removeItem('WA_Login');
@@ -24,7 +26,7 @@ const Default = () => {
     return (
         <div className="flex md:flex-row flex-col h-full">
             <Sidebar />
-            <AppError theme={theme}>
+            <AppError theme={theme} path={location.pathname}>
                 <div className="flex flex-col flex-auto w-full min-w-0 h-full overflow-hidden" id="app-content">
                     <Headerbar>
                         <button
@@ -43,15 +45,15 @@ const Default = () => {
                                 navigation.routes?.map((route, idx) => {
                                     let C = RouteComponents[route.component];
                                     return route.component ? (
-                                        <Route key={idx} path={route.path} exact={route.exact} name={route.name}
-                                            render={props => (
+                                        <Route key={idx} path={route.path} name={route.name}
+                                            element={props => (
                                                 (C !== undefined) ? <C routedata={route} {...props} />
                                                     : <div>Error: Component '{route.component}' not found!</div>
                                             )} />
                                     ) : (null);
                                 })
                             }
-                            <Route path="/" render={() => <Navigate to="/dashboard" replace />} />
+                            <Route path="/" element={() => <Navigate to="/dashboard" replace />} />
                         </Routes>
                     </div>
                 </div>
