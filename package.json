@@ -58,7 +58,7 @@
         "react-masonry-css": "^1.0.16",
         "react-moment": "^1.1.1",
         "react-resizable": "^3.0.4",
-        "react-router-dom": "^5.3.3",
+        "react-router-dom": "^6.3.0",
         "react-test-renderer": "^17.0.2",
         "react-tooltip": "^4.2.18",
         "simple-react-validator": "^1.6.1",
