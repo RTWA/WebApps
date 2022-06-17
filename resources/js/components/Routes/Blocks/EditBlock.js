@@ -520,13 +520,10 @@ const EditBlock = props => {
                                                     }
                                                     let F = Fields[options[field].type];
                                                     return F ? (
-                                                        <Route key={i}
-                                                            render={props => (
-                                                                <F name={field} index={i} field={options[field]}
-                                                                    data={settings} update={update} value={settings[field]}
-                                                                    repeater={_repeater} {...props} />
-                                                            )} />)
-                                                        : (null);
+                                                        <F name={field} key={i} index={i} field={options[field]}
+                                                            data={settings} update={update} value={settings[field]}
+                                                            repeater={_repeater} {...props} />
+                                                    ) : null;
                                                 })
                                             }
                                             <div className="border-t border-gray-200 dark:border-gray-700 w-full">
