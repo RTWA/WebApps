@@ -3,6 +3,8 @@ import { useHistory } from 'react-router-dom';
 import Moment from 'react-moment';
 import { APIClient, Loader } from 'webapps-react';
 
+// import { createRoot } from 'react-dom/client';
+
 const PopularBlocks = () => {
     const [blocks, setBlocks] = useState(null);
 
@@ -137,9 +139,9 @@ const PopularBlocks = () => {
 
 export default PopularBlocks;
 
-// ReactDOM.render(
-//     <WebApps>
+// const root = createRoot(document.getElementById('PopularBlocks_Widget'));
+// root.render(
+//    <WebApps>
 //         <PopularBlocks />
-//     </WebApps>,
-//     document.getElementById('PopularBlocks_Widget')
-// );
+//     </WebApps>
+//);

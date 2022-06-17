@@ -1,9 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Install from './Install';
 import { Theme } from './Context';
-
 
 const App = () => {
     return (
@@ -17,6 +16,5 @@ const App = () => {
     );
 }
 
-ReactDOM.render(
-    <App />, document.getElementById('WebApps_Setup')
-);
+const root = createRoot(document.getElementById('WebApps_Setup'));
+root.render(<App />);

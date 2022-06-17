@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 import { APIClient } from 'webapps-react';
 
-// import ReactDOM from 'react-dom';
+// import { createRoot } from 'react-dom/client';
 
 const BlockCount = () => {
     const [count, setCount] = useState(null);
@@ -43,7 +43,5 @@ const BlockCount = () => {
 
 export default BlockCount;
 
-// ReactDOM.render(
-//     <BlockCount />,
-//     document.getElementById('BlockCount_Widget')
-// );
+// const root = createRoot(document.getElementById('BlockCount_Widget'));
+// root.render(<BlockCount />);

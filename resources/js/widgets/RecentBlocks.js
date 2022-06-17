@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import Moment from 'react-moment';
 import { APIClient, Button, Loader } from 'webapps-react';
 
-// import ReactDOM from 'react-dom';
+// import { createRoot } from 'react-dom/client';
 
 import { NoBlocks } from '../components/Routes/Blocks';
 
@@ -155,9 +155,9 @@ const RecentBlocks = () => {
 
 export default RecentBlocks;
 
-// ReactDOM.render(
-//     <WebApps>
+// const root = createRoot(document.getElementById('RecentBlocks_Widget'));
+// root.render(
+//    <WebApps>
 //         <RecentBlocks />
-//     </WebApps>,
-//     document.getElementById('RecentBlocks_Widget')
-// );
+//     </WebApps>
+//);

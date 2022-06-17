@@ -1,19 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import ReactTooltip from 'react-tooltip';
 
 import { CoreError, Auth } from 'webapps-react';
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('WebApps'));
+root.render(
     <CoreError>
         <Auth>
             <App />
             <ReactTooltip effect="solid" />
         </Auth>
-    </CoreError>,
-    document.getElementById('WebApps')
+    </CoreError>
 );
 
 // If you want your app to work offline and load faster, you can change

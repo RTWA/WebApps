@@ -11,5 +11,6 @@ module.exports = {
   transformIgnorePatterns: [
     "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
   ],
-  setupFiles: ['@testing-library/react/dont-cleanup-after-each']
+  setupFiles: ['@testing-library/react/dont-cleanup-after-each'],
+  testEnvironment: 'jsdom',
 }

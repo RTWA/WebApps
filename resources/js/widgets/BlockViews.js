@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 import { APIClient } from 'webapps-react';
 
-// import ReactDOM from 'react-dom';
+// import { createRoot } from 'react-dom/client';
 
 const BlockViews = () => {
     const [views, setViews] = useState(null);
@@ -44,7 +44,5 @@ const BlockViews = () => {
 
 export default BlockViews;
 
-// ReactDOM.render(
-//     <BlockViews />,
-//     document.getElementById('BlockViews_Widget')
-// );
+// const root = createRoot(document.getElementById('BlockViews_Widget'));
+// root.render(<BlockViews />);
