@@ -39,9 +39,7 @@ describe('Login Component', () => {
   test('Validation fails when empty Login form is submitted', async () => {
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
-    await waitFor(() =>
-      screen.getByText(/the username field is required\./i)
-    );
+    await waitFor(() => screen.getByText(/the username field is required\./i), { timeout: 2000 });
 
     expect(screen.getByText(/the username field is required\./i)).toBeInTheDocument();
     expect(screen.getByText(/the password field is required\./i)).toBeInTheDocument();

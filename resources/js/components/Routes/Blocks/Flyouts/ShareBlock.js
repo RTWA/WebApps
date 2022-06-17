@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { FlyoutContext } from '../EditBlock';
-import { APIClient, FlyoutContent, FlyoutFooter, FlyoutHeader, Input, UserAvatar, UserSuggest, useToasts } from 'webapps-react';
+import { APIClient, FlyoutContent, FlyoutFooter, FlyoutHeader, Input, Loader, UserAvatar, UserSuggest, useToasts } from 'webapps-react';
 
 const ShareBlock = ({ block, setBlock }) => {
     const [users, setUsers] = useState([]);
@@ -103,6 +103,19 @@ const ShareBlock = ({ block, setBlock }) => {
 
     if (context !== 'share') {
         return null;
+    }
+
+    if (users.length === 0) {
+        return (
+            <>
+                <FlyoutHeader>
+                    Share Block
+                </FlyoutHeader>
+                <FlyoutContent>
+                    <Loader />
+                </FlyoutContent>
+            </>
+        );
     }
 
     return (

@@ -3,9 +3,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { Auth, WebAppsUX } from 'webapps-react';
 
-import { rest } from 'msw';
-import { server } from '../../../../resources/js/__mocks__/server';
-
 import { users } from '../../../../resources/js/__mocks__/mockData';
 import EditBlock from '../../../../resources/js/components/Routes/Blocks/EditBlock';
 
@@ -23,7 +20,7 @@ describe('EditBlock Component', () => {
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /share block/i }))
         });
-        await waitFor(() => expect(screen.getByText(/the following people also have access to edit this block\./i)).toBeDefined());
+        await waitFor(() => expect(screen.getByText(/the following people also have access to edit this block\./i)).toBeDefined(), { timeout: 2000 });
     });
 
     test('Cannot Add A Share Due To An Error', async () => {
@@ -33,7 +30,7 @@ describe('EditBlock Component', () => {
             fireEvent.change(screen.getByRole('textbox', { name: /add person by name/i }), { target: { value: 'WebApps' } });
             await screen.getByRole('textbox', { name: /add person by name/i }).value === 'WebApps';
         });
-        await waitFor(() => expect(screen.getByText(/admin@test/i)).toBeDefined());
+        await waitFor(() => expect(screen.getByText(/\(admin@test\)/i)).toBeDefined(), { timeout: 5000 });
 
         await act(async () => {
             fireEvent.click(screen.getByText(/admin@test/i));
