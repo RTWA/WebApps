@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import * as RouteComponents from '../Routes';
 import Step from '../Components/Step';
@@ -84,7 +84,7 @@ const Install = () => {
                 <Step route={routes[4]} icon={icons.complete} success={success[4]} />
             </div>
 
-            <Switch>
+            <Routes>
                 {
                     routes.map((route, idx) => {
                         let C = RouteComponents[route.component];
@@ -97,7 +97,7 @@ const Install = () => {
                         ) : (null);
                     })
                 }
-            </Switch>
+            </Routes>
         </div>
     )
 }

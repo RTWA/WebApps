@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Routes } from 'react-router-dom';
 
 import {
     AppError,
@@ -38,7 +38,7 @@ const Default = () => {
                         </button>
                     </Headerbar>
                     <div className="flex flex-col flex-auto overflow-hidden">
-                        <Switch>
+                        <Routes>
                             {
                                 navigation.routes?.map((route, idx) => {
                                     let C = RouteComponents[route.component];
@@ -52,7 +52,7 @@ const Default = () => {
                                 })
                             }
                             <Redirect from="/" to="/dashboard" exact />
-                        </Switch>
+                        </Routes>
                     </div>
                 </div>
             </AppError>

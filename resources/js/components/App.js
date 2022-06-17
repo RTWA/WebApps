@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { Default } from './Layouts';
 import { Login, Logout } from './Auth';
@@ -12,7 +12,7 @@ const App = ()=> {
 
     return (
         <BrowserRouter>
-            <Switch>
+            <Routes>
                 <UnauthenticatedRoute exact path="/login" name="Login Page"
                     component={props => <Login loginUser={signIn} {...props} />} />
                 <Route exact path="/logout" name="Logout" component={Logout} />
@@ -22,7 +22,7 @@ const App = ()=> {
                         <AuthenticatedRoute path="/" name="Home" component={Default} />
                     </WebApps>
                 </WebAppsUX>
-            </Switch>
+            </Routes>
         </BrowserRouter>
     );
 }

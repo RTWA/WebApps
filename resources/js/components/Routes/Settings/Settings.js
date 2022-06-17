@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Route, Switch, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import {
     APIClient,
@@ -290,7 +290,7 @@ const Settings = props => {
                     <DrawerItem to="/settings/advanced" color="red" badge={{ text: 'Advanced' }}>Config Editor</DrawerItem>
                 </DrawerItems>
             </Drawer>
-            <Switch>
+            <Routes>
                 <Route exact path="/settings/application">
                     <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
                         {
@@ -435,7 +435,7 @@ const Settings = props => {
                 <Route exact path="/settings">
                     <SystemInfo />
                 </Route>
-            </Switch>
+            </Routes>
         </AppPage>
     )
 }
