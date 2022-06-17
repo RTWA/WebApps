@@ -12,8 +12,8 @@ const ErrorLog = () => {
 
     let APIController = new AbortController();
 
-    useEffect(async () => {
-        await getErrorLog();
+    useEffect(() => {
+        getErrorLog();
 
         return () => {
             void (isMountedRef.current = false);

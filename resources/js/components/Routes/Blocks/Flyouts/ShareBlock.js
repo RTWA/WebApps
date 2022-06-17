@@ -12,7 +12,16 @@ const ShareBlock = ({ block, setBlock }) => {
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
 
-    useEffect(async () => {
+    useEffect(() => {
+        loadUserData();
+
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            void (isMountedRef.current = false);
+        }
+    }, []);
+
+    const loadUserData = async () => {
         /* istanbul ignore else */
         if (users.length === 0) {
             await APIClient('/api/users', undefined, { signal: APIController.signal })
@@ -28,12 +37,7 @@ const ShareBlock = ({ block, setBlock }) => {
                     }
                 });
         }
-
-        return /* istanbul ignore next */ () => {
-            APIController.abort();
-            void (isMountedRef.current = false);
-        }
-    }, []);
+    }
 
     const addShare = async user => {
         let inArray = false;

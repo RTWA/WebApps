@@ -9,7 +9,15 @@ const BlockCount = () => {
 
     const APIController = new AbortController();
 
-    useEffect(async () => {
+    useEffect(() => {
+        getBlockCount();
+
+        return () => {
+            APIController.abort();
+        }
+    }, []);
+
+    const getBlockCount = async () => {
         await APIClient('/api/blocks/count', undefined, { signal: APIController.signal })
             .then(json => {
                 setCount(json.data.count);
@@ -20,11 +28,7 @@ const BlockCount = () => {
                     console.error(error);
                 }
             });
-
-        return () => {
-            APIController.abort();
-        }
-    }, []);
+    }
 
     if (count === null) {
         return null;

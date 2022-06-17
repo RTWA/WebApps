@@ -37,7 +37,20 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
 
-    useEffect(async () => {
+    useEffect(() => {
+        checkCanChown();
+
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            void (isMountedRef.current = false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadUserData();
+    }, [chown]);
+
+    const checkCanChown = async () => {
         /* istanbul ignore next */
         if (typeof checkPermission === 'function') {
             await checkPermission('admin.access')
@@ -49,14 +62,9 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
         } else if (process.env.JEST_WORKER_ID !== undefined && process.env.NODE_ENV === 'test' && isMounted()) {
             setCanChown(true);
         }
+    }
 
-        return /* istanbul ignore next */ () => {
-            APIController.abort();
-            void (isMountedRef.current = false);
-        }
-    }, []);
-
-    useEffect(async () => {
+    const loadUserData = async () => {
         /* istanbul ignore else */
         if (users.length === 0) {
             await APIClient('/api/users', undefined, { signal: APIController.signal })
@@ -72,7 +80,7 @@ const PropertiesFlyout = ({ user, checkPermission, ...props }) => {
                     }
                 });
         }
-    }, [chown]);
+    }
 
     const chownSelect = user => {
         /* istanbul ignore else */

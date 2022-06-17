@@ -5,7 +5,7 @@ import { APIClient, Loader } from 'webapps-react';
 import { withTheme } from '../Context';
 import Card from '../Components/Card';
 
-const DatabaseSetup = ({color, routedata, setSuccess}) => {
+const DatabaseSetup = ({ color, routedata, setSuccess }) => {
     const {
         title,
         subtitle
@@ -17,28 +17,32 @@ const DatabaseSetup = ({color, routedata, setSuccess}) => {
     const [canContinue, setCanContinue] = useState(false);
     const [sampling, setSampling] = useState(false);
     const [sample, setSample] = useState(null);
-    
+
     const APIController = new AbortController();
 
-    useEffect(async () => {
+    useEffect(() => {
         setSuccess([true, false, false, false, false]);
         if (fields) {
-            await APIClient('/api/install/database', undefined, { signal: APIController.signal })
-                .then(json => {
-                    setFields(json.data);
-                })
-                .catch(error => {
-                    if (!error.status.isAbort) {
-                        // TODO: Handle errors
-                        console.error(error);
-                    }
-                })
+            getData();
         }
-        
+
         return () => {
             APIController.abort();
         }
     }, []);
+
+    const getData = async () => {
+        await APIClient('/api/install/database', undefined, { signal: APIController.signal })
+            .then(json => {
+                setFields(json.data);
+            })
+            .catch(error => {
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
+            });
+    }
 
     const changeField = e => {
         fields[e.target.id] = e.target.value;

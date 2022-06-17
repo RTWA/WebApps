@@ -11,11 +11,8 @@ const Preferences = ({ user, preferences, setPreference }) => {
     const { useNavigation } = useContext(WebAppsUXContext);
     const { navigation, setNavigation } = useNavigation;
 
-    useEffect(async () => {
-        await APIClient('/api/setting', { key: JSON.stringify(['core.ui.dark_mode', 'core.sidebar.color_mode']) }, { signal: APIController.signal })
-            .then(json => {
-                setSettings(json.data);
-            });
+    useEffect(() => {
+        loadModes();
 
         return () => {
             APIController.abort();
@@ -58,6 +55,13 @@ const Preferences = ({ user, preferences, setPreference }) => {
             }
         ]);
     }, [preferences]);
+
+    const loadModes = async () => {
+        await APIClient('/api/setting', { key: JSON.stringify(['core.ui.dark_mode', 'core.sidebar.color_mode']) }, { signal: APIController.signal })
+            .then(json => {
+                setSettings(json.data);
+            });
+    }
 
     const setDarkMode = value => {
         if (value === '') {

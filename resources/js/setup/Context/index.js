@@ -10,7 +10,15 @@ const ThemeProvider = props => {
 
     const APIController = new AbortController();
 
-    useEffect(async () => {
+    useEffect(() => {
+        loadThemeData();
+
+        return () => {
+            APIController.abort();
+        }
+    }, []);
+
+    const loadThemeData = async () => {
         await APIClient('/api/theme', undefined, { signal: APIController.signal })
             .then(json => {
                 setColor(json.data['core.ui.theme']);
@@ -22,12 +30,8 @@ const ThemeProvider = props => {
                     // TODO: Handle errors
                     console.error(error);
                 }
-            })
-
-        return () => {
-            APIController.abort();
-        }
-    }, []);
+            });
+    }
 
     const changeColor = async value => {
         await APIClient('/api/color', { theme: value }, { signal: APIController.signal })

@@ -42,7 +42,7 @@ const Azure = ({ UI, ...props }) => {
         }
     }, []);
 
-    useEffect(async () => {
+    useEffect(() => {
         if (graphApp.tenantId) {
             RequestAccessToken();
         }

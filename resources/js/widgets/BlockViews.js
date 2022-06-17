@@ -9,7 +9,15 @@ const BlockViews = () => {
 
     const APIController = new AbortController();
 
-    useEffect(async () => {
+    useEffect(() => {
+        getViewCount();
+
+        return () => {
+            APIController.abort();
+        }
+    }, []);
+
+    const getViewCount = async () => {
         await APIClient('/api/blocks/views', undefined, { signal: APIController.signal })
             .then(json => {
                 setViews(json.data.views);
@@ -20,11 +28,7 @@ const BlockViews = () => {
                     console.error(error);
                 }
             });
-
-        return () => {
-            APIController.abort();
-        }
-    }, []);
+    }
 
     if (views === null) {
         return null;

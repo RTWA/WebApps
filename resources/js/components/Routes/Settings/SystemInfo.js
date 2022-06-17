@@ -22,9 +22,9 @@ const SystemInfo = () => {
     const isMountedRef = useRef(true);
     const isMounted = useCallback(() => isMountedRef.current, []);
 
-    useEffect(async () => {
-        await loadProductInfo();
-        await checkForUpdate();
+    useEffect(() => {
+        loadProductInfo();
+        checkForUpdate();
 
         return () => {
             void (isMountedRef.current = false);

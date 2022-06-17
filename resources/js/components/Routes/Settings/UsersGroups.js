@@ -36,9 +36,9 @@ const UsersGroups = props => {
     const APIController = new AbortController();
     let timers = [null, null];
 
-    useEffect(async () => {
+    useEffect(() => {
         _mounted = true;
-        await getUsers();
+        getUsers();
 
         return /* istanbul ignore next */ () => {
             APIController.abort();

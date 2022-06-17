@@ -18,25 +18,29 @@ const ApplicationSetup = ({ color, dark, changeColor, changeDark, ...props }) =>
 
     const APIController = new AbortController();
 
-    useEffect(async () => {
+    useEffect(() => {
         props.setSuccess([true, true, false, false, false]);
         if (!settings) {
-            APIClient('/api/install/application', undefined, { signal: APIController.signal })
-                .then(json => {
-                    setSettings(json.data);
-                })
-                .catch(error => {
-                    if (!error.status.isAbort) {
-                        // TODO: Handle errors
-                        console.error(error);
-                    }
-                })
+            getSettings();
         }
 
         return () => {
             APIController.abort();
         }
     }, []);
+
+    const getSettings = async () => {
+        APIClient('/api/install/application', undefined, { signal: APIController.signal })
+            .then(json => {
+                setSettings(json.data);
+            })
+            .catch(error => {
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
+            });
+    }
 
     const setURL = e => {
         setSettings({

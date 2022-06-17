@@ -13,8 +13,8 @@ const TaskInfo = () => {
 
     let APIController = new AbortController();
 
-    useEffect(async () => {
-        await loadTasks();
+    useEffect(() => {
+        loadTasks();
 
         return () => {
             void (isMountedRef.current = false);

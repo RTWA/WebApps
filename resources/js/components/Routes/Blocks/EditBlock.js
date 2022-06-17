@@ -57,14 +57,10 @@ const EditBlock = props => {
         };
     }, []);
 
-    useEffect(async () => {
+    useEffect(() => {
         /* istanbul ignore next */
         if (isMounted() && block) {
-            if (block.owner != user?.id) {
-                setCanShare(false);
-                await checkGroup('Administrators')
-                    .then(r => setCanShare(r));
-            }
+            checkCanShare();
             // Don't do anything if testing
             if (process.env.JEST_WORKER_ID === undefined && process.env.NODE_ENV !== 'test') {
                 if (block.scripts !== undefined) {
@@ -85,6 +81,14 @@ const EditBlock = props => {
             }
         }
     }, [repeater]);
+
+    const checkCanShare = async () => {
+        if (block.owner != user?.id) {
+            setCanShare(false);
+            await checkGroup('Administrators')
+                .then(r => setCanShare(r));
+        }
+    }
 
     const loadBlockData = async () => {
         await APIClient(`/api/blocks/${id}?edit=true`, undefined, { signal: APIController.signal })

@@ -19,30 +19,34 @@ const AdministratorUser = ({ color, ...props }) => {
 
     const APIController = new AbortController();
 
-    useEffect(async () => {
+    useEffect(() => {
         props.setSuccess([true, true, true, false, false]);
         if (!fields) {
-            await APIClient('/api/install/administrator', undefined, { signal: APIController.signal })
-                .then(json => {
-                    if (json.data.exists) {
-                        setExists(true);
-                        setFields({});
-                    } else {
-                        setFields(json.data);
-                    }
-                })
-                .catch(error => {
-                    if (!error.status.isAbort) {
-                        // TODO: Handle errors
-                        console.error(error);
-                    }
-                })
+            checkIfAdminExists();
         }
 
         return () => {
             APIController.abort();
         }
     }, []);
+
+    const checkIfAdminExists = async () => {
+        await APIClient('/api/install/administrator', undefined, { signal: APIController.signal })
+            .then(json => {
+                if (json.data.exists) {
+                    setExists(true);
+                    setFields({});
+                } else {
+                    setFields(json.data);
+                }
+            })
+            .catch(error => {
+                if (!error.status.isAbort) {
+                    // TODO: Handle errors
+                    console.error(error);
+                }
+            });
+    }
 
     const changeInput = e => {
         fields[e.target.id] = e.target.value;
@@ -72,7 +76,7 @@ const AdministratorUser = ({ color, ...props }) => {
 
     const CardAction = () => {
         if (exists) {
-            return (                
+            return (
                 <Link to="/install/complete"
                     className={`ml-auto flex flex-row px-2 py-2 rounded-md border border-${color}-600 dark:border-${color}-400 text-${color}-600 dark:text-${color}-400 font-medium hover:bg-${color}-600 dark:hover:bg-${color}-400 hover:text-white dark:hover:text-white`}>
                     <span className="pt-2">Complete Installation</span>

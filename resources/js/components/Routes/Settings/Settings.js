@@ -45,13 +45,13 @@ const Settings = props => {
     const APIController = new AbortController();
     let timer = null;
 
-    useEffect(async () => {
+    useEffect(() => {
         _mounted = true;
-        await loadUpdateInfo(); //
+        loadUpdateInfo(); //
 
-        await loadGroups();
-        await loadPermissions();
-        await loadSettings();
+        loadGroups();
+        loadPermissions();
+        loadSettings();
 
         return () => {
             APIController.abort();

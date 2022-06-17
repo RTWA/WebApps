@@ -34,8 +34,36 @@ const ViewSharedBlocks = props => {
 
     const APIController = new AbortController();
 
-    useEffect(async () => {
-        // Get all available Plugins
+    useEffect(() => {
+        getAvailablePlugins();
+        loadBlocks();
+
+        return /* istanbul ignore next */ () => {
+            APIController.abort();
+            void (isMountedRef.current = false);
+        }
+    }, []);
+
+    useEffect(() => {
+        /* istanbul ignore else */
+        if (blocks !== undefined && isMounted()) {
+            if ((blocks.length + load) >= (total + load - 1)) {
+                setHasMore(false);
+            }
+        }
+        filterBlocks();
+    }, [blocks]);
+
+    useEffect(() => {
+        setIsFiltering(true);
+        setTmpBlocks(blocks);
+        setBlocks([]);
+        setTotal(30);
+        setHasMore(true);
+        filterBlocks();
+    }, [sort]);
+
+    const getAvailablePlugins = async () => {
         await APIClient('/api/plugins/active', undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
@@ -49,19 +77,21 @@ const ViewSharedBlocks = props => {
                     console.error(error);
                 }
             });
+    }
 
-        // Get first set of Blocks
-        let uri = (ownBlocks) ? `/api/blocks/shared?limit=${load}&offset=0`
-            : `/api/blocks/shared/user/${username}?limit=${load}&offset=0`
+    const loadBlocks = async () => {
+        let uri = (ownBlocks) ? `/api/blocks?limit=${load}&offset=0`
+            : `/api/blocks/user/${username}?limit=${load}&offset=0`
         await APIClient(uri, undefined, { signal: APIController.signal })
             .then(json => {
                 /* istanbul ignore else */
-                if (isMounted()) {
+                if (isMounted) {
                     if (json.data.message === "No blocks found.") {
                         setHasBlocks(false);
                         return;
                     }
                     Object.keys(json.data.styles).map(function (i) {
+                        /* istanbul ignore next */
                         if (!document?.querySelectorAll('style[ref=' + i + ']').length) {
                             let style = document?.createElement("style");
                             style.setAttribute("ref", i);
@@ -83,38 +113,7 @@ const ViewSharedBlocks = props => {
                     console.error(error);
                 }
             });
-
-        return /* istanbul ignore next */ () => {
-            APIController.abort();
-            void (isMountedRef.current = false);
-        }
-    }, []);
-
-    useEffect(async () => {
-        /* istanbul ignore else */
-        if (blocks !== undefined && isMounted()) {
-            if ((blocks.length + load) >= (total + load - 1)) {
-                setHasMore(false);
-            }
-        }
-        if (isFiltering && isMounted() && blocks.length === 0) {
-            await loadMore();
-            setIsFiltering(false);
-        }
-    }, [blocks]);
-
-    useEffect(async () => {
-        setIsFiltering(true);
-        setTmpBlocks(blocks);
-        setBlocks([]);
-        setTotal(30);
-        setHasMore(true);
-
-        if (blocks.length === 0 && isMounted()) {
-            await loadMore();
-            setIsFiltering(false);
-        }
-    }, [sort]);
+    }
 
     const loadMore = async () => {
         let offset = (filter === null) ? blocks.length : 0;
@@ -150,6 +149,14 @@ const ViewSharedBlocks = props => {
                 });
         }
     };
+
+    const filterBlocks = async () => {
+        /* istanbul ignore else */
+        if (isFiltering && blocks.length === 0 && isMounted()) {
+            await loadMore();
+            setIsFiltering(false);
+        }
+    }
 
     const rename = _block => {
         blocks.map(function (b, i) {
