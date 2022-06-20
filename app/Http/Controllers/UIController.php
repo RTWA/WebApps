@@ -244,7 +244,7 @@ class UIController extends Controller
 
         if ($user->hasRole('Administrators')) {
             $routes[] = array(
-                'path'      => '/settings',
+                'path'      => '/settings/*',
                 'name'      => 'Settings',
                 'element' => 'Settings',
             );

@@ -291,7 +291,7 @@ const Settings = props => {
                 </DrawerItems>
             </Drawer>
             <Routes>
-                <Route exact path="/settings/application">
+                <Route path="/application" element={
                     <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
                         {
                             (errors.settings)
@@ -304,17 +304,17 @@ const Settings = props => {
                                 />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings/appsplugins">
+                } />
+                <Route path="/appsplugins" element={
                     <AppsPlugins />
-                </Route>
-                <Route exact path="/settings/online/apps">
+                } />
+                <Route path="/online/apps" element={
                     <Apps />
-                </Route>
-                <Route exact path="/settings/online/plugins">
+                } />
+                <Route path="/online/plugins" element={
                     <Plugins />
-                </Route>
-                <Route exact path="/settings/authentication">
+                } />
+                <Route path="/authentication" element={
                     <ComponentError
                         retry={() => {
                             errors.settings = null;
@@ -337,8 +337,8 @@ const Settings = props => {
                                     />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings/blocks">
+                } />
+                <Route path="/blocks" element={
                     <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
                         {
                             (errors.settings)
@@ -351,8 +351,8 @@ const Settings = props => {
                                 />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings/email">
+                } />
+                <Route path="/email" element={
                     <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
                         {
                             (errors.settings)
@@ -365,8 +365,8 @@ const Settings = props => {
                                 />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings/azure">
+                } />
+                <Route path="/azure" element={
                     <ComponentError
                         retry={() => {
                             errors.settings = null;
@@ -390,8 +390,8 @@ const Settings = props => {
                                     />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings/permissions">
+                } />
+                <Route path="/permissions" element={
                     <ComponentError retry={() => { errors.groups = null; setErrors({ ...errors }); loadGroups(); }}>
                         {
                             (errors.groups)
@@ -403,8 +403,8 @@ const Settings = props => {
                                 />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings/usersgroups">
+                } />
+                <Route path="/usersgroups" element={
                     <ComponentError retry={() => { errors.groups = null; setErrors({ ...errors }); loadGroups(); }}>
                         {
                             (errors.groups)
@@ -415,8 +415,8 @@ const Settings = props => {
                                 />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings/advanced">
+                } />
+                <Route path="/advanced" element={
                     <ComponentError retry={() => { errors.settings = null; setErrors({ ...errors }); loadSettings(); }}>
                         {
                             (errors.settings)
@@ -431,10 +431,10 @@ const Settings = props => {
                                 />
                         }
                     </ComponentError>
-                </Route>
-                <Route exact path="/settings">
+                } />
+                <Route path="/" element={
                     <SystemInfo />
-                </Route>
+                } />
             </Routes>
         </AppPage>
     )
