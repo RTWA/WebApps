@@ -72,7 +72,7 @@ class UITest extends TestCase
         $response->assertJsonFragment(['name' => 'Apps']);
         $response->assertJsonFragment(['name' => 'Return to CMS']);
         $response->assertJsonFragment(['name' => $user->name]);
-        $response->assertJsonFragment(['name' => "WebApps Settings", 'to' => "/settings"]);
+        $response->assertJsonFragment(['name' => "WebApps Settings", 'to' => "/settings/"]);
     }
 
     public function testApiNavigationResponseWithDarkSidebar()
