@@ -75,6 +75,8 @@ class AppsService
                     if ($apps[$i]['hasUpdate']) {
                         $apps[$i]['release'] = $this->repoData[$app['slug']]['release'];
                         $this->addToUpdateList($app['slug']);
+                    } else {
+                        $this->removeFromUpdateList($app['slug']);
                     }
                     // @codeCoverageIgnoreEnd
                 }
@@ -171,9 +173,9 @@ class AppsService
             $_app->background_color = $app['background_color'];
             $_app->author = $app['author'];
             $_app->save();
-
-            $this->removeFromUpdateList($slug);
         }
+
+        $this->removeFromUpdateList($slug);
 
         return true;
     }
@@ -223,7 +225,7 @@ class AppsService
         if (!isset($updates['apps'])) {
             $updates['apps'] = [];
         }
-        
+
         if (!in_array($slug, $updates['apps'])) {
             $updates['apps'][$slug] = [
                 'version' => $this->repoData[$slug]['latest']['version'],
@@ -243,7 +245,7 @@ class AppsService
         if (!isset($updates['apps'])) {
             $updates['apps'] = [];
         }
-        
+
         if (in_array($slug, $updates['apps'])) {
             unset($updates['apps'][$slug]);
             ApplicationSettings::set('core.available.updates', json_encode($updates));

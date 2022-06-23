@@ -75,6 +75,8 @@ class PluginsService
                     if ($plugins[$i]['hasUpdate']) {
                         $plugins[$i]['release'] = $this->repoData[$plugin['slug']]['release'];
                         $this->addToUpdateList($plugin['slug']);
+                    } else {
+                        $this->removeFromUpdateList($plugin['slug']);
                     }
                     // @codeCoverageIgnoreEnd
                 }
@@ -170,9 +172,9 @@ class PluginsService
             $_plugin->background_color = $plugin['background_color'];
             $_plugin->author = $plugin['author'];
             $_plugin->save();
-
-            $this->removeFromUpdateList($slug);
         }
+
+        $this->removeFromUpdateList($slug);
 
         return true;
     }
