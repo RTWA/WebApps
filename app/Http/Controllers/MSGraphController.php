@@ -31,7 +31,7 @@ class MSGraphController extends Controller
                 '500',
                 'Azure Tenant ID is not set!',
                 '29',
-                __DIR__.DIRECTORY_SEPARATOR.'MSGraphController.php'
+                __DIR__ . DIRECTORY_SEPARATOR . 'MSGraphController.php'
             );
         }
 
@@ -48,7 +48,7 @@ class MSGraphController extends Controller
                 '500',
                 'App Registration Information Missing!',
                 '46',
-                __DIR__.DIRECTORY_SEPARATOR.'MSGraphController.php'
+                __DIR__ . DIRECTORY_SEPARATOR . 'MSGraphController.php'
             );
         }
 
@@ -82,7 +82,7 @@ class MSGraphController extends Controller
                 '500',
                 $content['error_description'],
                 '80',
-                __DIR__.DIRECTORY_SEPARATOR.'MSGraphController.php'
+                __DIR__ . DIRECTORY_SEPARATOR . 'MSGraphController.php'
             );
         }
 
@@ -138,19 +138,27 @@ class MSGraphController extends Controller
                 'users/' . $user['azure_id'] . '?$select=userPrincipalName,displayName,mail,accountEnabled',
                 $token
             );
-            if ($user->username !== $azUser['userPrincipalName']) {
-                $user->username = $azUser['userPrincipalName'];
+            if (isset($azUser['error'])) {
+                if ($azUser['error']['code'] === 'Request_ResourceNotFound') {
+                    $user->active = false;
+                    $user->azure_id = null;
+                    $user->save();
+                }
+            } else {
+                if ($user->username !== $azUser['userPrincipalName']) {
+                    $user->username = $azUser['userPrincipalName'];
+                }
+                if ($user->name !== $azUser['displayName']) {
+                    $user->name = $azUser['displayName'];
+                }
+                if ($user->email !== $azUser['mail']) {
+                    $user->email = $azUser['mail'];
+                }
+                if ($user->active !== $azUser['accountEnabled']) {
+                    $user->active = $azUser['accountEnabled'];
+                }
+                $user->save();
             }
-            if ($user->name !== $azUser['displayName']) {
-                $user->name = $azUser['displayName'];
-            }
-            if ($user->email !== $azUser['mail']) {
-                $user->email = $azUser['mail'];
-            }
-            if ($user->active !== $azUser['accountEnabled']) {
-                $user->active = $azUser['accountEnabled'];
-            }
-            $user->save();
         }
     }
 
