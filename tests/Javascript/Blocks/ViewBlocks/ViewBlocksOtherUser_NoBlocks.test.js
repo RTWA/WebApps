@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import { WebAppsUX } from 'webapps-react';
 
@@ -7,7 +7,15 @@ import ViewBlocks from '../../../../resources/js/components/Routes/Blocks/ViewBl
 
 describe('ViewBlocks Component - Other Users', () => {
     test('Can View Another User\'s Blocks - No Blocks Were Found)', async () => {
-        render(<WebAppsUX><BrowserRouter><ViewBlocks match={{ params: { username: 'jestNoBlocks' } }} /></BrowserRouter></WebAppsUX>);
+        render(
+            <WebAppsUX>
+                <MemoryRouter initialEntries={["/blocks/user/jestNoBlocks"]}>
+                    <Routes>
+                        <Route path="/blocks/user/:username" element={<ViewBlocks />} />
+                    </Routes>
+                </MemoryRouter>
+            </WebAppsUX>
+        );
         await waitFor(() => expect(screen.getByRole('heading', { name: /this user has not created any blocks yet./i })).toBeDefined());
     });
 });

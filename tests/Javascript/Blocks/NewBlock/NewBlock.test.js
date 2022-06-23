@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Auth, WebAppsUX, WebApps } from 'webapps-react';
 
@@ -13,10 +13,10 @@ describe('NewBlock Component', () => {
                 <WebAppsUX>
                     <WebApps>
                         <BrowserRouter>
-                            <Switch>
-                                <Route exact path="/" name="NewBlock" component={NewBlock} />
-                                <Route exact path="/blocks/edit/:id" name="EditBlock" component={EditBlock} />
-                            </Switch>
+                            <Routes>
+                                <Route exact path="/" name="NewBlock" element={<NewBlock />} />
+                                <Route exact path="/blocks/edit/:id" name="EditBlock" element={<EditBlock />} />
+                            </Routes>
                         </BrowserRouter>
                     </WebApps>
                 </WebAppsUX>

@@ -4,6 +4,12 @@ import { setupServer } from 'msw/node';
 import * as mockData from './mockData';
 
 const handlers = [
+    rest.get('/sanctum/csrf_cookie', (req, res, ctx) => {
+        return res(
+            ctx.status(200)
+        );
+    }),
+
     rest.post('/login', (req, res, ctx) => {
         const { username, password } = req.body;
 

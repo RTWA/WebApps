@@ -6,7 +6,7 @@ const Login = props => {
     const { authenticated, signIn } = useContext(AuthContext);
     if (authenticated) {
         let redirect = (localStorage.getItem('WA_Login')) ? localStorage.getItem('WA_Login') : '/';
-        window.location.replace(redirect)
+        window.location.replace(redirect);
     }
 
     const theme = document.getElementsByTagName('body')[0].getAttribute('data-theme');
@@ -24,7 +24,6 @@ const Login = props => {
     const [state, setState] = useState({
         username: '',
         password: '',
-        redirect: null
     });
 
     useEffect(() => {

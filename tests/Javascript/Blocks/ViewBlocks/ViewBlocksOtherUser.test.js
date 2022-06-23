@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { WebAppsUX } from 'webapps-react';
 
@@ -7,7 +7,15 @@ import ViewBlocks from '../../../../resources/js/components/Routes/Blocks/ViewBl
 
 describe('ViewBlocks Component - Other Users', () => {
     test('Can View Another User\'s Blocks', async () => {
-        render(<WebAppsUX><BrowserRouter><ViewBlocks match={{ params: { username: 'jest2' } }} /></BrowserRouter></WebAppsUX>);
+        render(
+            <WebAppsUX>
+                <MemoryRouter initialEntries={["/blocks/user/jest2"]}>
+                    <Routes>
+                        <Route path="/blocks/user/:username" element={<ViewBlocks />} />
+                    </Routes>
+                </MemoryRouter>
+            </WebAppsUX>
+        );
         await waitFor(() => expect(screen.getByPlaceholderText('Search...')).toBeDefined());
         await waitFor(() => screen.getByText(/test block/i));
         expect(screen.getByText(/1234/i)).toBeDefined();

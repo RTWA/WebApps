@@ -326,7 +326,6 @@ const ViewBlocks = props => {
                             </h4>)
                             : (<h4>This user has not created any blocks yet.</h4>)
                     }
-
                 </NoBlocks>
             </PageWrapper>
         )
