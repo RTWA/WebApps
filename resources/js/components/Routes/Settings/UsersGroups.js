@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { APIClient, Button, PageWrapper, Flyout, useToasts, withWebAppsUX, Loader } from 'webapps-react';
+import { APIClient, Button, PageWrapper, Flyout, useToasts, withWebAppsUX, Loader, Input } from 'webapps-react';
 import { CreateGroupFlyout, CreateUserFlyout, GroupFlyout, UserFlyout } from './Flyouts';
 import { GroupList, UserList } from './Lists';
 
@@ -20,6 +20,8 @@ const UsersGroups = props => {
 
     const { addToast } = useToasts();
 
+    const [search, setSearch] = useState('');
+    const [searchUsers, setSearchUsers] = useState(null);
     const [users, setUsers] = useState(null);
     const [disabled, setDisabled] = useState(null);
     const [showDisabled, setShowDisabled] = useState(0);
@@ -121,7 +123,7 @@ const UsersGroups = props => {
         groups.map(function (_group) { _groups.push(_group) });
         _groups.push(group);
 
-        _groups.sort(/* istanbul ignore next */ (a, b) => (a.letter > b.letter) ? 1 : -1)
+        _groups.sort(/* istanbul ignore next */(a, b) => (a.letter > b.letter) ? 1 : -1)
         setGroups(_groups);
     }
 
@@ -425,7 +427,35 @@ const UsersGroups = props => {
         (tab === id) ? 'block' : 'hidden'
     )
 
-    let obj = (showDisabled) ? disabled : users;
+    const typeSearch = e => {
+        if (e.target.value !== '') {
+            setSearch(e.target.value);
+
+            let _users = [];
+            users.map(user => {
+                if (
+                    user.username.toLowerCase().startsWith(e.target.value.toLowerCase()) ||
+                    user.name.toLowerCase().startsWith(e.target.value.toLowerCase()) ||
+                    user.email.toLowerCase().startsWith(e.target.value.toLowerCase())
+                ) {
+                    _users.push(user);
+                }
+            })
+            setSearchUsers(_users);
+        } else {
+            setSearch('');
+            setSearchUsers(null);
+        }
+
+    }
+
+    const changeTab = i => {
+        setSearch('');
+        setSearchUsers(null);
+        setTab(i);
+    }
+
+    let obj = (showDisabled) ? disabled : (searchUsers) ? searchUsers : users;
 
     if (!users) {
         return <Loader />
@@ -435,22 +465,34 @@ const UsersGroups = props => {
         <>
             <PageWrapper title={
                 <div className="flex flex-row gap-6">
-                    <h6 className={tabClass(0)} onClick={() => setTab(0)}>Users</h6>
-                    <h6 className={tabClass(1)} onClick={() => setTab(1)}>Groups</h6>
+                    <h6 className={tabClass(0)} onClick={() => changeTab(0)}>Users</h6>
+                    <h6 className={tabClass(1)} onClick={() => changeTab(1)}>Groups</h6>
                 </div>
             }>
                 <div className="flex flex-col flex-col-reverse xl:flex-row">
                     {
                         (tab === 0) ?
                             (
-                                <div className="flex-1 text-right">
-                                    <Button onClick={toggleShowDisabled} type="link">{
-                                        (showDisabled) ? 'Show Enabled Users' : `Show Disabled Users ${(disabled === null) ? '' : `(${disabled.length})`}`
-                                    }</Button>
-                                    <Button onClick={openCreateUserFlyout} square>
-                                        Add New User
-                                    </Button>
-                                </div>
+                                <>
+                                    <Input
+                                        id="search"
+                                        name="search"
+                                        placeholder="Search..."
+                                        label="Search Users"
+                                        labelClassName="sr-only"
+                                        wrapperClassName="flex-1"
+                                        onChange={typeSearch}
+                                        value={search}
+                                    />
+                                    <div className="flex-1 text-right">
+                                        <Button onClick={toggleShowDisabled} type="link">{
+                                            (showDisabled) ? 'Show Enabled Users' : `Show Disabled Users ${(disabled === null) ? '' : `(${disabled.length})`}`
+                                        }</Button>
+                                        <Button onClick={openCreateUserFlyout} square>
+                                            Add New User
+                                        </Button>
+                                    </div>
+                                </>
                             ) :
                             (
                                 <div className="flex-1 text-right">
