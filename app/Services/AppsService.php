@@ -27,8 +27,7 @@ class AppsService
         });
 
         // Check the raw data contains the expected name data
-        if (
-            isset($response['name']) && isset($response['apps'])
+        if (isset($response['name']) && isset($response['apps'])
             && $response['name'] === "WebApps Online Repository"
         ) {
             foreach ($response['apps'] as $app) {
